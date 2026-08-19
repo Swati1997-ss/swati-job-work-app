@@ -1,0 +1,551 @@
+<!doctype html>
+<html lang="gu">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#8f1736" />
+  <title>સ્વાતિ મિની ઓઇલ મિલ — મજૂરી કામ</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Swati" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="app-header no-print">
+    <div>
+      <div class="brand">સ્વાતિ મિની ઓઇલ મિલ</div>
+      <div class="subbrand">સુલતાનપુર • Digital મજૂરી કામ</div>
+    </div>
+    <div class="header-actions"><button class="ghost" id="installBtn" hidden>એપ ઇન્સ્ટોલ</button></div>
+  </header>
+
+  <main class="app-shell">
+    <nav class="tabs no-print" aria-label="મુખ્ય મેનુ">
+      <button class="tab active" data-screen="home">મુખ્ય</button>
+      <button class="tab" data-screen="new-oil">તેલ મિલ</button>
+      <button class="tab" data-screen="grain">અનાજ/કઠોળ</button>
+      <button class="tab" data-screen="customers">ગ્રાહકો</button>
+      <button class="tab" data-screen="history">History</button>
+      <button class="tab" data-screen="stock">સ્ટોક / Batch</button>
+      <button class="tab" data-screen="reports">Reports</button>
+      <button class="tab" data-screen="settings">Settings</button>
+    </nav>
+
+    <section class="screen active" id="screen-home">
+      <div class="hero card no-print">
+        <h1>આજે શું કરવું છે?</h1>
+        <div class="action-grid">
+          <button class="primary big" data-go="new-oil">+ નવું તેલ મિલ મજૂરી કામ</button>
+          <button class="secondary big" data-go="grain">+ અનાજ / કઠોળ મજૂરી કામ</button>
+        </div>
+      </div>
+
+      <div class="stats no-print">
+        <div class="stat card"><span>આજના બિલ</span><strong id="todayCount">0</strong></div>
+        <div class="stat card"><span>આજનું મજૂરી કામ</span><strong id="todayJob">₹0</strong></div>
+        <div class="stat card"><span>આજની ખોળ ખરીદી</span><strong id="todayKhol">₹0</strong></div>
+        <div class="stat card"><span>આજનું બાકી</span><strong id="todayOutstanding">₹0</strong></div>
+      </div>
+      <div class="stats no-print compact-stats">
+        <div class="stat card"><span>કુલ ગ્રાહકો</span><strong id="allCustomers">0</strong></div>
+        <div class="stat card"><span>ખેડૂતને કુલ આપવાના બાકી</span><strong id="allPayableOutstanding">₹0</strong></div>
+        <div class="stat card"><span>ખેડૂત પાસેથી કુલ લેવાના બાકી</span><strong id="allReceivableOutstanding">₹0</strong></div>
+        <div class="stat card"><span>કુલ ટ્રાન્ઝેક્શન</span><strong id="allTxCount">0</strong></div>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-new-oil">
+      <form id="oilForm" class="form-layout no-print" autocomplete="off">
+        <div class="card section-card">
+          <div class="section-title"><span>1</span><h2>ગ્રાહક</h2></div>
+          <div class="grid three">
+            <label class="suggest-wrap">નામ *
+              <input id="customerName" required placeholder="ગ્રાહકનું નામ" autocomplete="off" />
+              <div id="customerSuggestions" class="suggestions" hidden></div>
+            </label>
+            <label>મોબાઇલ નંબર<input id="customerMobile" type="tel" inputmode="numeric" maxlength="10" pattern="[0-9]{0,10}" placeholder="મહત્તમ 10 અંક" /></label>
+            <label>ગામ<input id="customerVillage" placeholder="ગામ" /></label>
+          </div>
+          <div class="hint" id="customerMatchHint"></div>
+          <div class="grid two compact-top">
+            <label>તારીખ<input id="txDate" type="date" required /></label>
+            <label>બિલ નંબર<input id="billNo" readonly /></label>
+          </div>
+        </div>
+
+        <div class="card section-card">
+          <div class="section-title"><span>2</span><h2>ગ્રાહક લાવેલ માલ અને નીકળેલ તેલ</h2></div>
+          <div class="incoming-grid">
+            <div class="incoming-box">
+              <h3>સિંગ / ગોગળા</h3>
+              <label>વજન (કિલો)<input id="singGoglaKg" type="number" min="0" step="0.01" value="0" /></label>
+            </div>
+            <div class="incoming-box">
+              <h3>દાણા / ફાડા</h3>
+              <label>વજન (કિલો)<input id="danaFalaKg" type="number" min="0" step="0.01" value="0" /></label>
+            </div>
+          </div>
+          <div class="subsection-title">નીકળેલ તેલ</div>
+          <div class="grid two">
+            <label>તેલના ડબો<input id="oilTins" type="number" min="0" step="1" value="0" /></label>
+            <label>વધારાનું તેલ (કિલો)<input id="oilExtraKg" type="number" min="0" step="0.01" value="0" /></label>
+          </div>
+          <div class="calc-strip">
+            <div><span>કુલ તેલ</span><strong id="totalOilKg">0 કિલો</strong></div>
+            <div><span>મજૂરી કામ</span><strong id="jobWorkAmount">₹0</strong></div>
+          </div>
+        </div>
+
+        <div class="card section-card">
+          <div class="section-title"><span>3</span><h2>ખોળ ખરીદી</h2></div>
+          <div class="grid two">
+            <label>ખોળનું વજન (કિલો)<input id="kholKg" type="number" min="0" step="0.01" value="0" /></label>
+            <label>ભાવ ₹ / કિલો<input id="kholRate" type="number" min="0" step="0.01" /></label>
+          </div>
+          <div class="single-total"><span>ખેડૂતને આપવાના</span><strong id="kholAmount">₹0</strong></div>
+        </div>
+
+        <div class="card section-card">
+          <div class="section-title"><span>4</span><h2>ગ્રાહકે અમારી પાસેથી લીધેલું</h2></div>
+          <div class="item-box">
+            <h3>નવું / ખાલી ડબો</h3>
+            <div class="grid two">
+              <label>સંખ્યા<input id="newTinQty" type="number" min="0" step="1" value="0" /></label>
+              <label>ભાવ ₹ / ડબો<input id="newTinRate" type="number" min="0" step="0.01" /></label>
+            </div>
+            <div class="mini-total">કુલ: <strong id="newTinAmount">₹0</strong></div>
+          </div>
+          <div class="item-box">
+            <div class="row-between"><h3>તેલ વેચાણ</h3><label class="switch-line"><input id="oilSaleEnabled" type="checkbox" /> ઉમેરવું</label></div>
+            <div id="oilSaleFields" class="grid three disabled-zone">
+              <label>એકમ<select id="oilSaleUnit"><option value="tin">ડબો</option><option value="kg">કિલો</option><option value="litre">લિટર</option></select></label>
+              <label>જથ્થો<input id="oilSaleQty" type="number" min="0" step="0.01" value="0" /></label>
+              <label>ભાવ ₹ / એકમ<input id="oilSaleRate" type="number" min="0" step="0.01" value="0" /></label>
+            </div>
+            <div class="mini-total">કુલ: <strong id="oilSaleAmount">₹0</strong></div>
+          </div>
+        </div>
+
+        <div class="card settlement-card">
+          <div class="section-title"><span>5</span><h2>અંતિમ સરભર</h2></div>
+          <div class="settlement-lines">
+            <div><span>મજૂરી કામ</span><strong id="sumJob">₹0</strong></div>
+            <div><span>ડબો / અન્ય વેચાણ</span><strong id="sumSales">₹0</strong></div>
+            <div class="line receivable"><span>કુલ લેવાના</span><strong id="totalReceivable">₹0</strong></div>
+            <div><span>ખોળની ખરીદી</span><strong id="sumKhol">₹0</strong></div>
+            <div class="line payable"><span>કુલ આપવાના</span><strong id="totalPayable">₹0</strong></div>
+          </div>
+          <div class="net-box" id="netBox">
+            <span id="netLabel">અંતિમ રકમ</span>
+            <strong id="netAmount">₹0</strong>
+          </div>
+        </div>
+
+        <div class="card section-card">
+          <div class="section-title"><span>6</span><h2>ચુકવણી</h2></div>
+          <div class="grid three">
+            <label>અત્યારે ચૂકવેલ / મળેલ ₹<input id="paidAmount" type="number" min="0" step="0.01" value="0" /></label>
+            <label>ચુકવણી રીત<select id="paymentMethod"><option value="cash">રોકડ</option><option value="bank">બેંક/UPI</option><option value="other">અન્ય</option></select></label>
+            <label>નોંધ<input id="note" placeholder="વૈકલ્પિક નોંધ" /></label>
+          </div>
+          <div class="single-total"><span id="remainingLabel">બાકી</span><strong id="remainingAmount">₹0</strong></div>
+        </div>
+
+        <div id="oilAuditBox" class="card audit-box" hidden>
+          <div class="audit-title">Record details</div>
+          <div class="audit-grid">
+            <span>Entry By</span><strong id="oilAuditCreatedBy">—</strong>
+            <span>Created</span><strong id="oilAuditCreatedAt">—</strong>
+            <span>Last Edited By</span><strong id="oilAuditUpdatedBy">—</strong>
+            <span>Device</span><strong id="oilAuditDevice">—</strong>
+            <span>Recent Activity</span><strong id="oilAuditActivity" class="audit-activity">—</strong>
+          </div>
+        </div>
+
+        <div class="sticky-actions">
+          <button type="submit" class="primary">સાચવો</button>
+          <button type="button" id="previewBtn" class="secondary">કાર્ડ જુઓ</button>
+          <button type="button" id="resetBtn" class="ghost">નવું સાફ કરો</button>
+        </div>
+      </form>
+
+      <div id="printArea" class="print-area">
+        <div class="print-toolbar no-print">
+          <button id="backToForm" class="ghost">← પાછા</button>
+          <button id="printBtn" class="primary">પ્રિન્ટ / PDF</button>
+        </div>
+
+        <div class="physical-card">
+          <div class="card-face card-front">
+            <div class="card-brand">સ્વાતિ મિની ઓઇલ મિલ</div>
+            <div class="card-place">સુલતાનપુર</div>
+            <div class="front-table">
+              <div class="ft-head">વિગત</div><div class="ft-head">વજન / જથ્થો</div><div class="ft-head">નોંધ</div>
+              <div>સિંગ / ગોગળા</div><div id="pSingGogla">—</div><div></div>
+              <div>દાણા / ફાડા</div><div id="pDanaFala">—</div><div></div>
+              <div>તેલ</div><div id="pOilOutput">—</div><div></div>
+              <div>ખોળ</div><div id="pKholQty">—</div><div></div>
+            </div>
+            <div class="front-note">આ કાર્ડ ગ્રાહકના મજૂરી કામ અને સરભર માટે છે.</div>
+          </div>
+
+          <div class="card-face card-back">
+            <div class="top-fields">
+              <span>નામ: <b id="pName">—</b></span>
+              <span>ગામ: <b id="pVillage">—</b></span>
+              <span>તા.: <b id="pDate">—</b></span>
+              <span>બિલ: <b id="pBill">—</b></span>
+            </div>
+            <div class="back-table">
+              <div class="bt-head">વિગત</div><div class="bt-head">જથ્થો</div><div class="bt-head">ભાવ</div><div class="bt-head">રકમ</div>
+              <div>મજૂરી કામ</div><div id="pJobQty">—</div><div id="pJobRate">—</div><div id="pJobAmount">—</div>
+              <div>ખોળ</div><div id="pKholQty2">—</div><div id="pKholRate">—</div><div id="pKholAmount">—</div>
+              <div>નવું ડબો</div><div id="pTinQty">—</div><div id="pTinRate">—</div><div id="pTinAmount">—</div>
+              <div>તેલ વેચાણ</div><div id="pOilSaleQty">—</div><div id="pOilSaleRate">—</div><div id="pOilSaleAmount">—</div>
+            </div>
+            <div class="final-row"><span id="pFinalLabel">અંતિમ રકમ</span><strong id="pFinal">₹0</strong></div>
+            <div class="payment-row">ચૂકવેલ/મળેલ: <b id="pPaid">₹0</b> &nbsp; | &nbsp; બાકી: <b id="pRemaining">₹0</b></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-grain">
+      <form id="grainForm" class="form-layout no-print" autocomplete="off">
+        <div class="card section-card">
+          <div class="section-title"><span>1</span><h2>ગ્રાહક</h2></div>
+          <div class="grid three">
+            <label class="suggest-wrap">નામ *
+              <input id="grainCustomerName" required placeholder="ગ્રાહકનું નામ" autocomplete="off" />
+              <div id="grainCustomerSuggestions" class="suggestions" hidden></div>
+            </label>
+            <label>મોબાઇલ નંબર<input id="grainCustomerMobile" type="tel" inputmode="numeric" maxlength="10" pattern="[0-9]{0,10}" placeholder="મહત્તમ 10 અંક" /></label>
+            <label>ગામ<input id="grainCustomerVillage" placeholder="ગામ" /></label>
+          </div>
+          <div class="hint" id="grainCustomerMatchHint"></div>
+          <div class="grid two compact-top">
+            <label>તારીખ<input id="grainTxDate" type="date" required /></label>
+            <label>બિલ નંબર<input id="grainBillNo" readonly /></label>
+          </div>
+        </div>
+
+        <div class="card section-card">
+          <div class="section-title"><span>2</span><h2>અનાજ / કઠોળ સફાઈ</h2></div>
+          <div class="grid three">
+            <label>માલનો પ્રકાર
+              <select id="grainCommodity"><option value="મગ">મગ</option><option value="ચણા">ચણા</option><option value="ઘઉં">ઘઉં</option><option value="અન્ય">અન્ય</option></select>
+            </label>
+            <label>સાફ થયેલ સારો માલ (કિલો)<input id="grainCleanKg" type="number" min="0" step="0.01" value="0" /></label>
+            <label>ખરાબ / વધેલો માલ (કિલો)<input id="grainBadKg" type="number" min="0" step="0.01" value="0" /></label>
+          </div>
+          <div class="calc-strip">
+            <div><span>કુલ સફાઈ વજન</span><strong id="grainTotalKg">0 કિલો</strong></div>
+            <div><span>મજૂરી કામ</span><strong id="grainJobAmount">₹0</strong></div>
+          </div>
+          <div class="hint">મજૂરી કામ = સાફ થયેલ સારો માલ + ખરાબ / વધેલો માલ. ભાવ સેટિંગ્સમાંથી બદલી શકાય છે.</div>
+        </div>
+
+        <div class="card section-card">
+          <div class="section-title"><span>3</span><h2>વધેલો માલ — અમારી પાસે રાખેલ</h2></div>
+          <label class="switch-line"><input id="grainLeftoverEnabled" type="checkbox" /> વધેલો માલ અમે ખરીદ્યો / રાખ્યો</label>
+          <div id="grainLeftoverFields" class="grid two disabled-zone">
+            <label>ખરીદેલ જથ્થો (કિલો)<input id="grainPurchaseKg" type="number" min="0" step="0.01" value="0" /></label>
+            <label>ભાવ ₹ / કિલો<input id="grainPurchaseRate" type="number" min="0" step="0.01" value="0" /></label>
+          </div>
+          <div class="single-total"><span>ગ્રાહકને આપવાના</span><strong id="grainPurchaseAmount">₹0</strong></div>
+        </div>
+
+        <div class="card settlement-card">
+          <div class="section-title"><span>4</span><h2>અંતિમ સરભર</h2></div>
+          <div class="settlement-lines">
+            <div><span>મજૂરી કામ</span><strong id="grainSumJob">₹0</strong></div>
+            <div class="line receivable"><span>કુલ લેવાના</span><strong id="grainReceivable">₹0</strong></div>
+            <div><span>વધેલા માલની ખરીદી</span><strong id="grainSumPurchase">₹0</strong></div>
+            <div class="line payable"><span>કુલ આપવાના</span><strong id="grainPayable">₹0</strong></div>
+          </div>
+          <div class="net-box" id="grainNetBox"><span id="grainNetLabel">અંતિમ રકમ</span><strong id="grainNetAmount">₹0</strong></div>
+        </div>
+
+        <div class="card section-card">
+          <div class="section-title"><span>5</span><h2>ચુકવણી</h2></div>
+          <div class="grid three">
+            <label>અત્યારે ચૂકવેલ / મળેલ ₹<input id="grainPaidAmount" type="number" min="0" step="0.01" value="0" /></label>
+            <label>ચુકવણી રીત<select id="grainPaymentMethod"><option value="cash">રોકડ</option><option value="bank">બેંક/UPI</option><option value="other">અન્ય</option></select></label>
+            <label>નોંધ<input id="grainNote" placeholder="વૈકલ્પિક નોંધ" /></label>
+          </div>
+          <div class="single-total"><span id="grainRemainingLabel">બાકી</span><strong id="grainRemainingAmount">₹0</strong></div>
+        </div>
+
+        <div id="grainAuditBox" class="card audit-box" hidden>
+          <div class="audit-title">Record details</div>
+          <div class="audit-grid">
+            <span>Entry By</span><strong id="grainAuditCreatedBy">—</strong>
+            <span>Created</span><strong id="grainAuditCreatedAt">—</strong>
+            <span>Last Edited By</span><strong id="grainAuditUpdatedBy">—</strong>
+            <span>Device</span><strong id="grainAuditDevice">—</strong>
+            <span>Recent Activity</span><strong id="grainAuditActivity" class="audit-activity">—</strong>
+          </div>
+        </div>
+
+        <div class="sticky-actions">
+          <button type="submit" class="primary">સાચવો</button>
+          <button type="button" id="grainPreviewBtn" class="secondary">કાર્ડ જુઓ</button>
+          <button type="button" id="grainResetBtn" class="ghost">નવું સાફ કરો</button>
+        </div>
+      </form>
+
+      <div id="grainPrintArea" class="print-area">
+        <div class="print-toolbar no-print"><button id="grainBackToForm" class="ghost">← પાછા</button><button id="grainPrintBtn" class="primary">પ્રિન્ટ / PDF</button></div>
+        <div class="physical-card single-print-card">
+          <div class="card-face card-back">
+            <div class="card-brand">સ્વાતિ મિની ઓઇલ મિલ</div><div class="card-place">સુલતાનપુર — અનાજ / કઠોળ સફાઈ</div>
+            <div class="top-fields"><span>નામ: <b id="gpName">—</b></span><span>ગામ: <b id="gpVillage">—</b></span><span>તા.: <b id="gpDate">—</b></span><span>બિલ: <b id="gpBill">—</b></span></div>
+            <div class="back-table grain-print-table">
+              <div class="bt-head">વિગત</div><div class="bt-head">જથ્થો</div><div class="bt-head">ભાવ</div><div class="bt-head">રકમ</div>
+              <div id="gpCommodity">માલનો પ્રકાર</div><div id="gpTotalQty">—</div><div id="gpJobRate">—</div><div id="gpJobAmount">—</div>
+              <div>સાફ થયેલ સારો માલ</div><div id="gpCleanQty">—</div><div>—</div><div>—</div>
+              <div>ખરાબ / વધેલો માલ</div><div id="gpBadQty">—</div><div>—</div><div>—</div>
+              <div>વધેલો માલ ખરીદી</div><div id="gpPurchaseQty">—</div><div id="gpPurchaseRate">—</div><div id="gpPurchaseAmount">—</div>
+            </div>
+            <div class="final-row"><span id="gpFinalLabel">અંતિમ રકમ</span><strong id="gpFinal">₹0</strong></div>
+            <div class="payment-row">ચૂકવેલ/મળેલ: <b id="gpPaid">₹0</b> &nbsp; | &nbsp; બાકી: <b id="gpRemaining">₹0</b></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-customers">
+      <div class="card no-print">
+        <div class="row-between"><h2>ગ્રાહકો</h2><strong id="customerCountLabel">0 ગ્રાહકો</strong></div>
+        <input id="customerSearch" class="search" placeholder="નામ, મોબાઇલ અથવા ગામ શોધો" />
+        <div id="customerList" class="customer-list"></div>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-history">
+      <div class="card no-print">
+        <div class="row-between"><h2>મજૂરી કામ History</h2><div class="button-row"><button id="backupBtn" class="ghost">Backup</button><button id="exportOilBtn" class="secondary">તેલ મિલ Excel</button><button id="exportGrainBtn" class="secondary">અનાજ / કઠોળ Excel</button></div></div>
+        <input id="historySearch" class="search" placeholder="નામ, મોબાઇલ, ગામ અથવા બિલ નંબર શોધો" />
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>તારીખ</th><th>બિલ</th><th>વિભાગ</th><th>ગ્રાહક</th><th>વિગત</th><th>મજૂરી કામ</th><th>સરભર</th><th>બાકી</th><th></th></tr></thead>
+            <tbody id="historyBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-stock">
+      <div class="stats no-print compact-stats">
+        <div class="stat card"><span>કુલ ખરીદેલ વધેલો માલ</span><strong id="stockPurchasedKg">0 કિલો</strong></div>
+        <div class="stat card"><span>Batchમાં ગયેલ</span><strong id="stockAllocatedKg">0 કિલો</strong></div>
+        <div class="stat card"><span>ઉપલબ્ધ સ્ટોક</span><strong id="stockAvailableKg">0 કિલો</strong></div>
+        <div class="stat card"><span>કુલ Batch Profit</span><strong id="batchTotalProfit">₹0</strong></div>
+      </div>
+
+      <div class="card no-print section-card">
+        <div class="row-between"><div class="section-title"><span>1</span><h2>ઉપલબ્ધ સ્ટોક</h2></div><div class="button-row"><button id="exportStockBtn" class="secondary" type="button">Stock Excel</button><button id="exportBatchBtn" class="secondary" type="button">Batch Excel</button></div></div>
+        <p class="muted">તેલ મિલની ખોળ અને અનાજ/કઠોળમાં અમે ખરીદેલો વધેલો માલ અહીં આપમેળે આવે છે.</p>
+        <div class="table-wrap"><table><thead><tr><th>માલ</th><th>ખરીદેલ</th><th>Batchમાં</th><th>ઉપલબ્ધ</th><th>ખરીદી કિંમત</th></tr></thead><tbody id="stockBody"></tbody></table></div>
+      </div>
+
+      <form id="batchForm" class="card no-print section-card" autocomplete="off">
+        <div class="section-title"><span>2</span><h2>નવો Batch બનાવો</h2></div>
+        <div class="grid three">
+          <label>Batch નામ / નંબર<input id="batchNo" readonly /></label>
+          <label>માલ<select id="batchMaterial"></select></label>
+          <label>વેચાણ તારીખ<input id="batchSaleDate" type="date" required /></label>
+          <label>સમયગાળો શરૂ<input id="batchFromDate" type="date" required /></label>
+          <label>સમયગાળો અંત<input id="batchToDate" type="date" required /></label>
+          <label>Batch જથ્થો (કિલો)<input id="batchQty" type="number" min="0" step="0.01" value="0" /></label>
+          <label>Processing / અન્ય ખર્ચ ₹<input id="batchProcessingCost" type="number" min="0" step="0.01" value="0" /></label>
+          <label>વેચાણની કુલ રકમ ₹<input id="batchSaleAmount" type="number" min="0" step="0.01" value="0" /></label>
+          <label>નોંધ<input id="batchNote" placeholder="વૈકલ્પિક" /></label>
+        </div>
+        <div class="notice" id="batchAvailability">ઉપલબ્ધ સ્ટોક પસંદ કરો.</div>
+        <div class="settlement-lines batch-calc-lines">
+          <div><span>આ Batchની ખરીદી કિંમત</span><strong id="batchPurchaseCost">₹0</strong></div>
+          <div><span>Processing / અન્ય ખર્ચ</span><strong id="batchCostExtra">₹0</strong></div>
+          <div><span>કુલ Cost</span><strong id="batchTotalCost">₹0</strong></div>
+          <div><span>વેચાણ</span><strong id="batchSaleValue">₹0</strong></div>
+        </div>
+        <div class="net-box" id="batchProfitBox"><span>Batch Profit / Loss</span><strong id="batchProfit">₹0</strong></div>
+        <div class="sticky-actions"><button class="primary" type="submit">Batch સાચવો</button><button class="ghost" type="button" id="batchResetBtn">નવું સાફ કરો</button></div>
+      </form>
+
+      <div class="card no-print section-card">
+        <div class="row-between"><h2>Batch History</h2><strong id="batchCountLabel">0 Batch</strong></div>
+        <div class="table-wrap"><table><thead><tr><th>Batch</th><th>માલ</th><th>સમયગાળો</th><th>જથ્થો</th><th>ખરીદી</th><th>ખર્ચ</th><th>વેચાણ</th><th>Profit/Loss</th><th></th></tr></thead><tbody id="batchBody"></tbody></table></div>
+      </div>
+    </section>
+
+
+    <section class="screen" id="screen-reports">
+      <div class="card no-print section-card">
+        <div class="row-between"><div><h2>Business Reports</h2><p class="muted">તેલ મિલ અને અનાજ/કઠોળના રિપોર્ટ અલગથી અથવા કુલ જોઈ શકો.</p></div><button id="exportReportBtn" class="secondary" type="button">Report Excel</button></div>
+        <div class="grid three report-filters">
+          <label>વિભાગ<select id="reportBusiness"><option value="all">બધું</option><option value="oil">તેલ મિલ</option><option value="grain">અનાજ / કઠોળ</option></select></label>
+          <label>શરૂઆત તારીખ<input id="reportFrom" type="date" /></label>
+          <label>અંત તારીખ<input id="reportTo" type="date" /></label>
+        </div>
+        <div class="button-row report-presets">
+          <button type="button" class="ghost" data-report-range="today">આજે</button>
+          <button type="button" class="ghost" data-report-range="7days">છેલ્લા 7 દિવસ</button>
+          <button type="button" class="ghost" data-report-range="month">આ મહિનો</button>
+          <button type="button" class="ghost" data-report-range="season">આ સીઝન / વર્ષ</button>
+        </div>
+      </div>
+
+      <div class="stats no-print compact-stats report-stats">
+        <div class="stat card"><span>કુલ ટ્રાન્ઝેક્શન</span><strong id="reportTxCount">0</strong></div>
+        <div class="stat card"><span>કુલ મજૂરી કામ</span><strong id="reportJobTotal">₹0</strong></div>
+        <div class="stat card"><span>કુલ ખરીદી</span><strong id="reportPurchaseTotal">₹0</strong></div>
+        <div class="stat card"><span>કુલ વેચાણ</span><strong id="reportSalesTotal">₹0</strong></div>
+        <div class="stat card"><span>ખેડૂત પાસેથી લેવાના</span><strong id="reportReceivable">₹0</strong></div>
+        <div class="stat card"><span>ખેડૂતને આપવાના</span><strong id="reportPayable">₹0</strong></div>
+        <div class="stat card"><span>ચૂકવેલ / મળેલ</span><strong id="reportPaid">₹0</strong></div>
+        <div class="stat card"><span>બાકી</span><strong id="reportOutstanding">₹0</strong></div>
+      </div>
+
+      <div class="grid two no-print report-panels">
+        <div class="card section-card">
+          <div class="row-between"><h2>દિવસ મુજબ Summary</h2><strong id="reportPeriodLabel"></strong></div>
+          <div class="table-wrap"><table><thead><tr><th>તારીખ</th><th>બિલ</th><th>મજૂરી</th><th>ખરીદી</th><th>વેચાણ</th><th>બાકી</th></tr></thead><tbody id="reportDailyBody"></tbody></table></div>
+        </div>
+        <div class="card section-card">
+          <h2>Top ગ્રાહકો</h2>
+          <div class="table-wrap"><table><thead><tr><th>ગ્રાહક</th><th>ગામ</th><th>ટ્રાન્ઝેક્શન</th><th>મજૂરી</th></tr></thead><tbody id="reportCustomerBody"></tbody></table></div>
+        </div>
+      </div>
+
+      <div class="card no-print section-card">
+        <h2>ગામ મુજબ Summary</h2>
+        <div class="table-wrap"><table><thead><tr><th>ગામ</th><th>ગ્રાહકો</th><th>ટ્રાન્ઝેક્શન</th><th>મજૂરી કામ</th><th>બાકી</th></tr></thead><tbody id="reportVillageBody"></tbody></table></div>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-settings">
+      <form id="settingsForm" class="card no-print">
+        <h2>Rates & System Settings</h2>
+        <div class="grid two">
+          <label>1 ડબોમાં તેલ (કિલો)<input id="settingTinKg" type="number" min="0.01" step="0.01" /></label>
+          <label>મજૂરી કામ ₹ / ડબો<input id="settingJobRate" type="number" min="0" step="0.01" /></label>
+          <label>ખોળનો Default ભાવ ₹ / કિલો<input id="settingKholRate" type="number" min="0" step="0.01" /></label>
+          <label>નવા ડબોનો Default ભાવ ₹<input id="settingNewTinRate" type="number" min="0" step="0.01" /></label>
+          <label>સીઝન<input id="settingSeason" placeholder="2026" /></label>
+          <label>તેલ મિલ બિલ Prefix<input id="settingPrefix" placeholder="JW" /></label>
+          <label>અનાજ/કઠોળ — આધાર વજન (કિલો)<input id="settingGrainBaseKg" type="number" min="0.01" step="0.01" /></label>
+          <label>અનાજ/કઠોળ — આધાર મજૂરી ₹<input id="settingGrainBaseRate" type="number" min="0" step="0.01" /></label>
+          <label>વધેલા માલનો Default ભાવ ₹ / કિલો<input id="settingGrainPurchaseRate" type="number" min="0" step="0.01" /></label>
+          <label>અનાજ/કઠોળ બિલ Prefix<input id="settingGrainPrefix" placeholder="GK" /></label>
+        </div>
+        <div class="sticky-actions"><button class="primary" type="submit">Settings સાચવો</button></div>
+      </form>
+
+      <div class="card no-print data-card">
+        <h2>Operators</h2>
+        <p class="muted">Alpha testing માટે ત્રણ લોકોના નામ રાખી શકો. હાલ આ ઓળખ માટે છે; final cloud versionમાં અલગ secure login રહેશે.</p>
+        <div class="grid three">
+          <label>Operator 1<input id="operator1" placeholder="નિતેશભાઈ" /></label>
+          <label>Operator 2<input id="operator2" placeholder="દર્શન" /></label>
+          <label>Operator 3<input id="operator3" placeholder="હેત" /></label>
+        </div>
+        <div class="button-row"><button id="saveOperatorsBtn" class="secondary" type="button">Operators સાચવો</button></div>
+      </div>
+      <div class="card no-print data-card">
+        <h2>Device & Audit</h2>
+        <p class="muted">આ browser/device એક Operator સાથે lock રહે છે. સામાન્ય કામમાં Operator પસંદ કરવાની જરૂર નથી.</p>
+        <div class="audit-grid device-status-grid">
+          <span>Assigned Operator</span><strong id="deviceAssignedOperator">—</strong>
+          <span>Device ID</span><strong id="deviceAssignedId">—</strong>
+        </div>
+        <div class="button-row"><button id="resetDeviceAssignmentBtn" class="ghost" type="button">Change Device Assignment</button></div>
+        <p class="muted small-note">Change option માટે double confirmation રાખ્યું છે. Entryની અંદર audit details quietly save થાય છે.</p>
+      </div>
+
+
+      <div class="card no-print data-card">
+        <h2>Offline & Shared Sync</h2>
+        <p class="muted">દરેક મોબાઇલમાં data પહેલા local save થાય છે. Internet મળે ત્યારે changes company master data સાથે merge થાય છે અને બીજા મોબાઇલ પર પણ ખેંચી શકાય છે.</p>
+        <div class="audit-grid device-status-grid">
+          <span>Internet</span><strong id="syncNetworkStatus">—</strong>
+          <span>Local Data</span><strong id="syncLocalStatus">Saved on this device</strong>
+          <span>Pending Sync</span><strong id="syncPendingCount">0</strong>
+          <span>Last Sync</span><strong id="syncLastAt">Never</strong>
+          <span>Shared Target</span><strong id="syncTargetStatus">Not configured</strong>
+          <span>Master Updated</span><strong id="syncMasterAt">Never</strong>
+        </div>
+        <div class="button-row">
+          <button id="syncNowBtn" class="secondary" type="button">Sync & Merge</button>
+          <button id="pullMasterBtn" class="ghost" type="button">Pull Latest</button>
+          <button id="downloadLocalSnapshotBtn" class="ghost" type="button">Local Snapshot</button>
+        </div>
+        <details class="sync-config-panel">
+          <summary>Shared Sync Setup</summary>
+          <p class="muted small-note">Private key source filesમાં રાખવાની જરૂર નથી. દરેક trusted deviceમાં એક વખત અહીં save કરો.</p>
+          <div class="grid two">
+            <label>Sync Web App URL<input id="syncEndpointInput" type="url" autocomplete="off" /></label>
+            <label>Workspace Code<input id="syncWorkspaceCodeInput" autocomplete="off" /></label>
+          </div>
+          <div class="grid two">
+            <label>Private Workspace Key<input id="syncWorkspaceKeyInput" type="password" autocomplete="new-password" /></label>
+            <div class="button-field"><span>Key visibility</span><button id="syncKeyToggleBtn" class="ghost" type="button">Show key</button></div>
+          </div>
+          <label class="switch-line"><input id="syncAutoToggle" type="checkbox" checked /> Internet મળ્યા પછી Auto Sync</label>
+          <div class="button-row">
+            <button id="syncSaveConfigBtn" class="secondary" type="button">Save Sync Setup</button>
+            <button id="syncForgetConfigBtn" class="ghost" type="button">Forget Key on This Device</button>
+          </div>
+        </details>
+        <p class="muted small-note">Internet ન હોય તો app ચાલુ રહેશે. Online થયા પછી Sync & Merge local recordsને shared master સાથે safely merge કરશે. Payment records ID પ્રમાણે જોડાય છે જેથી બે devicesની અલગ ચુકવણી overwrite ન થાય.</p>
+      </div>
+      <div class="card no-print data-card">
+        <h2>Install App</h2>
+        <div class="audit-grid device-status-grid">
+          <span>Status</span><strong id="pwaInstallStatus">Browser mode</strong>
+        </div>
+        <p id="pwaInstallHelp" class="muted">HTTPS hosting પછી આ app Home Screen પર install કરી શકાય છે.</p>
+        <div class="button-row"><button id="pwaInstallActionBtn" class="secondary" type="button">Install / Add to Home Screen</button></div>
+        <p class="muted small-note">Installed થયા પછી icon પરથી સીધી app ખૂલશે. Offline local data ચાલુ રહેશે; internet મળતાં shared sync થઈ શકશે.</p>
+      </div>
+
+      <div class="card no-print data-card">
+        <h2>ડેટા</h2>
+        <p class="muted">Local copy આ deviceમાં રહે છે. Shared sync configure કર્યા પછી central master copy Google Driveમાં રહેશે.</p>
+        <div class="button-row"><button id="restoreBtn" class="ghost" type="button">Backup Restore</button><input id="restoreFile" type="file" accept="application/json" hidden /></div>
+      </div>
+    </section>
+  </main>
+
+  <div id="paymentModal" class="modal no-print" hidden>
+    <div class="modal-card">
+      <div class="row-between"><h2>ચુકવણી ઉમેરો</h2><button id="closePaymentModal" class="ghost">✕</button></div>
+      <div id="paymentModalInfo" class="notice"></div>
+      <div class="grid two">
+        <label>તારીખ<input id="paymentDate" type="date" /></label>
+        <label>રકમ ₹<input id="paymentAmount" type="number" min="0.01" step="0.01" /></label>
+        <label>રીત<select id="paymentMethodModal"><option value="cash">રોકડ</option><option value="bank">બેંક/UPI</option><option value="other">અન્ય</option></select></label>
+        <label>નોંધ<input id="paymentNote" /></label>
+      </div>
+      <div class="modal-actions"><button id="savePaymentBtn" class="primary">ચુકવણી સાચવો</button></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast no-print" role="status"></div>
+  <script src="sync-config.js"></script>
+  <script src="offline-sync.js"></script>
+  <script src="app.js"></script>
+  <script src="pwa.js"></script>
+
+  <div id="deviceSetupModal" class="device-modal" hidden>
+    <div class="device-modal-card">
+      <h2>આ ડિવાઇસ કોનું છે?</h2>
+      <p>આ પસંદગી આ browser/deviceમાં યાદ રહેશે. Final online versionમાં આ જ વસ્તુ login credentialsથી secure થશે.</p>
+      <div id="deviceOperatorButtons" class="device-operator-buttons"></div>
+    </div>
+  </div>
+
+</body>
+</html>
