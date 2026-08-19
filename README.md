@@ -14,4 +14,3 @@ Alpha 20 turns the tested offline/shared-sync prototype into an installable-PWA-
 PWA installation and service workers require the app to be served over HTTPS (or localhost during development). Opening `index.html` directly with `file://` is still useful for local testing, but it cannot behave as a fully installed PWA.
 
 The private workspace key should only be entered on trusted operator devices and should not be shared in screenshots/messages.
-PWA deployment test
