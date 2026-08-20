@@ -990,10 +990,43 @@
     clearTimeout(t._timer); t._timer = setTimeout(()=>t.classList.remove('show'),2200);
   }
 
+  const SCREEN_TITLES={
+    home:'મુખ્ય',
+    'new-oil':'તેલ મીલ',
+    grain:'અનાજ / કઠોળ',
+    customers:'ગ્રાહકો',
+    history:'હિસ્ટ્રી',
+    stock:'સ્ટોક / Batch',
+    reports:'રિપોર્ટ્સ',
+    settings:'સેટિંગ્સ'
+  };
+
+  function closeAppDrawer(){
+    const drawer=$('appDrawer'),backdrop=$('drawerBackdrop'),btn=$('drawerOpenBtn');
+    if(drawer){drawer.classList.remove('open');drawer.setAttribute('aria-hidden','true');}
+    if(backdrop) backdrop.hidden=true;
+    if(btn) btn.setAttribute('aria-expanded','false');
+    document.body.classList.remove('drawer-open');
+  }
+
+  function openAppDrawer(){
+    const drawer=$('appDrawer'),backdrop=$('drawerBackdrop'),btn=$('drawerOpenBtn');
+    if(drawer){drawer.classList.add('open');drawer.setAttribute('aria-hidden','false');}
+    if(backdrop) backdrop.hidden=false;
+    if(btn) btn.setAttribute('aria-expanded','true');
+    document.body.classList.add('drawer-open');
+  }
+
   function showScreen(name){
+    const target=$(`screen-${name}`);
+    if(!target) return;
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.screen === name));
-    $(`screen-${name}`).classList.add('active');
+    document.querySelectorAll('.drawer-link').forEach(t => t.classList.toggle('active', t.dataset.screen === name));
+    target.classList.add('active');
+    const pageTitle=$('currentPageTitle');
+    if(pageTitle) pageTitle.textContent=SCREEN_TITLES[name]||'સ્વાતિ';
+    closeAppDrawer();
     hidePreview();
     hideGrainPreview();
     if (name === 'history') renderHistory();
@@ -1088,7 +1121,32 @@
   window.addEventListener('swati:toast',(e)=>toast(e.detail||''));
 
   document.querySelectorAll('.tab').forEach(b => b.addEventListener('click',()=>showScreen(b.dataset.screen)));
+  document.querySelectorAll('.drawer-link').forEach(b => b.addEventListener('click',()=>showScreen(b.dataset.screen)));
   document.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click',()=>showScreen(b.dataset.go)));
+  $('drawerOpenBtn')?.addEventListener('click',openAppDrawer);
+  $('drawerCloseBtn')?.addEventListener('click',closeAppDrawer);
+  $('drawerBackdrop')?.addEventListener('click',closeAppDrawer);
+  document.addEventListener('keydown',(e)=>{if(e.key==='Escape') closeAppDrawer();});
+
+  document.querySelectorAll('[data-report-business-ui]').forEach(btn=>btn.addEventListener('click',()=>{
+    document.querySelectorAll('[data-report-business-ui]').forEach(x=>x.classList.remove('active'));
+    btn.classList.add('active');
+    if($('reportBusiness')) $('reportBusiness').value=btn.dataset.reportBusinessUi;
+    renderReports();
+    $('reportDetailArea')?.scrollIntoView({behavior:'smooth',block:'start'});
+  }));
+
+  const reportTargets={
+    summary:'reportSummaryBlock',
+    daily:'reportDailyBlock',
+    customers:'reportCustomerBlock',
+    villages:'reportVillageBlock'
+  };
+  document.querySelectorAll('[data-report-open]').forEach(btn=>btn.addEventListener('click',()=>{
+    renderReports();
+    const el=$(reportTargets[btn.dataset.reportOpen]||'reportDetailArea');
+    el?.scrollIntoView({behavior:'smooth',block:'start'});
+  }));
   $('oilForm').addEventListener('input', ()=>{ clearPreparedBillPdf('oil'); calculate(); });
   $('customerMobile').addEventListener('input',()=>{
     const clean = $('customerMobile').value.replace(/\D/g,'').slice(0,10);
@@ -1282,6 +1340,17 @@
   $('installBtn').addEventListener('click', async ()=>{
     if(!deferredInstall) return; deferredInstall.prompt(); await deferredInstall.userChoice; deferredInstall = null; $('installBtn').hidden = true;
   });
+
+  const updateDrawerNetwork=()=>{
+    const t=$('drawerNetworkText'),d=document.querySelector('.drawer-footer .status-indicator'),h=$('headerSyncDot');
+    const online=navigator.onLine;
+    if(t) t.textContent=online?'Online':'Offline';
+    if(d) d.classList.toggle('offline',!online);
+    if(h) h.classList.toggle('offline',!online);
+  };
+  window.addEventListener('online',updateDrawerNetwork);
+  window.addEventListener('offline',updateDrawerNetwork);
+  updateDrawerNetwork();
 
   if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('./sw.js').catch(()=>{});
 
