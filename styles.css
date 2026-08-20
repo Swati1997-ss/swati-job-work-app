@@ -244,7 +244,7 @@ th{color:var(--muted);font-size:.8rem}
 
 
 /* =========================================================
-   UI ALPHA 1 — Professional mobile navigation + reports
+   UI ALPHA 2 — Professional mobile navigation + reports
    ========================================================= */
 :root{
   --brand:#9b1b42;
@@ -415,3 +415,27 @@ input:focus,select:focus{border-color:var(--pro-blue);box-shadow:0 0 0 3px rgba(
 @media(min-width:900px){
   .app-drawer{width:340px}
 }
+
+
+/* UI Alpha 2 refinements */
+.report-subpage-head{
+  display:flex;align-items:center;gap:14px;margin:2px 0 14px;
+}
+.report-subpage-head h2{
+  margin:0;font-size:1.35rem;color:var(--text-strong)
+}
+.report-back-btn{
+  border:1px solid var(--ui-line);
+  background:#fff;
+  border-radius:12px;
+  padding:10px 14px;
+  font-weight:800;
+  color:var(--text-strong);
+  box-shadow:0 2px 8px rgba(25,33,45,.05);
+}
+.report-subpage-block{scroll-margin-top:84px}
+[hidden]{display:none!important}
+#screen-settings .muted:empty,
+#screen-settings .small-note:empty{display:none!important}
+#screen-settings .data-card{padding-top:18px;padding-bottom:18px}
+#screen-settings .data-card h2{margin-bottom:14px}

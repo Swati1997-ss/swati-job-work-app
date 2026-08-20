@@ -4,13 +4,13 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#8f1736" />
-  <title>સ્વાતિ મિની ઓઇલ મિલ — મજૂરી કામ</title>
-  <link rel="manifest" href="manifest.webmanifest?v=ui-alpha1" />
+  <title>સ્વાતિ મિની ઓઇલ મિલ</title>
+  <link rel="manifest" href="manifest.webmanifest?v=ui-alpha2" />
   <link rel="apple-touch-icon" href="swati-icon-v2-192.png?v=22" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Swati" />
-  <link rel="stylesheet" href="styles.css?v=ui-alpha1" />
+  <link rel="stylesheet" href="styles.css?v=ui-alpha2" />
 </head>
 <body>
   
@@ -19,10 +19,10 @@
       <button id="drawerOpenBtn" class="icon-button hamburger-button" type="button" aria-label="મેનુ ખોલો" aria-controls="appDrawer" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
-      <img class="header-logo" src="swati-icon-v2-192.png?v=ui1" alt="સ્વાતિ" />
+      <img class="header-logo" src="swati-icon-v2-192.png?v=ui2" alt="સ્વાતિ" />
       <div class="header-brand-copy">
         <div class="brand">સ્વાતિ મિની ઓઇલ મિલ</div>
-        <div class="subbrand">સુલતાનપુર • Digital મજૂરી કામ</div>
+        <div class="subbrand">સુલતાનપુર</div>
       </div>
     </div>
     <div class="header-actions">
@@ -35,7 +35,7 @@
   <aside id="appDrawer" class="app-drawer no-print" aria-label="મુખ્ય મેનુ" aria-hidden="true">
     <div class="drawer-head">
       <div class="drawer-brand-row">
-        <img class="drawer-logo" src="swati-icon-v2-192.png?v=ui1" alt="સ્વાતિ" />
+        <img class="drawer-logo" src="swati-icon-v2-192.png?v=ui2" alt="સ્વાતિ" />
         <div>
           <div class="drawer-brand">સ્વાતિ મિની ઓઇલ મિલ</div>
           <div class="drawer-subbrand">સુલતાનપુર</div>
@@ -57,14 +57,14 @@
 
     <div class="drawer-footer">
       <div class="drawer-status-line"><span class="status-indicator"></span><span id="drawerNetworkText">Online</span></div>
-      <div class="drawer-version">UI Alpha 1</div>
+      <div class="drawer-version">UI Alpha 2</div>
     </div>
   </aside>
 
   <main class="app-shell">
     <div class="page-heading no-print">
       <div>
-        <div class="page-eyebrow">સ્વાતિ મજૂરી કામ</div>
+        
         <h1 id="currentPageTitle">મુખ્ય</h1>
       </div>
     </div>
@@ -74,14 +74,14 @@
       <div class="hero card no-print">
         <h1>ઝડપી કામ</h1>
         <div class="action-grid">
-          <button class="primary big" data-go="new-oil">+ નવું તેલ મિલ મજૂરી કામ</button>
-          <button class="secondary big" data-go="grain">+ અનાજ / કઠોળ મજૂરી કામ</button>
+          <button class="primary big" data-go="new-oil">+ નવું તેલ મિલ મજૂરી</button>
+          <button class="secondary big" data-go="grain">+ અનાજ / કઠોળ મજૂરી</button>
         </div>
       </div>
 
       <div class="stats no-print">
         <div class="stat card"><span>આજના બિલ</span><strong id="todayCount">0</strong></div>
-        <div class="stat card"><span>આજનું મજૂરી કામ</span><strong id="todayJob">₹0</strong></div>
+        <div class="stat card"><span>આજનું મજૂરી</span><strong id="todayJob">₹0</strong></div>
         <div class="stat card"><span>આજની ખોળ ખરીદી</span><strong id="todayKhol">₹0</strong></div>
         <div class="stat card"><span>આજનું બાકી</span><strong id="todayOutstanding">₹0</strong></div>
       </div>
@@ -131,7 +131,7 @@
           </div>
           <div class="calc-strip">
             <div><span>કુલ તેલ</span><strong id="totalOilKg">0 કિલો</strong></div>
-            <div><span>મજૂરી કામ</span><strong id="jobWorkAmount">₹0</strong></div>
+            <div><span>મજૂરી</span><strong id="jobWorkAmount">₹0</strong></div>
           </div>
         </div>
 
@@ -168,7 +168,7 @@
         <div class="card settlement-card">
           <div class="section-title"><span>5</span><h2>અંતિમ સરભર</h2></div>
           <div class="settlement-lines">
-            <div><span>મજૂરી કામ</span><strong id="sumJob">₹0</strong></div>
+            <div><span>મજૂરી</span><strong id="sumJob">₹0</strong></div>
             <div><span>ડબો / અન્ય વેચાણ</span><strong id="sumSales">₹0</strong></div>
             <div class="line receivable"><span>કુલ લેવાના</span><strong id="totalReceivable">₹0</strong></div>
             <div><span>ખોળની ખરીદી</span><strong id="sumKhol">₹0</strong></div>
@@ -226,7 +226,7 @@
               <div>તેલ</div><div id="pOilOutput">—</div><div></div>
               <div>ખોળ</div><div id="pKholQty">—</div><div></div>
             </div>
-            <div class="front-note">આ કાર્ડ ગ્રાહકના મજૂરી કામ અને સરભર માટે છે.</div>
+            <div class="front-note">આ કાર્ડ ગ્રાહકના મજૂરી અને સરભર માટે છે.</div>
           </div>
 
           <div class="card-face card-back">
@@ -238,7 +238,7 @@
             </div>
             <div class="back-table">
               <div class="bt-head">વિગત</div><div class="bt-head">જથ્થો</div><div class="bt-head">ભાવ</div><div class="bt-head">રકમ</div>
-              <div>મજૂરી કામ</div><div id="pJobQty">—</div><div id="pJobRate">—</div><div id="pJobAmount">—</div>
+              <div>મજૂરી</div><div id="pJobQty">—</div><div id="pJobRate">—</div><div id="pJobAmount">—</div>
               <div>ખોળ</div><div id="pKholQty2">—</div><div id="pKholRate">—</div><div id="pKholAmount">—</div>
               <div>નવું ડબો</div><div id="pTinQty">—</div><div id="pTinRate">—</div><div id="pTinAmount">—</div>
               <div>તેલ વેચાણ</div><div id="pOilSaleQty">—</div><div id="pOilSaleRate">—</div><div id="pOilSaleAmount">—</div>
@@ -280,9 +280,9 @@
           </div>
           <div class="calc-strip">
             <div><span>કુલ સફાઈ વજન</span><strong id="grainTotalKg">0 કિલો</strong></div>
-            <div><span>મજૂરી કામ</span><strong id="grainJobAmount">₹0</strong></div>
+            <div><span>મજૂરી</span><strong id="grainJobAmount">₹0</strong></div>
           </div>
-          <div class="hint">મજૂરી કામ = સાફ થયેલ સારો માલ + ખરાબ / વધેલો માલ. ભાવ સેટિંગ્સમાંથી બદલી શકાય છે.</div>
+          <div class="hint">મજૂરી = સાફ થયેલ સારો માલ + ખરાબ / વધેલો માલ. ભાવ સેટિંગ્સમાંથી બદલી શકાય છે.</div>
         </div>
 
         <div class="card section-card">
@@ -298,7 +298,7 @@
         <div class="card settlement-card">
           <div class="section-title"><span>4</span><h2>અંતિમ સરભર</h2></div>
           <div class="settlement-lines">
-            <div><span>મજૂરી કામ</span><strong id="grainSumJob">₹0</strong></div>
+            <div><span>મજૂરી</span><strong id="grainSumJob">₹0</strong></div>
             <div class="line receivable"><span>કુલ લેવાના</span><strong id="grainReceivable">₹0</strong></div>
             <div><span>વધેલા માલની ખરીદી</span><strong id="grainSumPurchase">₹0</strong></div>
             <div class="line payable"><span>કુલ આપવાના</span><strong id="grainPayable">₹0</strong></div>
@@ -364,11 +364,11 @@
 
     <section class="screen" id="screen-history">
       <div class="card no-print">
-        <div class="row-between"><h2>મજૂરી કામ History</h2><div class="button-row"><button id="backupBtn" class="ghost">Backup</button><button id="exportOilBtn" class="secondary">તેલ મિલ Excel</button><button id="exportGrainBtn" class="secondary">અનાજ / કઠોળ Excel</button></div></div>
+        <div class="row-between"><h2>મજૂરી History</h2><div class="button-row"><button id="backupBtn" class="ghost">Backup</button><button id="exportOilBtn" class="secondary">તેલ મિલ Excel</button><button id="exportGrainBtn" class="secondary">અનાજ / કઠોળ Excel</button></div></div>
         <input id="historySearch" class="search" placeholder="નામ, મોબાઇલ, ગામ અથવા બિલ નંબર શોધો" />
         <div class="table-wrap">
           <table>
-            <thead><tr><th>તારીખ</th><th>બિલ</th><th>વિભાગ</th><th>ગ્રાહક</th><th>વિગત</th><th>મજૂરી કામ</th><th>સરભર</th><th>બાકી</th><th></th></tr></thead>
+            <thead><tr><th>તારીખ</th><th>બિલ</th><th>વિભાગ</th><th>ગ્રાહક</th><th>વિગત</th><th>મજૂરી</th><th>સરભર</th><th>બાકી</th><th></th></tr></thead>
             <tbody id="historyBody"></tbody>
           </table>
         </div>
@@ -385,7 +385,6 @@
 
       <div class="card no-print section-card">
         <div class="row-between"><div class="section-title"><span>1</span><h2>ઉપલબ્ધ સ્ટોક</h2></div><div class="button-row"><button id="exportStockBtn" class="secondary" type="button">Stock Excel</button><button id="exportBatchBtn" class="secondary" type="button">Batch Excel</button></div></div>
-        <p class="muted">તેલ મિલની ખોળ અને અનાજ/કઠોળમાં અમે ખરીદેલો વધેલો માલ અહીં આપમેળે આવે છે.</p>
         <div class="table-wrap"><table><thead><tr><th>માલ</th><th>ખરીદેલ</th><th>Batchમાં</th><th>ઉપલબ્ધ</th><th>ખરીદી કિંમત</th></tr></thead><tbody id="stockBody"></tbody></table></div>
       </div>
 
@@ -424,7 +423,7 @@
     <section class="screen" id="screen-reports">
       <div class="report-mobile-head no-print">
         <div>
-          <span class="section-kicker">Business Intelligence</span>
+          
           <h2>રિપોર્ટ્સ</h2>
           <p>જરૂર મુજબ રિપોર્ટ પસંદ કરો અને નીચે વિગત જુઓ.</p>
         </div>
@@ -440,30 +439,38 @@
       <div class="report-launch-list no-print">
         <button class="report-launch-card" type="button" data-report-open="summary">
           <span class="report-launch-icon maroon">₹</span>
-          <span class="report-launch-copy"><strong>બિઝનેસ Summary</strong><small>મજૂરી, ખરીદી, વેચાણ અને બાકીનો એક નજરમાં હિસાબ</small></span>
+          <span class="report-launch-copy"><strong>કુલ સારાંશ</strong><small>મજૂરી, ખરીદી, વેચાણ અને બાકીનો એક નજરમાં હિસાબ</small></span>
           <span class="report-chevron">›</span>
         </button>
         <button class="report-launch-card" type="button" data-report-open="daily">
           <span class="report-launch-icon blue">▤</span>
-          <span class="report-launch-copy"><strong>દિવસ મુજબ રિપોર્ટ</strong><small>તારીખ પ્રમાણે ટ્રાન્ઝેક્શન અને કુલ રકમ</small></span>
+          <span class="report-launch-copy"><strong>દિવસ મુજબ સારાંશ</strong><small>તારીખ પ્રમાણે ટ્રાન્ઝેક્શન અને કુલ રકમ</small></span>
           <span class="report-chevron">›</span>
         </button>
         <button class="report-launch-card" type="button" data-report-open="customers">
           <span class="report-launch-icon teal">◎</span>
-          <span class="report-launch-copy"><strong>ગ્રાહક રિપોર્ટ</strong><small>Top ગ્રાહકો, ગામ અને મજૂરી કામ</small></span>
+          <span class="report-launch-copy"><strong>ગ્રાહક સારાંશ</strong><small>ગ્રાહકો, ગામ અને મજૂરીની વિગતો</small></span>
           <span class="report-chevron">›</span>
         </button>
         <button class="report-launch-card" type="button" data-report-open="villages">
           <span class="report-launch-icon gold">⌖</span>
-          <span class="report-launch-copy"><strong>ગામ મુજબ Summary</strong><small>ગામ પ્રમાણે ગ્રાહકો, ટ્રાન્ઝેક્શન અને બાકી</small></span>
+          <span class="report-launch-copy"><strong>ગામ મુજબ સારાંશ</strong><small>ગામ પ્રમાણે ગ્રાહકો, ટ્રાન્ઝેક્શન અને બાકી</small></span>
           <span class="report-chevron">›</span>
         </button>
       </div>
 
-      <div id="reportDetailArea" class="report-detail-area">
+      
+      <div id="reportDetailArea" class="report-detail-area" hidden>
+        <div class="report-subpage-head no-print">
+          <button id="reportBackBtn" class="report-back-btn" type="button">← પાછા</button>
+          <div>
+            <h2 id="reportSubpageTitle">રિપોર્ટ</h2>
+          </div>
+        </div>
+
         <div class="card no-print section-card report-filter-card">
           <div class="report-filter-title">
-            <div><span class="section-kicker">Filters</span><h2>સમયગાળો પસંદ કરો</h2></div>
+            <div><h2>સમયગાળો પસંદ કરો</h2></div>
           </div>
           <div class="grid three report-filters">
             <label>વિભાગ<select id="reportBusiness"><option value="all">બધું</option><option value="oil">તેલ મિલ</option><option value="grain">અનાજ / કઠોળ</option></select></label>
@@ -478,31 +485,32 @@
           </div>
         </div>
 
-        <div id="reportSummaryBlock" class="stats no-print compact-stats report-stats">
-          <div class="stat card"><span>કુલ ટ્રાન્ઝેક્શન</span><strong id="reportTxCount">0</strong></div>
-          <div class="stat card"><span>કુલ મજૂરી કામ</span><strong id="reportJobTotal">₹0</strong></div>
-          <div class="stat card"><span>કુલ ખરીદી</span><strong id="reportPurchaseTotal">₹0</strong></div>
-          <div class="stat card"><span>કુલ વેચાણ</span><strong id="reportSalesTotal">₹0</strong></div>
-          <div class="stat card"><span>ખેડૂત પાસેથી લેવાના</span><strong id="reportReceivable">₹0</strong></div>
-          <div class="stat card"><span>ખેડૂતને આપવાના</span><strong id="reportPayable">₹0</strong></div>
-          <div class="stat card"><span>ચૂકવેલ / મળેલ</span><strong id="reportPaid">₹0</strong></div>
-          <div class="stat card"><span>બાકી</span><strong id="reportOutstanding">₹0</strong></div>
-        </div>
-
-        <div class="grid two no-print report-panels">
-          <div id="reportDailyBlock" class="card section-card report-data-card">
-            <div class="row-between"><h2>દિવસ મુજબ Summary</h2><strong id="reportPeriodLabel"></strong></div>
-            <div class="table-wrap"><table><thead><tr><th>તારીખ</th><th>બિલ</th><th>મજૂરી</th><th>ખરીદી</th><th>વેચાણ</th><th>બાકી</th></tr></thead><tbody id="reportDailyBody"></tbody></table></div>
-          </div>
-          <div id="reportCustomerBlock" class="card section-card report-data-card">
-            <h2>Top ગ્રાહકો</h2>
-            <div class="table-wrap"><table><thead><tr><th>ગ્રાહક</th><th>ગામ</th><th>ટ્રાન્ઝેક્શન</th><th>મજૂરી</th></tr></thead><tbody id="reportCustomerBody"></tbody></table></div>
+        <div id="reportSummaryBlock" class="report-subpage-block">
+          <div class="stats no-print compact-stats report-stats">
+            <div class="stat card"><span>કુલ ટ્રાન્ઝેક્શન</span><strong id="reportTxCount">0</strong></div>
+            <div class="stat card"><span>કુલ મજૂરી</span><strong id="reportJobTotal">₹0</strong></div>
+            <div class="stat card"><span>કુલ ખરીદી</span><strong id="reportPurchaseTotal">₹0</strong></div>
+            <div class="stat card"><span>કુલ વેચાણ</span><strong id="reportSalesTotal">₹0</strong></div>
+            <div class="stat card"><span>ખેડૂત પાસેથી લેવાના</span><strong id="reportReceivable">₹0</strong></div>
+            <div class="stat card"><span>ખેડૂતને આપવાના</span><strong id="reportPayable">₹0</strong></div>
+            <div class="stat card"><span>ચૂકવેલ / મળેલ</span><strong id="reportPaid">₹0</strong></div>
+            <div class="stat card"><span>બાકી</span><strong id="reportOutstanding">₹0</strong></div>
           </div>
         </div>
 
-        <div id="reportVillageBlock" class="card no-print section-card report-data-card">
-          <h2>ગામ મુજબ Summary</h2>
-          <div class="table-wrap"><table><thead><tr><th>ગામ</th><th>ગ્રાહકો</th><th>ટ્રાન્ઝેક્શન</th><th>મજૂરી કામ</th><th>બાકી</th></tr></thead><tbody id="reportVillageBody"></tbody></table></div>
+        <div id="reportDailyBlock" class="card section-card report-data-card report-subpage-block" hidden>
+          <div class="row-between"><h2>દિવસ મુજબ સારાંશ</h2><strong id="reportPeriodLabel"></strong></div>
+          <div class="table-wrap"><table><thead><tr><th>તારીખ</th><th>બિલ</th><th>મજૂરી</th><th>ખરીદી</th><th>વેચાણ</th><th>બાકી</th></tr></thead><tbody id="reportDailyBody"></tbody></table></div>
+        </div>
+
+        <div id="reportCustomerBlock" class="card section-card report-data-card report-subpage-block" hidden>
+          <h2>ગ્રાહક સારાંશ</h2>
+          <div class="table-wrap"><table><thead><tr><th>ગ્રાહક</th><th>ગામ</th><th>ટ્રાન્ઝેક્શન</th><th>મજૂરી</th></tr></thead><tbody id="reportCustomerBody"></tbody></table></div>
+        </div>
+
+        <div id="reportVillageBlock" class="card section-card report-data-card report-subpage-block" hidden>
+          <h2>ગામ મુજબ સારાંશ</h2>
+          <div class="table-wrap"><table><thead><tr><th>ગામ</th><th>ગ્રાહકો</th><th>ટ્રાન્ઝેક્શન</th><th>મજૂરી</th><th>બાકી</th></tr></thead><tbody id="reportVillageBody"></tbody></table></div>
         </div>
       </div>
     </section>
@@ -512,7 +520,7 @@
         <h2>Rates & System Settings</h2>
         <div class="grid two">
           <label>1 ડબોમાં તેલ (કિલો)<input id="settingTinKg" type="number" min="0.01" step="0.01" /></label>
-          <label>મજૂરી કામ ₹ / ડબો<input id="settingJobRate" type="number" min="0" step="0.01" /></label>
+          <label>મજૂરી ₹ / ડબો<input id="settingJobRate" type="number" min="0" step="0.01" /></label>
           <label>ખોળનો Default ભાવ ₹ / કિલો<input id="settingKholRate" type="number" min="0" step="0.01" /></label>
           <label>નવા ડબોનો Default ભાવ ₹<input id="settingNewTinRate" type="number" min="0" step="0.01" /></label>
           <label>સીઝન<input id="settingSeason" placeholder="2026" /></label>
@@ -527,7 +535,6 @@
 
       <div class="card no-print data-card">
         <h2>Operators</h2>
-        <p class="muted">Alpha testing માટે ત્રણ લોકોના નામ રાખી શકો. હાલ આ ઓળખ માટે છે; final cloud versionમાં અલગ secure login રહેશે.</p>
         <div class="grid three">
           <label>Operator 1<input id="operator1" placeholder="નિતેશભાઈ" /></label>
           <label>Operator 2<input id="operator2" placeholder="દર્શન" /></label>
@@ -565,7 +572,6 @@
         </div>
         <details class="sync-config-panel">
           <summary>Shared Sync Setup</summary>
-          <p class="muted small-note">Private key source filesમાં રાખવાની જરૂર નથી. દરેક trusted deviceમાં એક વખત અહીં save કરો.</p>
           <div class="grid two">
             <label>Sync Web App URL<input id="syncEndpointInput" type="url" autocomplete="off" /></label>
             <label>Workspace Code<input id="syncWorkspaceCodeInput" autocomplete="off" /></label>
@@ -580,21 +586,17 @@
             <button id="syncForgetConfigBtn" class="ghost" type="button">Forget Key on This Device</button>
           </div>
         </details>
-        <p class="muted small-note">Internet ન હોય તો app ચાલુ રહેશે. Online થયા પછી Sync & Merge local recordsને shared master સાથે safely merge કરશે. Payment records ID પ્રમાણે જોડાય છે જેથી બે devicesની અલગ ચુકવણી overwrite ન થાય.</p>
       </div>
       <div class="card no-print data-card">
         <h2>Install App</h2>
         <div class="audit-grid device-status-grid">
           <span>Status</span><strong id="pwaInstallStatus">Browser mode</strong>
         </div>
-        <p id="pwaInstallHelp" class="muted">HTTPS hosting પછી આ app Home Screen પર install કરી શકાય છે.</p>
         <div class="button-row"><button id="pwaInstallActionBtn" class="secondary" type="button">Install / Add to Home Screen</button></div>
-        <p class="muted small-note">Installed થયા પછી icon પરથી સીધી app ખૂલશે. Offline local data ચાલુ રહેશે; internet મળતાં shared sync થઈ શકશે.</p>
       </div>
 
       <div class="card no-print data-card">
         <h2>ડેટા</h2>
-        <p class="muted">Local copy આ deviceમાં રહે છે. Shared sync configure કર્યા પછી central master copy Google Driveમાં રહેશે.</p>
         <div class="button-row"><button id="restoreBtn" class="ghost" type="button">Backup Restore</button><input id="restoreFile" type="file" accept="application/json" hidden /></div>
       </div>
     </section>
@@ -634,11 +636,11 @@
     </div>
   </div>
 
-  <script src="sync-config.js?v=ui-alpha1"></script>
-  <script src="offline-sync.js?v=ui-alpha1"></script>
-  <script src="file-tools.js?v=ui-alpha1"></script>
-  <script src="app.js?v=ui-alpha1"></script>
-  <script src="pwa.js?v=ui-alpha1"></script>
+  <script src="sync-config.js?v=ui-alpha2"></script>
+  <script src="offline-sync.js?v=ui-alpha2"></script>
+  <script src="file-tools.js?v=ui-alpha2"></script>
+  <script src="app.js?v=ui-alpha2"></script>
+  <script src="pwa.js?v=ui-alpha2"></script>
 
 </body>
 </html>

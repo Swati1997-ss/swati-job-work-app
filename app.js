@@ -1033,7 +1033,7 @@
     if (name === 'customers') renderCustomers();
     if (name === 'home') renderDashboard();
     if (name === 'stock') renderStock();
-    if (name === 'reports') renderReports();
+    if (name === 'reports') { renderReports(); showReportHome(); }
     window.scrollTo({top:0,behavior:'smooth'});
   }
 
@@ -1137,16 +1137,39 @@
   }));
 
   const reportTargets={
-    summary:'reportSummaryBlock',
-    daily:'reportDailyBlock',
-    customers:'reportCustomerBlock',
-    villages:'reportVillageBlock'
+    summary:{id:'reportSummaryBlock',title:'કુલ સારાંશ'},
+    daily:{id:'reportDailyBlock',title:'દિવસ મુજબ સારાંશ'},
+    customers:{id:'reportCustomerBlock',title:'ગ્રાહક સારાંશ'},
+    villages:{id:'reportVillageBlock',title:'ગામ મુજબ સારાંશ'}
   };
-  document.querySelectorAll('[data-report-open]').forEach(btn=>btn.addEventListener('click',()=>{
+
+  function showReportHome(){
+    $('reportDetailArea').hidden=true;
+    document.querySelector('.report-launch-list')?.removeAttribute('hidden');
+    document.querySelector('.report-category-strip')?.removeAttribute('hidden');
+    document.querySelector('.report-mobile-head')?.removeAttribute('hidden');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  function openReportSubpage(key){
+    const target=reportTargets[key]||reportTargets.summary;
     renderReports();
-    const el=$(reportTargets[btn.dataset.reportOpen]||'reportDetailArea');
-    el?.scrollIntoView({behavior:'smooth',block:'start'});
+    document.querySelector('.report-launch-list')?.setAttribute('hidden','');
+    document.querySelector('.report-category-strip')?.setAttribute('hidden','');
+    document.querySelector('.report-mobile-head')?.setAttribute('hidden','');
+    const area=$('reportDetailArea');
+    if(area) area.hidden=false;
+    document.querySelectorAll('.report-subpage-block').forEach(el=>el.hidden=true);
+    const el=$(target.id);
+    if(el) el.hidden=false;
+    if($('reportSubpageTitle')) $('reportSubpageTitle').textContent=target.title;
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  document.querySelectorAll('[data-report-open]').forEach(btn=>btn.addEventListener('click',()=>{
+    openReportSubpage(btn.dataset.reportOpen);
   }));
+  $('reportBackBtn')?.addEventListener('click',showReportHome);
   $('oilForm').addEventListener('input', ()=>{ clearPreparedBillPdf('oil'); calculate(); });
   $('customerMobile').addEventListener('input',()=>{
     const clean = $('customerMobile').value.replace(/\D/g,'').slice(0,10);
