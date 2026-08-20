@@ -8,9 +8,6 @@
   const STORAGE_CURRENT_OPERATOR = 'swati_current_operator_v1';
   const STORAGE_DEVICE_ID = 'swati_device_id_v1';
   const STORAGE_AUDIT = 'swati_audit_v1';
-  const STORAGE_DELETED = 'swati_deleted_v1';
-  const STORAGE_SECURITY = 'swati_delete_security_v1';
-  const STORAGE_LAST_LOCAL_SAVE = 'swati_last_local_save_v1';
   const defaults = {
     tinKg: 15,
     jobRatePerTin: 100,
@@ -90,9 +87,7 @@
 
   const $ = (id) => document.getElementById(id);
   function notifyDataChanged(dataset, action='update') {
-    try { localStorage.setItem(STORAGE_LAST_LOCAL_SAVE,new Date().toISOString()); } catch {}
     try { window.dispatchEvent(new CustomEvent('swati:data-changed',{detail:{dataset,action}})); } catch {}
-    try { renderLocalStatus(); } catch {}
   }
   const money = (n) => `₹${Number(n || 0).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
   const num = (id) => Number($(id)?.value || 0);
@@ -139,54 +134,17 @@
   }
 
   function getTx(){
-    try { const deleted=new Set(getDeleted().filter(x=>x.entityType==='transaction').map(x=>x.id)); return JSON.parse(localStorage.getItem(STORAGE_TX) || '[]').map(migrateRow).filter(r=>!deleted.has(r.id)); }
+    try { return JSON.parse(localStorage.getItem(STORAGE_TX) || '[]').map(migrateRow); }
     catch { return []; }
   }
   function setTx(rows){ localStorage.setItem(STORAGE_TX, JSON.stringify(rows)); notifyDataChanged('transactions'); }
 
 
   function getBatches(){
-    try { const deleted=new Set(getDeleted().filter(x=>x.entityType==='batch').map(x=>x.id)); return JSON.parse(localStorage.getItem(STORAGE_BATCHES) || '[]').filter(r=>!deleted.has(r.id)); }
+    try { return JSON.parse(localStorage.getItem(STORAGE_BATCHES) || '[]'); }
     catch { return []; }
   }
   function setBatches(rows){ localStorage.setItem(STORAGE_BATCHES, JSON.stringify(rows)); notifyDataChanged('batches'); }
-
-  function getDeleted(){ try{return JSON.parse(localStorage.getItem(STORAGE_DELETED)||'[]');}catch{return [];} }
-  function setDeleted(rows){ localStorage.setItem(STORAGE_DELETED,JSON.stringify(rows.slice(-5000))); notifyDataChanged('deleted','delete'); }
-  function markDeleted(entityType,id,details={}){
-    const rows=getDeleted().filter(x=>!(x.entityType===entityType&&x.id===id));
-    rows.push({id,entityType,deletedAt:new Date().toISOString(),deletedBy:currentOperator()||'Unknown',deviceId:deviceId(),...details});
-    setDeleted(rows);
-  }
-  function getDeleteSecurity(){try{return JSON.parse(localStorage.getItem(STORAGE_SECURITY)||'null');}catch{return null;}}
-  function bytesToB64(bytes){let s='';bytes.forEach(b=>s+=String.fromCharCode(b));return btoa(s);}
-  function b64ToBytes(s){const b=atob(s),o=new Uint8Array(b.length);for(let i=0;i<b.length;i++)o[i]=b.charCodeAt(i);return o;}
-  async function pinHash(pin,saltB64,iterations=120000){
-    const key=await crypto.subtle.importKey('raw',new TextEncoder().encode(pin),'PBKDF2',false,['deriveBits']);
-    const bits=await crypto.subtle.deriveBits({name:'PBKDF2',salt:b64ToBytes(saltB64),iterations,hash:'SHA-256'},key,256);
-    return bytesToB64(new Uint8Array(bits));
-  }
-  async function saveDeletePin(){
-    const pin=$('deletePinNew')?.value||'', confirmPin=$('deletePinConfirm')?.value||'';
-    if(pin.length<6){toast('Delete PIN ઓછામાં ઓછો 6 અંક/અક્ષરનો રાખો','warning');return;}
-    if(pin!==confirmPin){toast('બંને Delete PIN સરખા નથી','error');return;}
-    try{
-      const salt=crypto.getRandomValues(new Uint8Array(16)); const saltB64=bytesToB64(salt), iterations=120000;
-      const hash=await pinHash(pin,saltB64,iterations);
-      localStorage.setItem(STORAGE_SECURITY,JSON.stringify({salt:saltB64,hash,iterations,updatedAt:new Date().toISOString()}));
-      notifyDataChanged('security'); addAudit('DELETE_PIN_SET','system','delete-security','Delete authorization PIN updated');
-      $('deletePinNew').value='';$('deletePinConfirm').value='';renderDeleteSecurityStatus();toast('Delete PIN સુરક્ષિત રીતે સેટ થયો','success');
-    }catch(e){toast('Delete PIN સેટ થઈ શક્યો નહીં','error');}
-  }
-  async function verifyDeletePin(pin){const sec=getDeleteSecurity();if(!sec?.salt||!sec?.hash)return false;try{return (await pinHash(pin,sec.salt,Number(sec.iterations||120000)))===sec.hash;}catch{return false;}}
-  function renderDeleteSecurityStatus(){if($('deletePinStatus'))$('deletePinStatus').textContent=getDeleteSecurity()?.hash?'Delete PIN status: સેટ છે — delete માટે authorization જરૂરી છે':'Delete PIN status: સેટ નથી';}
-  function renderLocalStatus(){
-    if($('localRecordCount'))$('localRecordCount').textContent=`${getTx().length} ટ્રાન્ઝેક્શન • ${getBatches().length} Batch`;
-    const last=localStorage.getItem(STORAGE_LAST_LOCAL_SAVE); if($('localLastSavedAt'))$('localLastSavedAt').textContent=last?new Date(last).toLocaleString('en-IN'):'Never';
-    let bytes=0;try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i),v=localStorage.getItem(k)||'';bytes+=(k.length+v.length)*2;}}catch{}
-    if($('localStorageSize'))$('localStorageSize').textContent=bytes<1024?`${bytes} B`:`${(bytes/1024).toFixed(1)} KB`;
-    if($('syncLocalStatus'))$('syncLocalStatus').textContent='આ device/browserના App Storageમાં સચવાયેલ';
-  }
 
   function sourceLots(){
     const lots=[];
@@ -329,10 +287,8 @@
   }
 
   function deleteBatch(id){
-    const b=getBatches().find(x=>x.id===id); if(!b)return;
-    requestDeleteAuthorization('batch',id,`${b.batchNo} • ${b.material}`);
+    const b=getBatches().find(x=>x.id===id); if(!b)return; if(!confirm(`${b.batchNo} કાઢવો છે? સ્ટોક પાછો ઉપલબ્ધ થઈ જશે.`))return; setBatches(getBatches().filter(x=>x.id!==id)); addAudit('BATCH_DELETE','batch',id,`${b.batchNo} • ${b.material} • ${b.qty} કિલો`); renderStock(); toast('Batch કાઢ્યો');
   }
-
 
   function todayISO(){
     const d = new Date();
@@ -802,28 +758,13 @@
 
   function deleteRecord(id){
     const r=getTx().find(x=>x.id===id); if(!r) return;
-    requestDeleteAuthorization('transaction',id,`${r.billNo} • ${r.customer?.name||''}`);
-  }
-
-  let pendingDelete=null;
-  function requestDeleteAuthorization(entityType,id,label){
-    if(!getDeleteSecurity()?.hash){toast('પહેલા Settings → Delete Securityમાં Delete PIN સેટ કરો','warning',4200);showScreen('settings');return;}
-    pendingDelete={entityType,id,label}; $('deleteAuthInfo').textContent=`${label} કાઢવા માટે Admin Delete PIN નાખો.`;$('deleteAuthPin').value='';$('deleteAuthModal').hidden=false;setTimeout(()=>$('deleteAuthPin')?.focus(),80);
-  }
-  function closeDeleteAuth(){pendingDelete=null;$('deleteAuthModal').hidden=true;$('deleteAuthPin').value='';}
-  async function confirmDeleteAuth(){
-    if(!pendingDelete)return; const ok=await verifyDeletePin($('deleteAuthPin').value||'');
-    if(!ok){toast('Delete PIN ખોટો છે','error');$('deleteAuthPin').select();return;}
-    const p=pendingDelete; closeDeleteAuth();
-    if(p.entityType==='transaction') performDeleteRecord(p.id); else if(p.entityType==='batch') performDeleteBatch(p.id);
-  }
-  function performDeleteRecord(id){
-    const r=getTx().find(x=>x.id===id);if(!r)return; markDeleted('transaction',id,{billNo:r.billNo||'',customerName:r.customer?.name||''});
-    addAudit('TX_DELETE','transaction',id,`${r.billNo} • ${r.customer?.name||''}`); localStorage.setItem(STORAGE_TX,JSON.stringify(getTx().filter(x=>x.id!==id)));notifyDataChanged('transactions','delete');
-    if(lastSavedId===id)resetForm();if(lastSavedGrainId===id)resetGrainForm();renderAll();toast('એન્ટ્રી authorized રીતે કાઢી — Sync પછી બીજા devicesમાં પણ દૂર થશે','success',4200);
-  }
-  function performDeleteBatch(id){
-    const b=getBatches().find(x=>x.id===id);if(!b)return;markDeleted('batch',id,{batchNo:b.batchNo||'',material:b.material||''});addAudit('BATCH_DELETE','batch',id,`${b.batchNo} • ${b.material} • ${b.qty} કિલો`);localStorage.setItem(STORAGE_BATCHES,JSON.stringify(getBatches().filter(x=>x.id!==id)));notifyDataChanged('batches','delete');renderStock();toast('Batch authorized રીતે કાઢ્યો — stock ફરી ઉપલબ્ધ થયો','success');
+    if(!confirm(`${r.billNo} — ${r.customer?.name}\nઆ એન્ટ્રી કાઢવી છે?`)) return;
+    addAudit('TX_DELETE','transaction',id,`${r.billNo} • ${r.customer?.name||''}`);
+    setTx(getTx().filter(x=>x.id!==id));
+    if(lastSavedId===id) resetForm();
+    if(lastSavedGrainId===id) resetGrainForm();
+    renderAll();
+    toast('એન્ટ્રી કાઢી');
   }
 
   function openPaymentModal(id){
@@ -1013,7 +954,7 @@
   }
 
   function exportBackup(){
-    const payload={version:24,exportedAt:new Date().toISOString(),settings,operators:getOperators(),currentOperator:currentOperator(),deviceId:deviceId(),transactions:getTx(),batches:getBatches(),audit:getAudit(),deleted:getDeleted(),deleteSecurity:getDeleteSecurity()};
+    const payload={version:4,exportedAt:new Date().toISOString(),settings,operators:getOperators(),currentOperator:currentOperator(),deviceId:deviceId(),transactions:getTx(),batches:getBatches(),audit:getAudit()};
     downloadBlob(JSON.stringify(payload,null,2),'application/json',`swati-job-work-backup-${todayISO()}.json`);
   }
 
@@ -1025,7 +966,7 @@
         if(!Array.isArray(data.transactions)) throw new Error('Invalid');
         if(data.settings){ settings={...defaults,...data.settings}; saveSettings(); initSettingsForm(); }
         setTx(data.transactions.map(migrateRow));
-        if(Array.isArray(data.batches)) setBatches(data.batches); if(Array.isArray(data.operators)) setOperators(data.operators); if(Array.isArray(data.audit)) setAudit(data.audit); if(Array.isArray(data.deleted)) localStorage.setItem(STORAGE_DELETED,JSON.stringify(data.deleted)); if(data.deleteSecurity) localStorage.setItem(STORAGE_SECURITY,JSON.stringify(data.deleteSecurity)); addAudit('BACKUP_RESTORE','system','restore',`Backup ${data.exportedAt||''}`); renderOperatorUI();
+        if(Array.isArray(data.batches)) setBatches(data.batches); if(Array.isArray(data.operators)) setOperators(data.operators); if(Array.isArray(data.audit)) setAudit(data.audit); addAudit('BACKUP_RESTORE','system','restore',`Backup ${data.exportedAt||''}`); renderOperatorUI();
         resetForm(); resetBatchForm(); renderAll(); toast('Backup restore થયું');
       }catch{ toast('Backup file માન્ય નથી'); }
     };
@@ -1033,27 +974,19 @@
   }
 
   function downloadBlob(content,type,name){
-    if(type.includes('text/csv') && window.SwatiFiles){ window.SwatiFiles.presentCsvAsXlsx(content,name.replace(/\.csv$/i,'.xlsx')); return; }
-    const blob=new Blob([content],{type});
-    if(window.SwatiFiles){window.SwatiFiles.presentBlob(blob,name,{title:name.endsWith('.json')?'Local Backup તૈયાર છે':'ફાઇલ તૈયાર છે'});return;}
-    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+    const blob = new Blob([content], {type});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download=name; a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href),1000);
   }
 
   function escapeHtml(s=''){ return String(s).replace(/[&<>'"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
   function escapeAttr(s=''){ return escapeHtml(s); }
 
-  function toast(msg,type='info',duration=2800){
-    if(msg && typeof msg==='object'){type=msg.type||type;duration=msg.duration||duration;msg=msg.message||'';}
-    if(type==='info'){const m=String(msg);if(/સાચવ|પૂર્ણ|તૈયાર|સેટ થયું|મળ્યું|updated|download/i.test(m))type='success';else if(/ખોટ|નિષ્ફળ|failed|error|માન્ય નથી/i.test(m))type='error';else if(/જરૂરી|નથી|પહેલા|વધુ નહીં|offline/i.test(m))type='warning';}
-    const t=$('toast'); if(!t)return; const icon={success:'✓',warning:'⚠',error:'✕',info:'•'}[type]||'•'; t.textContent=`${icon} ${msg}`;t.className=`toast no-print ${type} show`;
-    clearTimeout(t._timer);t._timer=setTimeout(()=>{t.classList.remove('show');},duration);
+  function toast(msg){
+    const t = $('toast'); t.textContent = msg; t.classList.add('show');
+    clearTimeout(t._timer); t._timer = setTimeout(()=>t.classList.remove('show'),2200);
   }
-  function printOnly(business){document.body.classList.remove('print-oil','print-grain');document.body.classList.add(business==='grain'?'print-grain':'print-oil');window.print();setTimeout(()=>document.body.classList.remove('print-oil','print-grain'),700);}
-  async function makeBillPdf(business,shareNow=false){
-    try{const r=business==='grain'?currentGrainRecord():currentRecord();if(!r.customer?.name){toast('ગ્રાહકનું નામ જરૂરી છે','warning');return;}toast('PDF તૈયાર થઈ રહી છે…','info',5000);const blob=await window.SwatiFiles.billPdf(r,business);const name=`સ્વાતિ-${business==='grain'?'અનાજ-કઠોળ':'તેલ-મિલ'}-${r.billNo||todayISO()}.pdf`;const text=window.SwatiFiles.billText(r,business);if(shareNow)await window.SwatiFiles.share(blob,name,'સ્વાતિ બિલ',text);else window.SwatiFiles.presentBlob(blob,name,{title:'PDF તૈયાર છે',text});}catch(e){console.error(e);toast('PDF બનાવવામાં સમસ્યા આવી','error',4200);}
-  }
-  function shareBillWhatsApp(business){const r=business==='grain'?currentGrainRecord():currentRecord();if(!r.customer?.name){toast('ગ્રાહકનું નામ જરૂરી છે','warning');return;}window.SwatiFiles.whatsappText(window.SwatiFiles.billText(r,business));}
-
 
   function showScreen(name){
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -1148,7 +1081,7 @@
     });
   }
 
-  function renderAll(){ renderDashboard(); renderHistory(); renderCustomers(); renderStock(); renderReports(); renderLocalStatus(); renderDeleteSecurityStatus(); }
+  function renderAll(){ renderDashboard(); renderHistory(); renderCustomers(); renderStock(); renderReports(); }
 
   window.addEventListener('swati:toast',(e)=>toast(e.detail||''));
 
@@ -1162,10 +1095,7 @@
   $('oilForm').addEventListener('submit', saveRecord);
   $('previewBtn').addEventListener('click', showPreview);
   $('backToForm').addEventListener('click', hidePreview);
-  $('printBtn').addEventListener('click', () => printOnly('oil'));
-  $('oilPdfBtn')?.addEventListener('click',()=>makeBillPdf('oil',false));
-  $('oilShareBtn')?.addEventListener('click',()=>makeBillPdf('oil',true));
-  $('oilWhatsAppBtn')?.addEventListener('click',()=>shareBillWhatsApp('oil'));
+  $('printBtn').addEventListener('click', () => window.print());
   $('resetBtn').addEventListener('click', resetForm);
   $('historySearch').addEventListener('input', renderHistory);
   $('customerSearch').addEventListener('input', renderCustomers);
@@ -1204,28 +1134,17 @@
   $('grainCustomerSuggestions').addEventListener('click',(e)=>{const b=e.target.closest('[data-grain-customer-key]'); if(b) selectGrainCustomer(b.dataset.grainCustomerKey);});
   $('grainLeftoverEnabled').addEventListener('change',()=>{ $('grainLeftoverFields').classList.toggle('enabled',$('grainLeftoverEnabled').checked); $('grainPurchaseKg').dataset.manual=''; calculateGrain(); });
   $('grainPurchaseKg').addEventListener('input',()=>{$('grainPurchaseKg').dataset.manual='1';});
-  $('grainPreviewBtn').addEventListener('click',showGrainPreview); $('grainBackToForm').addEventListener('click',hideGrainPreview); $('grainPrintBtn').addEventListener('click',()=>printOnly('grain')); $('grainPdfBtn')?.addEventListener('click',()=>makeBillPdf('grain',false)); $('grainShareBtn')?.addEventListener('click',()=>makeBillPdf('grain',true)); $('grainWhatsAppBtn')?.addEventListener('click',()=>shareBillWhatsApp('grain')); $('grainResetBtn').addEventListener('click',resetGrainForm);
+  $('grainPreviewBtn').addEventListener('click',showGrainPreview); $('grainBackToForm').addEventListener('click',hideGrainPreview); $('grainPrintBtn').addEventListener('click',()=>window.print()); $('grainResetBtn').addEventListener('click',resetGrainForm);
   $('grainTxDate').addEventListener('change',()=>{if(!lastSavedGrainId)$('grainBillNo').value=nextGrainBillNo();});
   $('batchForm').addEventListener('input',calculateBatch);
   $('batchForm').addEventListener('change',calculateBatch);
   $('batchForm').addEventListener('submit',saveBatch);
   $('batchResetBtn').addEventListener('click',resetBatchForm);
   $('batchBody').addEventListener('click',(e)=>{const b=e.target.closest('[data-delete-batch]');if(b)deleteBatch(b.dataset.deleteBatch);});
-  // Alpha 23: delegated handler keeps dynamically-rendered operator buttons reliable.
-  document.addEventListener('click',(e)=>{
-    const target=e.target instanceof Element ? e.target : null;
-    const b=target?.closest('[data-assign-operator]');
-    if(b) assignDeviceOperator(b.dataset.assignOperator);
-  });
+  $('deviceOperatorButtons')?.addEventListener('click',(e)=>{const b=e.target.closest('[data-assign-operator]'); if(b) assignDeviceOperator(b.dataset.assignOperator);});
 
   $('txDate').addEventListener('change',()=>{ if(!lastSavedId) $('billNo').value = nextBillNo(); });
   $('resetDeviceAssignmentBtn')?.addEventListener('click',resetDeviceAssignment);
-  $('saveDeletePinBtn')?.addEventListener('click',saveDeletePin);
-  $('deleteAuthClose')?.addEventListener('click',closeDeleteAuth);
-  $('deleteAuthConfirm')?.addEventListener('click',confirmDeleteAuth);
-  $('deleteAuthPin')?.addEventListener('keydown',e=>{if(e.key==='Enter')confirmDeleteAuth();});
-  $('deleteAuthModal')?.addEventListener('click',e=>{if(e.target===$('deleteAuthModal'))closeDeleteAuth();});
-  $('backupLocalBtn')?.addEventListener('click',exportBackup);
   $('saveOperatorsBtn')?.addEventListener('click',()=>{ const ops=[$('operator1').value.trim(),$('operator2').value.trim(),$('operator3').value.trim()].filter(Boolean); if(!ops.length){toast('ઓછામાં ઓછો એક Operator રાખો');return;} setOperators(ops); if(!ops.includes(localStorage.getItem(STORAGE_CURRENT_OPERATOR))) localStorage.removeItem(STORAGE_CURRENT_OPERATOR); renderOperatorUI(); ensureDeviceAssignment(); toast('Operators સાચવાયા'); });
   $('settingsForm').addEventListener('submit',(e)=>{
     e.preventDefault();

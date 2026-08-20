@@ -1,5 +1,3 @@
-# Swati Job Work App — Alpha 24
-
 # Swati Job Work App — Alpha 20
 
 Alpha 20 turns the tested offline/shared-sync prototype into an installable-PWA-ready package.

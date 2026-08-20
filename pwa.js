@@ -5,9 +5,9 @@
   const isiOS=()=>/iphone|ipad|ipod/i.test(navigator.userAgent);
   const isAndroid=()=>/android/i.test(navigator.userAgent);
   function render(){
-    if($('pwaInstallStatus')) $('pwaInstallStatus').textContent=isStandalone()?'Installed App mode':'Browser / Trial mode';
+    if($('pwaInstallStatus')) $('pwaInstallStatus').textContent=isStandalone()?'Installed / Home Screen mode':'Browser mode';
     if($('pwaInstallHelp')){
-      if(isStandalone()) $('pwaInstallHelp').textContent='આ deviceમાં Swati standalone app તરીકે ખુલી રહી છે — browser tabની જરૂર નથી.';
+      if(isStandalone()) $('pwaInstallHelp').textContent='આ deviceમાં app normal installed app જેવી ખુલી રહી છે.';
       else if(isiOS()) $('pwaInstallHelp').textContent='iPhone: Safariમાં Share → Add to Home Screen → Add.';
       else if(isAndroid()) $('pwaInstallHelp').textContent='Android: Chromeમાં Install app / Add to Home screen પસંદ કરો.';
       else $('pwaInstallHelp').textContent='HTTPS hosting પછી browser menuમાંથી Install app / Add to Home screen પસંદ કરો.';

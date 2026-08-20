@@ -2,12 +2,11 @@
 <html lang="gu">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#8f1736" />
   <title>સ્વાતિ મિની ઓઇલ મિલ — મજૂરી કામ</title>
   <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="apple-touch-icon" href="swati-icon-v3-192.png?v=24" />
-  <meta name="mobile-web-app-capable" content="yes" />
+  <link rel="apple-touch-icon" href="swati-icon-v2-192.png?v=22" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Swati" />
@@ -176,9 +175,6 @@
         <div class="print-toolbar no-print">
           <button id="backToForm" class="ghost">← પાછા</button>
           <button id="printBtn" class="primary">પ્રિન્ટ / PDF</button>
-          <button id="oilPdfBtn" class="secondary">PDF ફાઇલ</button>
-          <button id="oilShareBtn" class="secondary">ફાઇલ શેર</button>
-          <button id="oilWhatsAppBtn" class="ghost">WhatsApp</button>
         </div>
 
         <div class="physical-card">
@@ -301,7 +297,7 @@
       </form>
 
       <div id="grainPrintArea" class="print-area">
-        <div class="print-toolbar no-print"><button id="grainBackToForm" class="ghost">← પાછા</button><button id="grainPrintBtn" class="primary">પ્રિન્ટ / PDF</button><button id="grainPdfBtn" class="secondary">PDF ફાઇલ</button><button id="grainShareBtn" class="secondary">ફાઇલ શેર</button><button id="grainWhatsAppBtn" class="ghost">WhatsApp</button></div>
+        <div class="print-toolbar no-print"><button id="grainBackToForm" class="ghost">← પાછા</button><button id="grainPrintBtn" class="primary">પ્રિન્ટ / PDF</button></div>
         <div class="physical-card single-print-card">
           <div class="card-face card-back">
             <div class="card-brand">સ્વાતિ મિની ઓઇલ મિલ</div><div class="card-place">સુલતાનપુર — અનાજ / કઠોળ સફાઈ</div>
@@ -416,17 +412,17 @@
       <div class="grid two no-print report-panels">
         <div class="card section-card">
           <div class="row-between"><h2>દિવસ મુજબ Summary</h2><strong id="reportPeriodLabel"></strong></div>
-          <div class="table-wrap report-mobile-wrap"><table class="report-mobile-table report-daily-table"><thead><tr><th>તારીખ</th><th>બિલ</th><th>મજૂરી</th><th>ખરીદી</th><th>વેચાણ</th><th>બાકી</th></tr></thead><tbody id="reportDailyBody"></tbody></table></div>
+          <div class="table-wrap"><table><thead><tr><th>તારીખ</th><th>બિલ</th><th>મજૂરી</th><th>ખરીદી</th><th>વેચાણ</th><th>બાકી</th></tr></thead><tbody id="reportDailyBody"></tbody></table></div>
         </div>
         <div class="card section-card">
           <h2>Top ગ્રાહકો</h2>
-          <div class="table-wrap report-mobile-wrap"><table class="report-mobile-table report-customer-table"><thead><tr><th>ગ્રાહક</th><th>ગામ</th><th>ટ્રાન્ઝેક્શન</th><th>મજૂરી</th></tr></thead><tbody id="reportCustomerBody"></tbody></table></div>
+          <div class="table-wrap"><table><thead><tr><th>ગ્રાહક</th><th>ગામ</th><th>ટ્રાન્ઝેક્શન</th><th>મજૂરી</th></tr></thead><tbody id="reportCustomerBody"></tbody></table></div>
         </div>
       </div>
 
       <div class="card no-print section-card">
         <h2>ગામ મુજબ Summary</h2>
-        <div class="table-wrap report-mobile-wrap"><table class="report-mobile-table report-village-table"><thead><tr><th>ગામ</th><th>ગ્રાહકો</th><th>ટ્રાન્ઝેક્શન</th><th>મજૂરી કામ</th><th>બાકી</th></tr></thead><tbody id="reportVillageBody"></tbody></table></div>
+        <div class="table-wrap"><table><thead><tr><th>ગામ</th><th>ગ્રાહકો</th><th>ટ્રાન્ઝેક્શન</th><th>મજૂરી કામ</th><th>બાકી</th></tr></thead><tbody id="reportVillageBody"></tbody></table></div>
       </div>
     </section>
 
@@ -459,17 +455,6 @@
         <div class="button-row"><button id="saveOperatorsBtn" class="secondary" type="button">Operators સાચવો</button></div>
       </div>
       <div class="card no-print data-card">
-        <h2>Delete Security</h2>
-        <p class="muted">History અથવા Batch delete કરવા માટે 6 અથવા વધુ અક્ષર/અંકનો Admin PIN રાખો. PIN secure hash તરીકે સચવાશે અને Shared Sync દ્વારા trusted devicesમાં જઈ શકશે.</p>
-        <div class="grid two">
-          <label>નવો Delete PIN<input id="deletePinNew" type="password" inputmode="numeric" autocomplete="new-password" placeholder="ઓછામાં ઓછા 6 અંક/અક્ષર" /></label>
-          <label>ફરી Delete PIN<input id="deletePinConfirm" type="password" inputmode="numeric" autocomplete="new-password" placeholder="ફરી લખો" /></label>
-        </div>
-        <div class="button-row"><button id="saveDeletePinBtn" class="secondary" type="button">Delete PIN સેટ / બદલો</button></div>
-        <p class="muted small-note" id="deletePinStatus">Delete PIN status: તપાસાઈ રહ્યું છે…</p>
-      </div>
-
-      <div class="card no-print data-card">
         <h2>Device & Audit</h2>
         <p class="muted">આ browser/device એક Operator સાથે lock રહે છે. સામાન્ય કામમાં Operator પસંદ કરવાની જરૂર નથી.</p>
         <div class="audit-grid device-status-grid">
@@ -486,10 +471,7 @@
         <p class="muted">દરેક મોબાઇલમાં data પહેલા local save થાય છે. Internet મળે ત્યારે changes company master data સાથે merge થાય છે અને બીજા મોબાઇલ પર પણ ખેંચી શકાય છે.</p>
         <div class="audit-grid device-status-grid">
           <span>Internet</span><strong id="syncNetworkStatus">—</strong>
-          <span>Local Data</span><strong id="syncLocalStatus">આ device/browserમાં સચવાયેલ</strong>
-          <span>Local Records</span><strong id="localRecordCount">0</strong>
-          <span>Last Local Save</span><strong id="localLastSavedAt">Never</strong>
-          <span>Local Storage</span><strong id="localStorageSize">0 KB</strong>
+          <span>Local Data</span><strong id="syncLocalStatus">Saved on this device</strong>
           <span>Pending Sync</span><strong id="syncPendingCount">0</strong>
           <span>Last Sync</span><strong id="syncLastAt">Never</strong>
           <span>Shared Target</span><strong id="syncTargetStatus">Not configured</strong>
@@ -532,8 +514,7 @@
       <div class="card no-print data-card">
         <h2>ડેટા</h2>
         <p class="muted">Local copy આ deviceમાં રહે છે. Shared sync configure કર્યા પછી central master copy Google Driveમાં રહેશે.</p>
-        <div class="button-row"><button id="backupLocalBtn" class="secondary" type="button">Local Backup બનાવો</button><button id="restoreBtn" class="ghost" type="button">Backup Restore</button><input id="restoreFile" type="file" accept="application/json" hidden /></div>
-        <p class="muted small-note">Backup બનાવ્યા પછી file popupમાં filename દેખાશે. Android/iOSના download folderનું exact સ્થાન browser/OS નક્કી કરે છે.</p>
+        <div class="button-row"><button id="restoreBtn" class="ghost" type="button">Backup Restore</button><input id="restoreFile" type="file" accept="application/json" hidden /></div>
       </div>
     </section>
   </main>
@@ -552,25 +533,11 @@
     </div>
   </div>
 
-  <div id="deleteAuthModal" class="modal no-print" hidden>
-    <div class="modal-card compact-modal-card">
-      <div class="row-between"><h2>Delete Authorization</h2><button id="deleteAuthClose" class="ghost" type="button">✕</button></div>
-      <p id="deleteAuthInfo" class="notice">Delete કરવા માટે Admin PIN નાખો.</p>
-      <label>Admin Delete PIN<input id="deleteAuthPin" type="password" inputmode="numeric" autocomplete="current-password" /></label>
-      <div class="modal-actions"><button id="deleteAuthConfirm" class="danger-btn" type="button">Authorize & Delete</button></div>
-    </div>
-  </div>
-
-  <div id="fileActionModal" class="modal no-print" hidden>
-    <div class="modal-card compact-modal-card">
-      <div class="row-between"><h2 id="fileActionTitle">ફાઇલ તૈયાર છે</h2><button id="fileActionClose" class="ghost" type="button">✕</button></div>
-      <div class="file-ready-box"><span>ફાઇલ</span><strong id="fileActionName">—</strong></div>
-      <p id="fileActionHint" class="muted">ફાઇલ ડાઉનલોડ કરો અથવા Share મેનુથી મોકલો.</p>
-      <div class="button-row file-actions"><button id="fileActionOpen" class="ghost" type="button">ફાઇલ ખોલો</button><button id="fileActionShare" class="primary" type="button">શેર કરો</button><button id="fileActionDownload" class="secondary" type="button">ડાઉનલોડ</button></div>
-    </div>
-  </div>
-
-  <div id="toast" class="toast no-print" role="status" aria-live="polite"></div>
+  <div id="toast" class="toast no-print" role="status"></div>
+  <script src="sync-config.js"></script>
+  <script src="offline-sync.js"></script>
+  <script src="app.js"></script>
+  <script src="pwa.js"></script>
 
   <div id="deviceSetupModal" class="device-modal" hidden>
     <div class="device-modal-card">
@@ -579,12 +546,6 @@
       <div id="deviceOperatorButtons" class="device-operator-buttons"></div>
     </div>
   </div>
-
-  <script src="sync-config.js"></script>
-  <script src="file-tools.js"></script>
-  <script src="offline-sync.js"></script>
-  <script src="app.js"></script>
-  <script src="pwa.js"></script>
 
 </body>
 </html>
