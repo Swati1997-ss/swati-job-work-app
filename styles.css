@@ -686,3 +686,118 @@ input:focus,select:focus{border-color:var(--pro-blue);box-shadow:0 0 0 3px rgba(
   padding:7px 10px;border-radius:999px;background:#f3f6f9;
   border:1px solid var(--ui-line);font-size:.72rem;font-weight:800;color:#4f5865
 }
+
+
+/* =========================================================
+   UI ALPHA 8 — Common Purchasing
+   ========================================================= */
+.home-action-card.purchase .home-action-icon{background:#fff2e5;color:#b96812}
+
+.purchase-context-grid{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:12px
+}
+.purchase-preset-card{
+  background:#f8fafc;border:1px solid var(--ui-line);border-radius:15px;padding:12px;margin-bottom:12px
+}
+.purchase-section-label{display:block;font-size:.72rem;font-weight:900;color:var(--text-soft);margin-bottom:8px}
+.purchase-preset-grid{display:flex;gap:7px;flex-wrap:wrap}
+.purchase-preset-btn{
+  border:1px solid #dce1e7;background:#fff;color:#535b66;border-radius:11px;
+  padding:8px 11px;font-weight:800;font-size:.76rem
+}
+.purchase-preset-btn.active{background:var(--pro-blue-soft);border-color:var(--pro-blue);color:var(--pro-blue)}
+
+.purchase-extra-costs{
+  background:#fafbfc;border:1px dashed #d9dee5;border-radius:15px;padding:12px;margin-top:12px
+}
+.purchase-extra-costs h3{margin:0;font-size:.92rem}
+.purchase-extra-costs small{color:var(--text-soft);font-size:.68rem}
+
+.purchase-totals{
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-top:12px
+}
+.purchase-totals>div{
+  background:#f7f9fb;border-radius:13px;padding:11px;display:grid;gap:4px
+}
+.purchase-totals span{font-size:.68rem;color:var(--text-soft)}
+.purchase-totals strong{font-size:.92rem}
+
+.purchase-history-head{
+  display:flex;align-items:center;gap:12px;margin-bottom:12px
+}
+.purchase-history-head h2{margin:0;font-size:1.2rem}
+.purchase-history-head small{color:var(--text-soft);font-size:.72rem}
+.purchase-history-filter-card{margin-bottom:10px}
+.purchase-history-summary{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-bottom:10px
+}
+.purchase-history-summary>div{
+  background:#fff;border:1px solid var(--ui-line);border-radius:14px;padding:12px;display:grid;gap:4px
+}
+.purchase-history-summary span{font-size:.68rem;color:var(--text-soft)}
+.purchase-history-summary strong{font-size:1rem}
+.purchase-history-list{display:grid;gap:9px}
+.purchase-history-card{
+  background:#fff;border:1px solid var(--ui-line);border-radius:16px;padding:13px;
+  box-shadow:0 3px 12px rgba(25,33,45,.045)
+}
+.purchase-history-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.purchase-history-top>span:first-child{display:grid;gap:3px}
+.purchase-history-top small{font-size:.7rem;color:var(--text-soft)}
+.purchase-history-amount{font-weight:900}
+.purchase-history-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+.purchase-history-tags span{
+  padding:5px 8px;border-radius:999px;background:#f4f6f8;font-size:.65rem;font-weight:750;color:#606873
+}
+.purchase-history-tags .due{background:#fff0ef;color:#a53a31}
+.purchase-mini-row small{line-height:1.35}
+
+@media(max-width:760px){
+  .purchase-totals{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:430px){
+  .purchase-context-grid{grid-template-columns:1fr}
+  .purchase-history-summary{grid-template-columns:1fr 1fr}
+  .purchase-history-summary>div:first-child{grid-column:1/-1}
+}
+
+
+/* UI Alpha 9 — Common Expense Module */
+.home-action-card.expense .home-action-icon{background:#fff0ef;color:#b74a3e}
+.expense-preset-grid{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:13px}
+.expense-preset-btn{
+  border:1px solid #dce1e7;background:#fff;border-radius:11px;padding:8px 11px;
+  font-size:.76rem;font-weight:800;color:#505864
+}
+.expense-preset-btn:active{background:#f5f7f9}
+.expense-summary-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:12px 0}
+.expense-summary-grid>div{
+  background:#fff;border:1px solid var(--ui-line);border-radius:15px;padding:12px;display:grid;gap:4px
+}
+.expense-summary-grid span{font-size:.68rem;color:var(--text-soft)}
+.expense-summary-grid strong{font-size:1rem}
+@media(max-width:520px){.expense-summary-grid{grid-template-columns:1fr 1fr}.expense-summary-grid>div:first-child{grid-column:1/-1}}
+
+
+/* UI Alpha 10 — Internal Transfer + Owner Finance */
+.home-action-card.finance .home-action-icon{background:#eaf5ff;color:#1766aa}
+.finance-owner-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.finance-owner-card{
+  background:#fff;border:1px solid var(--ui-line);border-radius:16px;padding:14px;display:grid;gap:5px;
+  box-shadow:0 3px 12px rgba(25,33,45,.045)
+}
+.finance-owner-card span{font-size:.7rem;color:var(--text-soft)}
+.finance-owner-card strong{font-size:1.12rem}
+.finance-owner-card.highlight{border-top:4px solid var(--pro-blue)}
+.finance-stock-list{display:grid}
+.finance-stock-row{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 2px;border-bottom:1px solid var(--ui-line)
+}
+.finance-stock-row:last-child{border-bottom:0}
+.finance-stock-row span{display:grid;gap:2px}
+.finance-stock-row span:last-child{text-align:right}
+.finance-stock-row small{font-size:.67rem;color:var(--text-soft)}
+.finance-position-list{display:grid;gap:8px}
+.finance-position-list>div{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--ui-line)}
+.finance-position-list>div:last-child{border-bottom:0}
+@media(max-width:800px){.finance-owner-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
