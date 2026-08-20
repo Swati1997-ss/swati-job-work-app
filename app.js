@@ -2473,6 +2473,8 @@
     enBtn?.classList.toggle('active',l==='en');
     guBtn?.setAttribute('aria-pressed',String(l==='gu'));
     enBtn?.setAttribute('aria-pressed',String(l==='en'));
+
+    if(window.SwatiI18n) window.SwatiI18n.setLanguage(l);
   }
 
   document.addEventListener('DOMContentLoaded',()=>{

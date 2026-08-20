@@ -892,3 +892,12 @@ html,body{
 @media(max-width:380px){
   .language-choice-buttons{grid-template-columns:1fr}
 }
+
+
+/* UI Alpha 15 — bilingual interface consistency */
+html[lang="en"] .language-choice-btn,
+html[lang="en"] button,
+html[lang="en"] input,
+html[lang="en"] select{
+  letter-spacing:0;
+}
