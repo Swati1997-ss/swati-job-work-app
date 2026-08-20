@@ -848,3 +848,47 @@ input:focus,select:focus{border-color:var(--pro-blue);box-shadow:0 0 0 3px rgba(
 .grain-action-tile strong{font-size:.92rem}
 .grain-action-tile small{font-size:.7rem;color:var(--text-soft);line-height:1.35}
 @media(max-width:480px){.grain-action-grid{grid-template-columns:1fr}}
+
+
+/* =========================================================
+   UI ALPHA 14 — Focused mobile UI fixes
+   ========================================================= */
+html,body{
+  touch-action:pan-x pan-y;
+  overscroll-behavior-y:contain;
+}
+.language-settings-card{
+  display:grid;
+  gap:14px;
+}
+.language-settings-card h2{
+  margin:0 0 5px;
+}
+.language-settings-card small{
+  display:block;
+  color:var(--text-soft);
+  line-height:1.45;
+}
+.language-choice-buttons{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+.language-choice-btn{
+  min-height:52px;
+  border:1px solid #d8dee6;
+  border-radius:14px;
+  background:#fff;
+  font-size:.95rem;
+  font-weight:850;
+  color:var(--text-strong);
+}
+.language-choice-btn.active{
+  border-color:var(--pro-blue);
+  background:var(--pro-blue-soft);
+  color:var(--pro-blue);
+  box-shadow:0 0 0 2px rgba(23,102,170,.08);
+}
+@media(max-width:380px){
+  .language-choice-buttons{grid-template-columns:1fr}
+}

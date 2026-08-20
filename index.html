@@ -2,15 +2,15 @@
 <html lang="gu">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#8f1736" />
   <title>સ્વાતિ મિની ઓઇલ મિલ</title>
-  <link rel="manifest" href="manifest.webmanifest?v=ui-alpha13" />
+  <link rel="manifest" href="manifest.webmanifest?v=ui-alpha14" />
   <link rel="apple-touch-icon" href="swati-icon-v2-192.png?v=22" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Swati" />
-  <link rel="stylesheet" href="styles.css?v=ui-alpha13" />
+  <link rel="stylesheet" href="styles.css?v=ui-alpha14" />
 </head>
 <body>
   
@@ -20,7 +20,7 @@
         <span></span><span></span><span></span>
       </button>
       <button id="headerHomeBtn" class="header-home-link" type="button" aria-label="મુખ્ય પેજ">
-        <img class="header-logo" src="swati-icon-v2-192.png?v=ui13" alt="સ્વાતિ" />
+        <img class="header-logo" src="swati-icon-v2-192.png?v=ui14" alt="સ્વાતિ" />
         <span class="header-brand-copy">
           <span class="brand">સ્વાતિ મિની ઓઇલ મિલ</span>
           <span class="subbrand">સુલતાનપુર</span>
@@ -37,7 +37,7 @@
   <aside id="appDrawer" class="app-drawer no-print" aria-label="મુખ્ય મેનુ" aria-hidden="true">
     <div class="drawer-head">
       <button id="drawerBrandHomeBtn" class="drawer-brand-row drawer-brand-button" type="button" aria-label="મુખ્ય પેજ">
-        <img class="drawer-logo" src="swati-icon-v2-192.png?v=ui13" alt="સ્વાતિ" />
+        <img class="drawer-logo" src="swati-icon-v2-192.png?v=ui14" alt="સ્વાતિ" />
         <span>
           <span class="drawer-brand">સ્વાતિ મિની ઓઇલ મિલ</span>
           <span class="drawer-subbrand">સુલતાનપુર</span>
@@ -139,7 +139,6 @@
     <section class="screen active" id="screen-home">
       <div class="home-welcome no-print">
         <div>
-          <h2>મુખ્ય</h2>
           <p>જરૂરી કામ માટે સીધો વિકલ્પ પસંદ કરો.</p>
         </div>
         <span id="homeTodayDate" class="home-date"></span>
@@ -656,7 +655,6 @@
     <section class="screen" id="screen-purchases">
       <div class="module-head">
         <div>
-          <h2>ખરીદી</h2>
           <p>બંને વિભાગની ખરીદી એક જ જગ્યાએ — division અને unit પ્રમાણે અલગ.</p>
         </div>
         <button id="purchaseHistoryToggle" class="secondary" type="button">ખરીદી હિસ્ટ્રી</button>
@@ -826,7 +824,6 @@
 
       <div class="card section-card">
         <div class="row-between">
-          <h2 data-i18n="grainProduction">કંપની પ્રોડક્શન</h2>
           <span class="module-badge blue">Processing</span>
         </div>
         <div class="grain-action-grid">
@@ -856,7 +853,6 @@
       </div>
       <div class="card section-card">
         <div class="row-between">
-          <h2 data-i18n="grainSales">વેચાણ</h2>
           <span class="module-badge blue">Grain / Pulse</span>
         </div>
         <div class="notice">
@@ -872,7 +868,6 @@
 
       <div class="card section-card">
         <div class="row-between">
-          <h2 data-i18n="grainStock">સ્ટોક</h2>
           <strong id="grainStockItemCount">0</strong>
         </div>
         <div id="grainStockList" class="finance-stock-list"></div>
@@ -1025,7 +1020,6 @@
     <section class="screen" id="screen-expenses">
       <div class="module-head">
         <div>
-          <h2>ખર્ચ</h2>
           <p>કંપનીના બધા ખર્ચ division અને unit પ્રમાણે manage કરો.</p>
         </div>
         <button id="expenseHistoryToggle" class="secondary" type="button">ખર્ચ હિસ્ટ્રી</button>
@@ -1325,31 +1319,23 @@
     </section>
 
     <section class="screen" id="screen-settings">
-      <div class="card section-card">
-        <div class="row-between">
-          <div><h2 data-i18n="languageTitle">ઇન્ટરફેસ ભાષા</h2><small data-i18n="languageHelp">ફક્ત app interface બદલાશે; business data/PDF Gujaratiમાં જ રહેશે.</small></div>
-          <span class="module-badge blue">ગુજરાતી / English</span>
+      
+      <div class="card section-card language-settings-card">
+        <div>
+          <h2 data-i18n="languageTitle">ઇન્ટરફેસ ભાષા</h2>
+          <small data-i18n="languageHelp">ફક્ત app interface બદલાશે; business data/PDF Gujaratiમાં જ રહેશે.</small>
         </div>
-        <label data-i18n="languageLabel">ભાષા
-          <select id="interfaceLanguage">
-            <option value="gu">ગુજરાતી</option>
-            <option value="en">English</option>
-          </select>
-        </label>
-      </div>
 
-      <div class="card section-card core-architecture-card no-print">
-        <div class="row-between">
-          <div>
-            <h2>Company Core</h2>
-            <p class="muted">બંને વિભાગ માટે common business foundation.</p>
-          </div>
-          <span class="module-badge blue">Core v1</span>
+        <div class="language-choice-buttons" role="group" aria-label="Interface language">
+          <button id="langGujaratiBtn" class="language-choice-btn" type="button" data-lang="gu">
+            ગુજરાતી
+          </button>
+          <button id="langEnglishBtn" class="language-choice-btn" type="button" data-lang="en">
+            English
+          </button>
         </div>
-        <div class="core-pill-grid">
-          <span>Purchase</span><span>Sale</span><span>Expense</span>
-          <span>Stock</span><span>Transfer</span><span>Finance</span>
-        </div>
+
+        <input id="interfaceLanguage" type="hidden" value="gu" />
       </div>
 
       <form id="settingsForm" class="card no-print">
@@ -1491,13 +1477,13 @@
       <div id="deviceOperatorButtons" class="device-operator-buttons"></div>
     </div>
   </div>
-  <script src="sync-config.js?v=ui-alpha13"></script>
-  <script src="offline-sync.js?v=ui-alpha13"></script>
-  <script src="file-tools.js?v=ui-alpha13"></script>
-  <script src="business-core.js?v=ui-alpha13"></script>
-  <script src="business-core-bridge.js?v=ui-alpha13"></script>
-  <script src="app.js?v=ui-alpha13"></script>
-  <script src="pwa.js?v=ui-alpha13"></script>
+  <script src="sync-config.js?v=ui-alpha14"></script>
+  <script src="offline-sync.js?v=ui-alpha14"></script>
+  <script src="file-tools.js?v=ui-alpha14"></script>
+  <script src="business-core.js?v=ui-alpha14"></script>
+  <script src="business-core-bridge.js?v=ui-alpha14"></script>
+  <script src="app.js?v=ui-alpha14"></script>
+  <script src="pwa.js?v=ui-alpha14"></script>
 
 </body>
 </html>

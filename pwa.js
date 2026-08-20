@@ -27,3 +27,12 @@
     window.matchMedia('(display-mode: standalone)').addEventListener?.('change',render);
   });
 })();
+
+
+// UI Alpha 14: prevent pinch zoom / gesture zoom in installed/mobile web app.
+['gesturestart','gesturechange','gestureend'].forEach(evt=>{
+  document.addEventListener(evt,e=>e.preventDefault(),{passive:false});
+});
+document.addEventListener('touchmove',e=>{
+  if(e.touches && e.touches.length>1) e.preventDefault();
+},{passive:false});

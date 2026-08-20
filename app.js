@@ -2466,6 +2466,13 @@
     if($('pageTitle') && translatedTitles[current]) $('pageTitle').textContent=translatedTitles[current];
 
     if($('interfaceLanguage')) $('interfaceLanguage').value=l;
+
+    const guBtn=$('langGujaratiBtn');
+    const enBtn=$('langEnglishBtn');
+    guBtn?.classList.toggle('active',l==='gu');
+    enBtn?.classList.toggle('active',l==='en');
+    guBtn?.setAttribute('aria-pressed',String(l==='gu'));
+    enBtn?.setAttribute('aria-pressed',String(l==='en'));
   }
 
   document.addEventListener('DOMContentLoaded',()=>{
@@ -2473,8 +2480,6 @@
     const op=(typeof currentOperator==='function'?currentOperator():'')||'device';
     applyInterfaceLanguage(localStorage.getItem(`swati_interface_language_v1_${op}`)||localStorage.getItem('swati_interface_language_v1')||'gu');
   });
-
-  $('interfaceLanguage')?.addEventListener('change',()=>applyInterfaceLanguage($('interfaceLanguage').value));
 
   $('purchaseParty')?.addEventListener('input',()=>renderCorePurchases());
 
@@ -2560,6 +2565,10 @@
     renderFinance();
     toast('Loan / Credit facility ઉમેરાઈ');
   });
+
+
+  $('langGujaratiBtn')?.addEventListener('click',()=>applyInterfaceLanguage('gu'));
+  $('langEnglishBtn')?.addEventListener('click',()=>applyInterfaceLanguage('en'));
 
   if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('./sw.js').catch(()=>{});
 
