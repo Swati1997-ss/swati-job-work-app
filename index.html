@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#8f1736" />
   <title>સ્વાતિ મિની ઓઇલ મિલ</title>
-  <link rel="manifest" href="manifest.webmanifest?v=ui-alpha28" />
+  <link rel="manifest" href="manifest.webmanifest?v=ui-alpha29" />
   <link rel="apple-touch-icon" href="swati-icon-v2-192.png?v=22" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Swati" />
-  <link rel="stylesheet" href="styles.css?v=ui-alpha28" />
+  <link rel="stylesheet" href="styles.css?v=ui-alpha29" />
 </head>
 <body>
   
@@ -161,6 +161,111 @@
 
     
     <section class="screen active" id="screen-home">
+
+      <div id="ownerHomeDashboard" class="owner-home-dashboard">
+        <div class="owner-home-top">
+          <div>
+            <small data-i18n="todaySnapshot">આજનો Snapshot</small>
+            <h2 id="ownerHomeDate">—</h2>
+          </div>
+          <button class="ghost owner-refresh-btn no-print" id="ownerHomeRefreshBtn" type="button">↻</button>
+        </div>
+
+        <div class="owner-home-kpis">
+          <div class="card owner-home-kpi">
+            <span data-i18n="liquidMoney">Liquid Money</span>
+            <strong id="ownerHomeLiquid">₹0</strong>
+            <small>Cash + Bank</small>
+          </div>
+          <div class="card owner-home-kpi">
+            <span data-i18n="receivables">Receivables</span>
+            <strong id="ownerHomeReceivable">₹0</strong>
+            <small data-i18n="moneyToReceive">Money to receive</small>
+          </div>
+          <div class="card owner-home-kpi">
+            <span data-i18n="payables">Payables</span>
+            <strong id="ownerHomePayable">₹0</strong>
+            <small data-i18n="moneyToPay">Money to pay</small>
+          </div>
+          <div class="card owner-home-kpi">
+            <span data-i18n="stockValue">Stock Value</span>
+            <strong id="ownerHomeStockValue">₹0</strong>
+            <small data-i18n="moneyInInventory">Money tied in inventory</small>
+          </div>
+        </div>
+
+        <div class="owner-home-section-grid">
+          <div class="card section-card owner-home-card">
+            <div class="row-between">
+              <div>
+                <h2 data-i18n="todayBusiness">આજનું Business</h2>
+                <small data-i18n="todayBusinessHelp">Today sales, purchases, expenses અને job work.</small>
+              </div>
+            </div>
+            <div class="owner-today-grid">
+              <div><span>Sales</span><strong id="ownerTodaySales">₹0</strong></div>
+              <div><span>Purchases</span><strong id="ownerTodayPurchases">₹0</strong></div>
+              <div><span>Expenses</span><strong id="ownerTodayExpenses">₹0</strong></div>
+              <div><span>Job Work</span><strong id="ownerTodayJobWork">₹0</strong></div>
+            </div>
+          </div>
+
+          <div class="card section-card owner-home-card">
+            <div class="row-between">
+              <div>
+                <h2 data-i18n="productionSnapshot">Production Snapshot</h2>
+                <small data-i18n="productionSnapshotHelp">Oil + Grain/Pulse latest production status.</small>
+              </div>
+            </div>
+            <div class="owner-production-grid">
+              <div>
+                <span>Oil Produced</span>
+                <strong id="ownerOilProduced">0 kg</strong>
+              </div>
+              <div>
+                <span>Khol Produced</span>
+                <strong id="ownerKholProduced">0 kg</strong>
+              </div>
+              <div>
+                <span>Grain Processed</span>
+                <strong id="ownerGrainProcessed">0 kg</strong>
+              </div>
+              <div>
+                <span>Grain Waste</span>
+                <strong id="ownerGrainWaste">0 kg</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card section-card owner-home-card">
+          <div class="row-between">
+            <div>
+              <h2 data-i18n="ownerAttention">Needs Attention</h2>
+              <small data-i18n="ownerAttentionHelp">Ownerને action લેવાની priority બાબતો.</small>
+            </div>
+            <strong id="ownerAttentionCount">0</strong>
+          </div>
+          <div id="ownerAttentionList" class="owner-attention-list"></div>
+        </div>
+
+        <div class="card section-card owner-home-card">
+          <div class="row-between">
+            <div>
+              <h2 data-i18n="quickOwnerLinks">Quick Owner Links</h2>
+            </div>
+          </div>
+          <div class="owner-link-grid no-print">
+            <button type="button" data-go="finance">Finance</button>
+            <button type="button" data-go="costing">Costing</button>
+            <button type="button" data-go="stock-management">Stock</button>
+            <button type="button" data-go="reports">Reports</button>
+            <button type="button" data-go="invoices">Invoices</button>
+            <button type="button" data-go="staff">Staff</button>
+          </div>
+        </div>
+      </div>
+
       <div class="home-welcome no-print">
         <div>
           <p>જરૂરી કામ માટે સીધો વિકલ્પ પસંદ કરો.</p>
@@ -2080,14 +2185,14 @@
       <div id="deviceOperatorButtons" class="device-operator-buttons"></div>
     </div>
   </div>
-  <script src="sync-config.js?v=ui-alpha28"></script>
-  <script src="offline-sync.js?v=ui-alpha28"></script>
-  <script src="file-tools.js?v=ui-alpha28"></script>
-  <script src="business-core.js?v=ui-alpha28"></script>
-  <script src="business-core-bridge.js?v=ui-alpha28"></script>
-  <script src="ui-i18n.js?v=ui-alpha28"></script>
-  <script src="app.js?v=ui-alpha28"></script>
-  <script src="pwa.js?v=ui-alpha28"></script>
+  <script src="sync-config.js?v=ui-alpha29"></script>
+  <script src="offline-sync.js?v=ui-alpha29"></script>
+  <script src="file-tools.js?v=ui-alpha29"></script>
+  <script src="business-core.js?v=ui-alpha29"></script>
+  <script src="business-core-bridge.js?v=ui-alpha29"></script>
+  <script src="ui-i18n.js?v=ui-alpha29"></script>
+  <script src="app.js?v=ui-alpha29"></script>
+  <script src="pwa.js?v=ui-alpha29"></script>
 
 </body>
 </html>

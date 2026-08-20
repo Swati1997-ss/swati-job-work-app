@@ -1185,3 +1185,55 @@ html[lang="en"] select{
   .report-card-grid{grid-template-columns:1fr}
   .report-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+
+
+/* UI Alpha 29 — Owner Home Dashboard */
+.owner-home-dashboard{margin-bottom:16px}
+.owner-home-top{display:flex;justify-content:space-between;align-items:center;margin:4px 0 10px}
+.owner-home-top small{font-size:.7rem;color:var(--text-soft)}
+.owner-home-top h2{margin:2px 0 0;font-size:1rem}
+.owner-refresh-btn{min-width:42px}
+.owner-home-kpis{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:10px;
+  margin-bottom:12px
+}
+.owner-home-kpi{padding:13px;display:grid;gap:4px}
+.owner-home-kpi span{font-size:.68rem;color:var(--text-soft)}
+.owner-home-kpi strong{font-size:1.05rem}
+.owner-home-kpi small{font-size:.63rem;color:var(--text-soft)}
+.owner-home-section-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.owner-home-card{margin-bottom:12px}
+.owner-today-grid,.owner-production-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+  margin-top:10px
+}
+.owner-today-grid>div,.owner-production-grid>div{
+  padding:10px;border-radius:11px;background:#f7f9fb;display:grid;gap:3px
+}
+.owner-today-grid span,.owner-production-grid span{font-size:.67rem;color:var(--text-soft)}
+.owner-attention-list{display:grid;gap:8px;margin-top:10px}
+.owner-attention-row{
+  border:1px solid var(--ui-line);
+  background:#fff;
+  border-radius:12px;
+  padding:10px 12px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  text-align:left
+}
+.owner-attention-row>span:first-child{display:grid;gap:3px}
+.owner-attention-row small{font-size:.68rem;color:var(--text-soft)}
+.attention-warn{border-left:4px solid #b45309}
+.attention-info{border-left:4px solid var(--pro-blue)}
+.owner-link-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
+.owner-link-grid button{min-height:42px;border:1px solid var(--ui-line);border-radius:11px;background:#fff;font-weight:800}
+@media(max-width:720px){
+  .owner-home-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .owner-home-section-grid{grid-template-columns:1fr}
+  .owner-link-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}

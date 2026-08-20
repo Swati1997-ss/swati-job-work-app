@@ -2,6 +2,15 @@
   'use strict';
 
   const GU_TO_EN = {
+    'આજનો Snapshot':'Today Snapshot',
+    'આજનું Business':'Today Business',
+    'Today sales, purchases, expenses અને job work.':'Today sales, purchases, expenses and job work.',
+    'Production Snapshot':'Production Snapshot',
+    'Oil + Grain/Pulse latest production status.':'Oil + Grain/Pulse production status.',
+    'Needs Attention':'Needs Attention',
+    'Ownerને action લેવાની priority બાબતો.':'Priority items that need owner action.',
+    'Quick Owner Links':'Quick Owner Links',
+
     'Owner માટે business-wide reports, filters અને drill-down summaries.':'Business-wide reports, filters and drill-down summaries for the owner.',
     'Sales Report':'Sales Report',
     'Company + Grain/Pulse + Retail sales':'Company + Grain/Pulse + Retail sales',
