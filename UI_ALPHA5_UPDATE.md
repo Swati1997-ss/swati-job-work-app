@@ -12,8 +12,8 @@ Oil Mill now has four separate options:
 - Separate raw groundnut stock
 - Production batches
 - Automatic batch numbers
-- Oil / Khali / loss outputs
-- Oil yield and Khali yield
+- Oil / Khol / loss outputs
+- Oil yield and Khol yield
 - Input-output balance warning
 - 15 kg tin packaging count
 - Finished oil stock in kg

@@ -909,3 +909,41 @@ html[lang="en"] select{
 .sale-product-btn,.retail-category-btn{min-height:46px;border:1px solid var(--ui-line);background:#fff;border-radius:13px;font-weight:850;color:var(--text-strong)}
 .sale-product-btn.active,.retail-category-btn.active{border-color:var(--pro-blue);background:var(--pro-blue-soft);color:var(--pro-blue)}
 .module-inline-actions{display:flex;justify-content:flex-end;margin-bottom:10px}
+
+
+/* UI Alpha 18 — Party / Supplier Ledger */
+.party-advance-use-card{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;
+  padding:12px;border:1px solid #dbe7f1;border-radius:14px;background:#f7fbff;margin:12px 0
+}
+.party-advance-use-card>div{display:grid;gap:4px}
+.party-advance-use-card span{font-size:.72rem;color:var(--text-soft)}
+.party-advance-use-card strong{font-size:.95rem}
+.inline-check{display:flex!important;align-items:center;gap:8px;padding:8px 10px;border-radius:12px;background:#fff}
+.inline-check input{width:18px;height:18px;margin:0}
+.party-payment-panel,.party-ledger-history{margin-top:16px;padding-top:14px;border-top:1px solid var(--ui-line)}
+.party-payment-panel h3,.party-ledger-history h3{margin:0 0 3px}
+.party-payment-btn{margin-top:10px;width:100%}
+.party-ledger-transactions{display:grid;gap:8px;margin-top:10px}
+.party-ledger-row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px dashed var(--ui-line)}
+.party-ledger-row:last-child{border-bottom:0}
+.party-ledger-row>span{display:grid;gap:3px}
+.party-ledger-row>span:last-child{text-align:right}
+.party-ledger-row small{font-size:.7rem;color:var(--text-soft)}
+.ledger-credit strong{color:#157347}
+.ledger-debit strong{color:#9a3412}
+.module-badge.success{background:#e8f7ee;color:#157347}
+.module-badge.due{background:#fff1e8;color:#9a3412}
+@media(max-width:560px){
+  .party-advance-use-card{grid-template-columns:1fr}
+}
+
+
+/* UI Alpha 19 — separate customer lists */
+.customer-inline-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.customer-mode-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.customer-mode-tab{min-height:48px;border:1px solid var(--ui-line);background:#fff;border-radius:13px;padding:10px;font-weight:800;font-size:.78rem;color:var(--text-strong)}
+.customer-mode-tab.active{border-color:var(--pro-blue);background:var(--pro-blue-soft);color:var(--pro-blue)}
+.customer-mode-summary{margin-bottom:12px}
+.customer-mode-summary h2{margin:3px 0 0;font-size:1rem}
+@media(max-width:480px){.customer-mode-tabs,.customer-inline-actions{grid-template-columns:1fr}}

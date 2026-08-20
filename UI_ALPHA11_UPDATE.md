@@ -86,7 +86,7 @@ Loan/credit availability is kept separate from owned liquid money.
 
 ## 9. Batch Scope
 Batch is reserved for Oil Mill company production:
-One Production Run = one Batch = Oil + Khali.
+One Production Run = one Batch = Oil + Khol.
 Unrelated purchases, packaging, expenses, grain/pulse stock etc. are not batch-tracked.
 
 ## 10. Interface Language

@@ -42,7 +42,7 @@ The transaction context now stores normal operational categories:
 - multiple bank accounts
 - opening cash
 - loan / credit visibility
-- Oil + Khali batch scope
+- Oil + Khol batch scope
 - Gujarati / English interface switch
 
 This Alpha is intended to be the new clean baseline after the classification correction.

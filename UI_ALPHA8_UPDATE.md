@@ -69,4 +69,4 @@ Saving a purchase:
 - Entry count
 
 ### Important scope
-Khali purchase directly from an Oil Job Work farmer remains part of the dedicated Job Work transaction flow and is not duplicated as a separate generic purchase in this Alpha.
+Khol purchase directly from an Oil Job Work farmer remains part of the dedicated Job Work transaction flow and is not duplicated as a separate generic purchase in this Alpha.

@@ -81,16 +81,70 @@
 
     const purchaseTotal = round2(purchases.reduce((s,r)=>s+Number(r.amount||0),0));
     const paymentTotal = round2(payments.reduce((s,r)=>s+Number(r.amount||0),0));
-
     const net = round2(paymentTotal - purchaseTotal);
+
+    const transactions = [
+      ...purchases.map(r=>({
+        id:r.id,
+        date:r.date,
+        createdAt:r.createdAt||'',
+        type:'purchase',
+        title:r.itemName||'Purchase',
+        amount:round2(r.amount||0),
+        debit:round2(r.amount||0),
+        credit:0,
+        refId:r.id,
+        note:r.context?.notes||'',
+        advanceApplied:round2(r.advanceApplied||0)
+      })),
+      ...payments.map(r=>({
+        id:r.id,
+        date:r.date,
+        createdAt:r.createdAt||'',
+        type:'payment',
+        title:r.refType==='purchase_payment'?'Purchase Payment':'Party Payment',
+        amount:round2(r.amount||0),
+        debit:0,
+        credit:round2(r.amount||0),
+        refId:r.refId||r.id,
+        note:r.note||''
+      }))
+    ].sort((a,b)=>
+      String(a.date||'').localeCompare(String(b.date||'')) ||
+      String(a.createdAt||'').localeCompare(String(b.createdAt||''))
+    );
+
+    let running=0;
+    transactions.forEach(t=>{
+      running=round2(running + Number(t.credit||0) - Number(t.debit||0));
+      t.runningBalance=running;
+      t.balanceType=running>0?'advance':running<0?'payable':'settled';
+    });
+
     return {
       party,
       purchaseTotal,
       paymentTotal,
       advance: net > 0 ? net : 0,
       payable: net < 0 ? Math.abs(net) : 0,
-      balance: net
+      balance: net,
+      purchases,
+      payments,
+      transactions
     };
+  }
+
+  function listParties() {
+    const map=new Map();
+    read(KEYS.purchases).forEach(r=>{
+      const name=String(r.party||'').trim();
+      if(name) map.set(getPartyKey(name),name);
+    });
+    read(KEYS.partyPayments).forEach(r=>{
+      const name=String(r.party||'').trim();
+      if(name && !map.has(getPartyKey(name))) map.set(getPartyKey(name),name);
+    });
+    return [...map.values()].sort((a,b)=>a.localeCompare(b));
   }
 
   function addPartyPayment(input={}) {
@@ -103,6 +157,7 @@
       paymentMode: input.paymentMode || 'cash',
       refType: input.refType || 'party_payment',
       refId: input.refId || '',
+      note: input.note || '',
       context: normalizeContext(input.context),
       createdAt: input.createdAt || new Date().toISOString()
     };
@@ -235,6 +290,11 @@
     const rate = round2(input.rate);
     const amount = round2(input.amount ?? qty * rate);
     const paid = round2(input.paid);
+    const priorLedger = input.party ? partyLedger(input.party) : {advance:0};
+    const priorAdvance = round2(priorLedger.advance||0);
+    const usePartyAdvance = input.usePartyAdvance !== false;
+    const advanceApplied = usePartyAdvance ? round2(Math.min(priorAdvance, amount)) : 0;
+    const effectiveSettlement = round2(paid + advanceApplied);
     const baseQty = toBaseQty(qty, input.unitName || 'kg');
     const row = {
       id: input.id || uid('PUR'),
@@ -248,8 +308,11 @@
       rate,
       amount,
       paid,
-      outstanding: round2(Math.max(0, amount-paid)),
-      advance: round2(Math.max(0, paid-amount)),
+      priorAdvance,
+      advanceApplied,
+      effectiveSettlement,
+      outstanding: round2(Math.max(0, amount-effectiveSettlement)),
+      advance: round2(Math.max(0, priorAdvance + paid - amount)),
       context: normalizeContext(input.context),
       createdAt: input.createdAt || new Date().toISOString()
     };
@@ -502,7 +565,7 @@
     addPurchase, addSale, addExpense,
     addStockMovement, addInternalTransfer, addMoneyMovement,
     stockBalance, stockSnapshot, moneyBalance, financeSummary, list,
-    toBaseQty, isWeightUnit, partyLedger, addPartyPayment, addUsage,
+    toBaseQty, isWeightUnit, partyLedger, listParties, addPartyPayment, addUsage,
     getFinanceSettings, saveFinanceSettings, getBankAccounts, saveBankAccounts, addBankAccount
   };
 })();
