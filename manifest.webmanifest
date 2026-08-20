@@ -1,9 +1,9 @@
 {
-  "id": "./",
+  "id": "./swati-mini-oil-mill-v2",
   "name": "Swati Mini Oil Mill",
   "short_name": "Swati Mini Oil Mill",
-  "description": "Swati Mini Oil Mill — Oil Mill, Grain/Pulse, stock, costing, finance and reports.",
-  "start_url": "./?source=pwa",
+  "description": "Swati Mini Oil Mill — business operations app.",
+  "start_url": "./?source=pwa&app=swati-mini-oil-mill-v2",
   "scope": "./",
   "display": "standalone",
   "display_override": [
@@ -17,25 +17,25 @@
   "orientation": "any",
   "icons": [
     {
-      "src": "swati-icon-v2-192.png",
+      "src": "swati-icon-v2-192.png?v=alpha33-brand-v2",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "swati-icon-v2-512.png",
+      "src": "swati-icon-v2-512.png?v=alpha33-brand-v2",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "swati-icon-maskable-v2-192.png",
+      "src": "swati-icon-maskable-v2-192.png?v=alpha33-brand-v2",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "swati-icon-maskable-v2-512.png",
+      "src": "swati-icon-maskable-v2-512.png?v=alpha33-brand-v2",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"

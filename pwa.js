@@ -29,6 +29,11 @@
 })();
 
 
+
+// UI Alpha 33: PWA identity v2. Old Android WebAPK labels cannot be rewritten instantly
+// from page JavaScript; a reinstall creates the new WebAPK identity from the refreshed manifest.
+const SWATI_PWA_IDENTITY='swati-mini-oil-mill-v2';
+
 // UI Alpha 14: prevent pinch zoom / gesture zoom in installed/mobile web app.
 ['gesturestart','gesturechange','gestureend'].forEach(evt=>{
   document.addEventListener(evt,e=>e.preventDefault(),{passive:false});
