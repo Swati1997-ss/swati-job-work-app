@@ -3,7 +3,7 @@
   "name": "Swati Mini Oil Mill",
   "short_name": "Swati Mini Oil Mill",
   "description": "Swati Mini Oil Mill — business operations app.",
-  "start_url": "./?source=pwa&app=swati-mini-oil-mill-v2",
+  "start_url": "./?source=pwa&identity=swati-mini-oil-mill-v2&build=34",
   "scope": "./",
   "display": "standalone",
   "display_override": [

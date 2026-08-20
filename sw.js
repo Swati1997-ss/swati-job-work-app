@@ -1,6 +1,6 @@
 const CACHE='swati-mini-oil-mill-alpha33-brand-v2';
 const APP_SHELL=[
-  './','./index.html','./styles.css?v=ui-alpha33','./file-tools.js?v=ui-alpha33','./business-core.js?v=ui-alpha33','./business-core-bridge.js?v=ui-alpha33','./ui-i18n.js?v=ui-alpha33','./app.js?v=ui-alpha33','./sync-config.js?v=ui-alpha33','./offline-sync.js?v=ui-alpha33','./pwa.js?v=ui-alpha33',
+  './','./index.html','./styles.css?v=ui-alpha34','./file-tools.js?v=ui-alpha34','./business-core.js?v=ui-alpha34','./business-core-bridge.js?v=ui-alpha34','./ui-i18n.js?v=ui-alpha34','./app.js?v=ui-alpha34','./sync-config.js?v=ui-alpha34','./offline-sync.js?v=ui-alpha34','./pwa.js?v=ui-alpha34',
   './manifest.webmanifest?v=alpha33-brand-v2','./swati-icon-v2-192.png?v=alpha33-brand-v2','./swati-icon-v2-512.png?v=alpha33-brand-v2','./swati-icon-maskable-v2-192.png?v=alpha33-brand-v2','./swati-icon-maskable-v2-512.png?v=alpha33-brand-v2'
 ];
 self.addEventListener('install',event=>{

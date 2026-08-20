@@ -1651,8 +1651,8 @@
     if($('financeLoanUsed')) $('financeLoanUsed').textContent=money(owner.loanUsed||0);
     if($('financeLoanAvailable')) $('financeLoanAvailable').textContent=money(owner.loanAvailable||0);
 
-    if($('financePurchaseTotal')) $('financePurchaseTotal').textContent=money(f.purchaseTotal||0);
-    if($('financeExpenseTotal')) $('financeExpenseTotal').textContent=money(f.expenseTotal||0);
+    if($('financePurchaseTotal')) $('financePurchaseTotal').textContent=money(f.purchaseAmount||0);
+    if($('financeExpenseTotal')) $('financeExpenseTotal').textContent=money(f.expensesAmount||0);
     if($('financeSalesOutstanding')) $('financeSalesOutstanding').textContent=money(totalReceivable);
     if($('financePurchaseOutstanding')) $('financePurchaseOutstanding').textContent=money(totalPayable);
 
@@ -1668,6 +1668,29 @@
           <strong>${money(r.balance||0)}</strong>
         </div>`).join('')||'<div class="empty">હજુ cash/bank data નથી.</div>';
     }
+
+    const settings=window.SwatiCore.getFinanceSettings?window.SwatiCore.getFinanceSettings():{openingCash:0,loanFacilities:[]};
+    if($('financeOpeningCash') && document.activeElement!==$('financeOpeningCash')) $('financeOpeningCash').value=Number(settings.openingCash||0);
+
+    const manageBanks=window.SwatiCore.getBankAccounts?window.SwatiCore.getBankAccounts():[];
+    if($('financeBankManageList')){
+      $('financeBankManageList').innerHTML=manageBanks.map(b=>`
+        <div class="finance-manage-row">
+          <span><strong>${escapeHtml(b.bankName||'Bank')}</strong><small>${escapeHtml(b.accountName||'')} • ${escapeHtml(b.accountType||'current')}</small></span>
+          <span><strong>${money(b.openingBalance||0)}</strong><small>Opening Balance</small></span>
+          <button type="button" class="ghost" data-edit-bank="${escapeAttr(b.id)}">Edit</button>
+        </div>`).join('')||'<div class="empty">હજુ bank account ઉમેરેલ નથી.</div>';
+    }
+
+    const facilities=Array.isArray(settings.loanFacilities)?settings.loanFacilities:[];
+    if($('financeLoanManageList')){
+      $('financeLoanManageList').innerHTML=facilities.map(l=>`
+        <div class="finance-manage-row">
+          <span><strong>${escapeHtml(l.name||'Facility')}</strong><small>Used ${money(l.used||0)}</small></span>
+          <span><strong>${money(l.sanctioned||0)}</strong><small>Sanctioned</small></span>
+        </div>`).join('')||'<div class="empty">હજુ loan / credit facility ઉમેરેલ નથી.</div>';
+    }
+
   }
 
 
@@ -3828,15 +3851,25 @@
     e.preventDefault();
     const bankName=$('bankName').value.trim();
     if(!bankName){toast('Bank name દાખલ કરો');return;}
-    window.SwatiCore.addBankAccount({
+    const editId=$('bankEditId')?.value||'';
+    const payload={
       bankName,
       accountName:$('bankAccountName').value.trim(),
       accountType:$('bankAccountType').value,
       openingBalance:Number($('bankOpeningBalance').value||0)
-    });
+    };
+    if(editId && window.SwatiCore.updateBankAccount){
+      window.SwatiCore.updateBankAccount(editId,payload);
+      toast('Bank account update થયું');
+    }else{
+      window.SwatiCore.addBankAccount(payload);
+      toast('Bank account ઉમેરાયું');
+    }
     $('bankAccountForm').reset();
+    if($('bankEditId')) $('bankEditId').value='';
+    if($('bankSaveBtn')) $('bankSaveBtn').textContent='Bank Account ઉમેરો';
+    if($('bankEditCancelBtn')) $('bankEditCancelBtn').hidden=true;
     renderFinance();
-    toast('Bank account ઉમેરાયું');
   });
 
   $('loanFacilityForm')?.addEventListener('submit',(e)=>{
@@ -3855,6 +3888,37 @@
     toast('Loan / Credit facility ઉમેરાઈ');
   });
 
+
+
+  document.querySelectorAll('[data-finance-setup-tab]').forEach(btn=>btn.addEventListener('click',()=>{
+    const tab=btn.dataset.financeSetupTab;
+    document.querySelectorAll('[data-finance-setup-tab]').forEach(b=>b.classList.toggle('active',b===btn));
+    if($('financeSetupCashPanel')) $('financeSetupCashPanel').hidden=tab!=='cash';
+    if($('financeSetupBanksPanel')) $('financeSetupBanksPanel').hidden=tab!=='banks';
+    if($('financeSetupLoansPanel')) $('financeSetupLoansPanel').hidden=tab!=='loans';
+  }));
+
+  $('financeBankManageList')?.addEventListener('click',(e)=>{
+    const btn=e.target.closest('[data-edit-bank]');
+    if(!btn || !window.SwatiCore) return;
+    const b=window.SwatiCore.getBankAccounts().find(x=>x.id===btn.dataset.editBank);
+    if(!b) return;
+    $('bankEditId').value=b.id;
+    $('bankName').value=b.bankName||'';
+    $('bankAccountName').value=b.accountName||'';
+    $('bankAccountType').value=b.accountType||'current';
+    $('bankOpeningBalance').value=Number(b.openingBalance||0);
+    $('bankSaveBtn').textContent='Bank Account Update કરો';
+    $('bankEditCancelBtn').hidden=false;
+    window.scrollTo({top:$('bankAccountForm').getBoundingClientRect().top+window.scrollY-90,behavior:'smooth'});
+  });
+
+  $('bankEditCancelBtn')?.addEventListener('click',()=>{
+    $('bankAccountForm').reset();
+    $('bankEditId').value='';
+    $('bankSaveBtn').textContent='Bank Account ઉમેરો';
+    $('bankEditCancelBtn').hidden=true;
+  });
 
   $('langGujaratiBtn')?.addEventListener('click',()=>applyInterfaceLanguage('gu'));
   $('langEnglishBtn')?.addEventListener('click',()=>applyInterfaceLanguage('en'));

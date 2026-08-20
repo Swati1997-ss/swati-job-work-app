@@ -252,6 +252,22 @@
     return row;
   }
 
+  function updateBankAccount(id,input={}) {
+    const rows=getBankAccounts();
+    const i=rows.findIndex(r=>r.id===id);
+    if(i<0) return null;
+    rows[i]={
+      ...rows[i],
+      bankName: input.bankName ?? rows[i].bankName,
+      accountName: input.accountName ?? rows[i].accountName,
+      accountType: input.accountType ?? rows[i].accountType,
+      openingBalance: round2(input.openingBalance ?? rows[i].openingBalance),
+      updatedAt:new Date().toISOString()
+    };
+    saveBankAccounts(rows);
+    return rows[i];
+  }
+
   const normalizeContext = (ctx={}) => ({
     division: ctx.division || '',
     unit: ctx.unit || '',
@@ -654,9 +670,11 @@
     const stockValue = round2(Number(costing.totalStockValue||0));
     const ownedWorkingAssets = round2(liquidMoney + receivables + stockValue);
     const netWorkingPosition = round2(ownedWorkingAssets - payables);
-    const loanUsed = round2(Number(f.loanUsed||0));
-    const loanLimit = round2(Number(f.loanLimit||0));
-    const loanAvailable = round2(Math.max(0,loanLimit-loanUsed));
+    const settings=getFinanceSettings();
+    const facilities=Array.isArray(settings.loanFacilities)?settings.loanFacilities:[];
+    const loanLimit=round2(facilities.reduce((s,x)=>s+Number(x.sanctioned||0),0));
+    const loanUsed=round2(facilities.reduce((s,x)=>s+Number(x.used||0),0));
+    const loanAvailable=round2(Math.max(0,loanLimit-loanUsed));
 
     return {
       cash: round2(Number(f.cashBalance||0)),
@@ -722,6 +740,6 @@
     addStockMovement, addInternalTransfer, addMoneyMovement,
     stockBalance, stockSnapshot, moneyBalance, financeSummary, list,
     toBaseQty, isWeightUnit, partyLedger, listParties, addPartyPayment, addUsage,
-    getFinanceSettings, saveFinanceSettings, getBankAccounts, saveBankAccounts, addBankAccount
+    getFinanceSettings, saveFinanceSettings, getBankAccounts, saveBankAccounts, addBankAccount, updateBankAccount
   };
 })();

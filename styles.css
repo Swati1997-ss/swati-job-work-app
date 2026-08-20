@@ -1389,3 +1389,23 @@ html[lang="en"] select{
 }
 
 /* UI Alpha 33 — PWA brand identity refresh; no visual business UI changes. */
+
+
+/* UI Alpha 34 — Finance controls and account setup */
+.finance-setup-card{border-left:4px solid var(--pro-blue)}
+.finance-setup-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:14px 0}
+.finance-setup-tab{min-height:42px;border:1px solid var(--ui-line);border-radius:11px;background:#fff;font-weight:800}
+.finance-setup-tab.active{border-color:var(--pro-blue);background:var(--pro-blue-soft);color:var(--pro-blue)}
+.finance-control-form{padding:12px;border-radius:12px;background:#f8fafc;border:1px solid var(--ui-line)}
+.finance-control-form:not(.grid){display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:end}
+.finance-helper{margin-top:8px;font-size:.7rem;color:var(--text-soft)}
+.finance-form-actions{display:flex;gap:8px;flex-wrap:wrap}
+.finance-manage-list{display:grid;gap:8px;margin-top:12px}
+.finance-manage-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:10px 11px;border:1px solid var(--ui-line);border-radius:12px;background:#fff}
+.finance-manage-row>span{display:grid;gap:3px}.finance-manage-row small{font-size:.68rem;color:var(--text-soft)}
+@media(max-width:640px){
+  .finance-setup-tabs{grid-template-columns:1fr}
+  .finance-control-form:not(.grid){grid-template-columns:1fr}
+  .finance-manage-row{grid-template-columns:1fr auto}
+  .finance-manage-row button{grid-column:1/-1;width:100%}
+}

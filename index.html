@@ -12,7 +12,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Swati Mini Oil Mill" />
-  <link rel="stylesheet" href="styles.css?v=ui-alpha33" />
+  <link rel="stylesheet" href="styles.css?v=ui-alpha34" />
 </head>
 <body>
   
@@ -1711,6 +1711,64 @@
         </div>
       </div>
 
+
+      <div class="card section-card finance-setup-card no-print">
+        <div class="row-between">
+          <div>
+            <h2>Finance Setup & Accounts</h2>
+            <small>Opening cash, bank accounts અને loan/credit facilities અહીં manage કરો.</small>
+          </div>
+        </div>
+
+        <div class="finance-setup-tabs">
+          <button class="finance-setup-tab active" type="button" data-finance-setup-tab="cash">Cash</button>
+          <button class="finance-setup-tab" type="button" data-finance-setup-tab="banks">Bank Accounts</button>
+          <button class="finance-setup-tab" type="button" data-finance-setup-tab="loans">Loan / Credit</button>
+        </div>
+
+        <div id="financeSetupCashPanel" class="finance-setup-panel">
+          <form id="financeOpeningForm" class="finance-control-form">
+            <label>Opening Cash ₹
+              <input id="financeOpeningCash" type="number" step="0.01" value="0" />
+            </label>
+            <button class="primary" type="submit">Opening Cash સાચવો</button>
+          </form>
+          <div class="finance-helper">આ starting cash balance છે. Regular income/expense transactions તેને automatically affect કરશે.</div>
+        </div>
+
+        <div id="financeSetupBanksPanel" class="finance-setup-panel" hidden>
+          <form id="bankAccountForm" class="finance-control-form grid two">
+            <input id="bankEditId" type="hidden" />
+            <label>Bank Name *<input id="bankName" placeholder="ઉદાહરણ: SBI" required /></label>
+            <label>Account Name<input id="bankAccountName" placeholder="Swati Mini Oil Mill" /></label>
+            <label>Account Type
+              <select id="bankAccountType">
+                <option value="current">Current</option>
+                <option value="savings">Savings</option>
+                <option value="cc">Cash Credit / CC</option>
+                <option value="od">OD</option>
+              </select>
+            </label>
+            <label>Opening Balance ₹<input id="bankOpeningBalance" type="number" step="0.01" value="0" /></label>
+            <div class="span-2 finance-form-actions">
+              <button class="primary" type="submit" id="bankSaveBtn">Bank Account ઉમેરો</button>
+              <button class="ghost" type="button" id="bankEditCancelBtn" hidden>Cancel Edit</button>
+            </div>
+          </form>
+          <div id="financeBankManageList" class="finance-manage-list"></div>
+        </div>
+
+        <div id="financeSetupLoansPanel" class="finance-setup-panel" hidden>
+          <form id="loanFacilityForm" class="finance-control-form grid two">
+            <label>Facility / Bank Name *<input id="loanFacilityName" placeholder="CC / OD / Term Loan" required /></label>
+            <label>Sanctioned Limit ₹<input id="loanSanctioned" type="number" min="0" step="0.01" required /></label>
+            <label>Used / Outstanding ₹<input id="loanUsed" type="number" min="0" step="0.01" value="0" /></label>
+            <div class="span-2"><button class="primary" type="submit">Loan / Credit ઉમેરો</button></div>
+          </form>
+          <div id="financeLoanManageList" class="finance-manage-list"></div>
+        </div>
+      </div>
+
       <div class="card section-card">
         <div class="row-between">
           <div><h2 data-i18n="cashBankBreakdown">Cash & Bank Breakdown</h2><small data-i18n="cashBankHelp">Opening cash અને configured bank balances.</small></div>
@@ -2179,14 +2237,14 @@
       <div id="deviceOperatorButtons" class="device-operator-buttons"></div>
     </div>
   </div>
-  <script src="sync-config.js?v=ui-alpha33"></script>
-  <script src="offline-sync.js?v=ui-alpha33"></script>
-  <script src="file-tools.js?v=ui-alpha33"></script>
-  <script src="business-core.js?v=ui-alpha33"></script>
-  <script src="business-core-bridge.js?v=ui-alpha33"></script>
-  <script src="ui-i18n.js?v=ui-alpha33"></script>
-  <script src="app.js?v=ui-alpha33"></script>
-  <script src="pwa.js?v=ui-alpha33"></script>
+  <script src="sync-config.js?v=ui-alpha34"></script>
+  <script src="offline-sync.js?v=ui-alpha34"></script>
+  <script src="file-tools.js?v=ui-alpha34"></script>
+  <script src="business-core.js?v=ui-alpha34"></script>
+  <script src="business-core-bridge.js?v=ui-alpha34"></script>
+  <script src="ui-i18n.js?v=ui-alpha34"></script>
+  <script src="app.js?v=ui-alpha34"></script>
+  <script src="pwa.js?v=ui-alpha34"></script>
 
 </body>
 </html>
