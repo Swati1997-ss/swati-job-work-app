@@ -675,3 +675,14 @@ input:focus,select:focus{border-color:var(--pro-blue);box-shadow:0 0 0 3px rgba(
   .today-business-card{min-height:108px;padding:12px}
   .today-business-card strong{font-size:1.08rem}
 }
+
+
+/* UI Alpha 7 — Core architecture foundation */
+.core-architecture-card{margin-bottom:14px}
+.core-architecture-card h2{margin:0 0 3px;font-size:1.05rem}
+.core-architecture-card p{margin:0;font-size:.76rem}
+.core-pill-grid{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+.core-pill-grid span{
+  padding:7px 10px;border-radius:999px;background:#f3f6f9;
+  border:1px solid var(--ui-line);font-size:.72rem;font-weight:800;color:#4f5865
+}
