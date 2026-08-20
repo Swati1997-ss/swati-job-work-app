@@ -1,4 +1,4 @@
-const CACHE='swati-job-work-alpha22-v1';
+const CACHE='swati-job-work-alpha23-v1';
 const APP_SHELL=[
   './','./index.html','./styles.css','./app.js','./sync-config.js','./offline-sync.js','./pwa.js',
   './manifest.webmanifest','./swati-icon-v2-192.png','./swati-icon-v2-512.png','./swati-icon-maskable-v2-192.png','./swati-icon-maskable-v2-512.png'

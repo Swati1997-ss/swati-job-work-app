@@ -1141,7 +1141,12 @@
   $('batchForm').addEventListener('submit',saveBatch);
   $('batchResetBtn').addEventListener('click',resetBatchForm);
   $('batchBody').addEventListener('click',(e)=>{const b=e.target.closest('[data-delete-batch]');if(b)deleteBatch(b.dataset.deleteBatch);});
-  $('deviceOperatorButtons')?.addEventListener('click',(e)=>{const b=e.target.closest('[data-assign-operator]'); if(b) assignDeviceOperator(b.dataset.assignOperator);});
+  // Alpha 23: delegated handler keeps dynamically-rendered operator buttons reliable.
+  document.addEventListener('click',(e)=>{
+    const target=e.target instanceof Element ? e.target : null;
+    const b=target?.closest('[data-assign-operator]');
+    if(b) assignDeviceOperator(b.dataset.assignOperator);
+  });
 
   $('txDate').addEventListener('change',()=>{ if(!lastSavedId) $('billNo').value = nextBillNo(); });
   $('resetDeviceAssignmentBtn')?.addEventListener('click',resetDeviceAssignment);
