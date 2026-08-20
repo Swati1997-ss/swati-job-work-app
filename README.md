@@ -1,6 +1,6 @@
-# Swati Mini Oil Mill App — Alpha 37
+# Swati Mini Oil Mill App — Alpha 38
 
-Alpha 37 is the data-integrity and reliability stabilization build. See `UI_ALPHA37_UPDATE.md` for the repaired stock, finance, backup, sync, reporting and migration behavior.
+Alpha 38 keeps all Alpha 37 reliability fixes and introduces a cleaner, more compact interface. See `UI_ALPHA38_UPDATE.md` for the UI-copy changes and `UI_ALPHA37_UPDATE.md` for the repaired stock, finance, backup, sync, reporting and migration behavior.
 
 ## Added
 - Installable PWA manifest and app icons

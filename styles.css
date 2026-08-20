@@ -1168,13 +1168,13 @@ html[lang="en"] select{
 }
 .report-card{
   text-align:left;
-  min-height:92px;
+  min-height:58px;
   border:1px solid var(--ui-line);
   background:#fff;
   border-radius:14px;
   padding:14px;
-  display:grid;
-  gap:6px
+  display:flex;
+  align-items:center
 }
 .report-card strong{font-size:.94rem}
 .report-card small{font-size:.72rem;color:var(--text-soft)}
