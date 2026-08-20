@@ -2,6 +2,11 @@
   'use strict';
 
   const GU_TO_EN = {
+    'Customer પાસેથી લીધેલ Waste / Reject':'Customer-Origin Waste / Reject',
+    'ફક્ત Grain/Pulse Job Work Historyમાં customerએ ખરાબ / વધેલો માલ companyને વેચ્યો હોય તેવી saved entries અહીં દેખાશે.':'Only saved Grain/Pulse Job Work History entries where the customer sold bad/excess material to the company are shown here.',
+    'કુલ ખરીદેલ જથ્થો':'Total Purchased Quantity',
+    'કુલ ખરીદી કિંમત':'Total Purchase Value',
+
     'આજનો Snapshot':'Today Snapshot',
     'આજનું Business':'Today Business',
     'Today sales, purchases, expenses અને job work.':'Today sales, purchases, expenses and job work.',

@@ -1409,3 +1409,92 @@ html[lang="en"] select{
   .finance-manage-row{grid-template-columns:1fr auto}
   .finance-manage-row button{grid-column:1/-1;width:100%}
 }
+
+
+/* UI Alpha 35 — edit controls */
+.edit-chip{
+  border:1px solid #d7e1ea;
+  background:#f7fbff;
+  color:#1f5f93;
+  border-radius:9px;
+  min-height:30px;
+  padding:5px 10px;
+  font-size:.7rem;
+  font-weight:800;
+  cursor:pointer;
+}
+.row-actions{
+  display:grid !important;
+  gap:4px;
+  justify-items:end;
+  text-align:right;
+}
+.edit-form-actions{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+.edit-form-actions .primary{flex:1}
+.finance-manage-row .edit-chip{justify-self:end}
+@media(max-width:520px){
+  .edit-chip{min-height:34px;padding:6px 11px}
+  .edit-form-actions{display:grid;grid-template-columns:1fr}
+}
+
+
+/* UI Alpha 36 — Grain/Pulse customer-origin Waste / Reject history */
+.customer-waste-panel{
+  border-left:4px solid #9a6a2f;
+  margin-bottom:12px;
+}
+.customer-waste-summary{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:9px;
+  margin:12px 0;
+}
+.customer-waste-summary>div{
+  padding:10px 12px;
+  border-radius:11px;
+  background:#fbf8f3;
+  display:grid;
+  gap:3px;
+}
+.customer-waste-summary span{
+  font-size:.68rem;
+  color:var(--text-soft);
+}
+.customer-waste-list{
+  display:grid;
+  gap:8px;
+}
+.customer-waste-row{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  padding:11px 0;
+  border-bottom:1px dashed var(--ui-line);
+}
+.customer-waste-row:last-child{border-bottom:0}
+.customer-waste-row>span{
+  display:grid;
+  gap:3px;
+}
+.customer-waste-row small{
+  font-size:.68rem;
+  color:var(--text-soft);
+}
+.customer-waste-numbers{
+  text-align:right;
+  justify-items:end;
+}
+@media(max-width:560px){
+  .customer-waste-row{
+    display:grid;
+    grid-template-columns:1fr;
+  }
+  .customer-waste-numbers{
+    text-align:left;
+    justify-items:start;
+  }
+}

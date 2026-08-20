@@ -714,6 +714,181 @@
     };
   }
 
+
+  function replaceById(key,id,nextRow){
+    const rows=read(key);
+    const i=rows.findIndex(r=>r.id===id);
+    if(i<0) return null;
+    rows[i]=nextRow;
+    write(key,rows);
+    return rows[i];
+  }
+
+  function removeMoneyRef(refType,refId){
+    [KEYS.cashLedger,KEYS.bankLedger].forEach(key=>{
+      const rows=read(key).filter(r=>!(r.refType===refType && r.refId===refId));
+      write(key,rows);
+    });
+  }
+
+  function updateExpense(id,input={}){
+    const rows=read(KEYS.expenses);
+    const i=rows.findIndex(r=>r.id===id);
+    if(i<0) return null;
+    const old=rows[i];
+    const row={
+      ...old,
+      date:input.date ?? old.date,
+      category:input.category ?? old.category,
+      title:input.title ?? old.title,
+      amount:round2(input.amount ?? old.amount),
+      paymentMode:input.paymentMode ?? old.paymentMode,
+      party:input.party ?? old.party,
+      context:input.context ? normalizeContext(input.context) : old.context,
+      updatedAt:new Date().toISOString()
+    };
+    rows[i]=row; write(KEYS.expenses,rows);
+    removeMoneyRef('expense',id);
+    if(row.amount>0) addMoneyMovement({
+      date:row.date,amount:row.amount,direction:'out',mode:row.paymentMode,
+      refType:'expense',refId:row.id,title:row.title||row.category,context:row.context
+    });
+    return row;
+  }
+
+  function updateUsage(id,input={}){
+    const rows=read(KEYS.usageMovements);
+    const i=rows.findIndex(r=>r.id===id);
+    if(i<0) return null;
+    const old=rows[i];
+    const row={
+      ...old,
+      date:input.date ?? old.date,
+      itemId:input.itemId ?? old.itemId,
+      itemName:input.itemName ?? old.itemName,
+      qty:round2(input.qty ?? old.qty),
+      baseQty:toBaseQty(input.qty ?? old.qty,input.unitName ?? old.unitName),
+      unitName:input.unitName ?? old.unitName,
+      context:input.context ? normalizeContext(input.context) : old.context,
+      note:input.note ?? old.note,
+      updatedAt:new Date().toISOString()
+    };
+    rows[i]=row; write(KEYS.usageMovements,rows);
+    const sm=read(KEYS.stockMovements);
+    const si=sm.findIndex(r=>r.refType==='usage' && r.refId===id);
+    const movement={
+      ...(si>=0?sm[si]:{}),
+      id:si>=0?sm[si].id:uid('STK'),
+      date:row.date,itemId:row.itemId,itemName:row.itemName,qty:row.baseQty,
+      unitName:isWeightUnit(row.unitName)?'kg':row.unitName,
+      movementType:'usage_consume',direction:'out',refType:'usage',refId:row.id,
+      context:row.context,updatedAt:new Date().toISOString()
+    };
+    if(si>=0) sm[si]=movement; else sm.push(movement);
+    write(KEYS.stockMovements,sm);
+    return row;
+  }
+
+  function updatePurchase(id,input={}){
+    const rows=read(KEYS.purchases);
+    const i=rows.findIndex(r=>r.id===id);
+    if(i<0) return null;
+    const old=rows[i];
+    const qty=round2(input.qty ?? old.qty);
+    const unitName=input.unitName ?? old.unitName;
+    const rate=round2(input.rate ?? old.rate);
+    const amount=round2(input.amount ?? qty*rate);
+    const paid=round2(input.paid ?? old.paid);
+    const row={
+      ...old,
+      date:input.date ?? old.date,
+      party:input.party ?? old.party,
+      itemId:input.itemId ?? old.itemId,
+      itemName:input.itemName ?? old.itemName,
+      qty,baseQty:toBaseQty(qty,unitName),unitName,rate,amount,paid,
+      effectiveSettlement:paid,
+      outstanding:round2(Math.max(0,amount-paid)),
+      advance:round2(Math.max(0,paid-amount)),
+      context:input.context ? normalizeContext(input.context) : old.context,
+      updatedAt:new Date().toISOString()
+    };
+    rows[i]=row; write(KEYS.purchases,rows);
+
+    // Purchase stock movement
+    const sm=read(KEYS.stockMovements);
+    const si=sm.findIndex(r=>r.refType==='purchase' && r.refId===id);
+    const movement={
+      ...(si>=0?sm[si]:{}),
+      id:si>=0?sm[si].id:uid('STK'),
+      date:row.date,itemId:row.itemId,itemName:row.itemName,qty:row.baseQty,
+      unitName:isWeightUnit(row.unitName)?'kg':row.unitName,
+      movementType:MOVEMENT_TYPES.purchaseIn,direction:'in',refType:'purchase',refId:row.id,
+      unitCost:row.rate,context:row.context,updatedAt:new Date().toISOString()
+    };
+    if(si>=0) sm[si]=movement; else sm.push(movement);
+    write(KEYS.stockMovements,sm);
+
+    // Purchase payment + money ledger
+    let pays=read(KEYS.partyPayments);
+    const pi=pays.findIndex(p=>p.refType==='purchase_payment' && p.refId===id);
+    if(paid>0){
+      const pay={
+        ...(pi>=0?pays[pi]:{}),
+        id:pi>=0?pays[pi].id:uid('PAY'),
+        date:row.date,party:row.party,amount:paid,paymentMode:input.paymentMode||old.paymentMode||'cash',
+        refType:'purchase_payment',refId:row.id,context:row.context,updatedAt:new Date().toISOString()
+      };
+      if(pi>=0) pays[pi]=pay; else pays.push(pay);
+      write(KEYS.partyPayments,pays);
+      removeMoneyRef('purchase_payment',pay.id);
+      addMoneyMovement({
+        date:pay.date,amount:pay.amount,direction:'out',mode:pay.paymentMode,
+        refType:'purchase_payment',refId:pay.id,title:`Party payment - ${pay.party}`,context:pay.context
+      });
+    } else if(pi>=0){
+      const oldPay=pays[pi];
+      pays.splice(pi,1); write(KEYS.partyPayments,pays);
+      removeMoneyRef('purchase_payment',oldPay.id);
+    }
+    return row;
+  }
+
+  function updateSale(id,input={}){
+    const rows=read(KEYS.sales);
+    const i=rows.findIndex(r=>r.id===id);
+    if(i<0) return null;
+    const old=rows[i];
+    const qty=round2(input.qty ?? old.qty);
+    const unitName=input.unitName ?? old.unitName;
+    const rate=round2(input.rate ?? old.rate);
+    const amount=round2(input.amount ?? qty*rate);
+    const received=round2(input.received ?? old.received);
+    const row={
+      ...old,
+      date:input.date ?? old.date,party:input.party ?? old.party,
+      itemId:input.itemId ?? old.itemId,itemName:input.itemName ?? old.itemName,
+      qty,baseQty:toBaseQty(qty,unitName),unitName,rate,amount,received,
+      outstanding:round2(Math.max(0,amount-received)),
+      context:input.context ? normalizeContext(input.context) : old.context,
+      updatedAt:new Date().toISOString()
+    };
+    rows[i]=row; write(KEYS.sales,rows);
+
+    const sm=read(KEYS.stockMovements);
+    const si=sm.findIndex(r=>r.refType==='sale' && r.refId===id);
+    const movement={
+      ...(si>=0?sm[si]:{}),
+      id:si>=0?sm[si].id:uid('STK'),
+      date:row.date,itemId:row.itemId,itemName:row.itemName,qty:row.baseQty,
+      unitName:isWeightUnit(row.unitName)?'kg':row.unitName,
+      movementType:MOVEMENT_TYPES.saleOut,direction:'out',refType:'sale',refId:row.id,
+      context:row.context,updatedAt:new Date().toISOString()
+    };
+    if(si>=0) sm[si]=movement; else sm.push(movement);
+    write(KEYS.stockMovements,sm);
+    return row;
+  }
+
   function list(type) {
     return KEYS[type] ? read(KEYS[type]) : [];
   }
@@ -740,6 +915,6 @@
     addStockMovement, addInternalTransfer, addMoneyMovement,
     stockBalance, stockSnapshot, moneyBalance, financeSummary, list,
     toBaseQty, isWeightUnit, partyLedger, listParties, addPartyPayment, addUsage,
-    getFinanceSettings, saveFinanceSettings, getBankAccounts, saveBankAccounts, addBankAccount, updateBankAccount
+    getFinanceSettings, saveFinanceSettings, getBankAccounts, saveBankAccounts, addBankAccount, updateBankAccount, updatePurchase, updateSale, updateExpense, updateUsage
   };
 })();
