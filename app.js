@@ -73,8 +73,14 @@
   function renderOperatorUI(){
     const ops=getOperators();
     if($('operator1')) $('operator1').value=ops[0]||''; if($('operator2')) $('operator2').value=ops[1]||''; if($('operator3')) $('operator3').value=ops[2]||'';
-    if($('deviceAssignedOperator')) $('deviceAssignedOperator').textContent=currentOperator()||'Not assigned';
+    const activeOp=currentOperator()||'Not assigned';
+    if($('deviceAssignedOperator')) $('deviceAssignedOperator').textContent=activeOp;
     if($('deviceAssignedId')) $('deviceAssignedId').textContent=shortDeviceId();
+    if($('drawerOperatorName')) $('drawerOperatorName').textContent=activeOp;
+    if($('drawerOperatorAvatar')) $('drawerOperatorAvatar').textContent=(activeOp&&activeOp!=='Not assigned'?activeOp.trim().charAt(0):'ઓ');
+    if($('operatorModalName')) $('operatorModalName').textContent=activeOp;
+    if($('operatorModalDevice')) $('operatorModalDevice').textContent=shortDeviceId();
+    if($('operatorModalNetwork')) $('operatorModalNetwork').textContent=navigator.onLine?'Online':'Offline';
   }
   function resetDeviceAssignment(){
     const op=currentOperator();
@@ -689,14 +695,118 @@
     $('allPayableOutstanding').textContent=money(all.filter(r=>r.settlement?.net<0).reduce((s,r)=>s+remainingFor(r),0));
   }
 
+  let selectedCustomerVillage='';
+  let selectedCustomerKey='';
+
+  function customerVillageGroups(){
+    const map=new Map();
+    getCustomers().forEach(c=>{
+      const village=(c.village||'ગામ નથી').trim()||'ગામ નથી';
+      const x=map.get(village)||{village,customers:[],count:0,totalJob:0,receivableOutstanding:0,payableOutstanding:0,lastDate:''};
+      x.customers.push(c);
+      x.count++;
+      x.totalJob+=Number(c.totalJob||0);
+      x.receivableOutstanding+=Number(c.receivableOutstanding||0);
+      x.payableOutstanding+=Number(c.payableOutstanding||0);
+      if((c.lastDate||'')>x.lastDate) x.lastDate=c.lastDate||'';
+      map.set(village,x);
+    });
+    return [...map.values()].sort((a,b)=>a.village.localeCompare(b.village,'gu'));
+  }
+
+  function showCustomerVillageHome(){
+    selectedCustomerVillage='';
+    selectedCustomerKey='';
+    $('customerVillageView').hidden=false;
+    $('customerListView').hidden=true;
+    $('customerDetailView').hidden=true;
+    if($('customerSearch')) $('customerSearch').value='';
+    renderCustomers();
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  function showVillageCustomers(village){
+    selectedCustomerVillage=village;
+    selectedCustomerKey='';
+    $('customerVillageView').hidden=true;
+    $('customerListView').hidden=false;
+    $('customerDetailView').hidden=true;
+    $('customerSelectedVillage').textContent=village;
+    if($('customerWithinVillageSearch')) $('customerWithinVillageSearch').value='';
+    renderCustomers();
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  function showCustomerDetail(key){
+    const c=getCustomers().find(x=>x.key===key);
+    if(!c) return;
+    selectedCustomerKey=key;
+    $('customerVillageView').hidden=true;
+    $('customerListView').hidden=true;
+    $('customerDetailView').hidden=false;
+    $('customerDetailName').textContent=c.name;
+    const tx=getTx().filter(r=>{
+      const mobile=(r.customer?.mobile||'').trim();
+      const name=(r.customer?.name||'').trim();
+      const village=(r.customer?.village||'').trim();
+      const rkey=mobile?`m:${mobile}`:`n:${name.toLowerCase()}|${village.toLowerCase()}`;
+      return rkey===key;
+    }).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
+    const net=round2(Number(c.receivableOutstanding||0)-Number(c.payableOutstanding||0));
+    $('customerDetailCard').innerHTML=`
+      <div class="customer-detail-top">
+        <div><span>ગામ</span><strong>${escapeHtml(c.village||'—')}</strong></div>
+        <div><span>મોબાઇલ</span><strong>${escapeHtml(c.mobile||'—')}</strong></div>
+      </div>
+      <div class="customer-detail-stats">
+        <div><span>કુલ એન્ટ્રી</span><strong>${c.count}</strong></div>
+        <div><span>કુલ મજૂરી</span><strong>${money(c.totalJob)}</strong></div>
+        <div><span>લેવાના બાકી</span><strong>${money(c.receivableOutstanding)}</strong></div>
+        <div><span>આપવાના બાકી</span><strong>${money(c.payableOutstanding)}</strong></div>
+      </div>
+      <div class="button-row customer-detail-actions">
+        <button class="secondary" data-new-oil-for="${escapeAttr(c.key)}">+ તેલ મીલ</button>
+        <button class="ghost" data-new-grain-for="${escapeAttr(c.key)}">+ અનાજ / કઠોળ</button>
+      </div>
+      <div class="customer-detail-history">
+        <h3>તાજેતરની એન્ટ્રીઓ</h3>
+        ${tx.slice(0,8).map(r=>`<button type="button" class="customer-tx-row" data-customer-open-tx="${escapeAttr(r.id)}"><span><strong>${escapeHtml(r.billNo||'—')}</strong><small>${escapeHtml(r.date||'—')} • ${r.business==='grain'?'અનાજ / કઠોળ':'તેલ મીલ'}</small></span><span><strong>${money(r.jobWorkAmount||0)}</strong><small>બાકી ${money(remainingFor(r))}</small></span></button>`).join('')||'<div class="empty">એન્ટ્રી નથી.</div>'}
+      </div>`;
+  }
+
   function renderCustomers(){
-    const q=($('customerSearch')?.value||'').trim().toLowerCase();
-    const rows=getCustomers().filter(c=>[c.name,c.mobile,c.village].join(' ').toLowerCase().includes(q));
-    $('customerCountLabel').textContent=`${rows.length} ગ્રાહકો`;
-    $('customerList').innerHTML=rows.map(c=>`<div class="customer-card">
-      <div><strong>${escapeHtml(c.name)}</strong><div class="muted">${escapeHtml(c.village||'')}${c.mobile?` • ${escapeHtml(c.mobile)}`:''}</div><div class="customer-meta">${c.count} એન્ટ્રી • છેલ્લી ${escapeHtml(c.lastDate||'—')} • મજૂરી કામ ${money(c.totalJob)}</div></div>
-      <div class="customer-due"><span>લેવાના બાકી ${money(c.receivableOutstanding)}</span><span>આપવાના બાકી ${money(c.payableOutstanding)}</span><div class="button-row"><button class="secondary small" data-new-oil-for="${escapeAttr(c.key)}">તેલ મિલ</button><button class="ghost small" data-new-grain-for="${escapeAttr(c.key)}">અનાજ/કઠોળ</button></div></div>
-    </div>`).join('') || '<div class="empty">હજુ કોઈ ગ્રાહક નથી.</div>';
+    const villageView=$('customerVillageView');
+    if(villageView && !villageView.hidden){
+      const q=($('customerSearch')?.value||'').trim().toLowerCase();
+      const groups=customerVillageGroups().filter(v=>v.village.toLowerCase().includes(q));
+      $('customerVillageCount').textContent=`${groups.length} ગામ`;
+      $('customerVillageList').innerHTML=groups.map(v=>`
+        <button type="button" class="village-card" data-open-village="${escapeAttr(v.village)}">
+          <span class="village-card-icon">⌖</span>
+          <span class="village-card-copy">
+            <strong>${escapeHtml(v.village)}</strong>
+            <small>${v.count} ગ્રાહકો • ${v.lastDate?`છેલ્લી ${escapeHtml(v.lastDate)} • `:''}મજૂરી ${money(v.totalJob)}</small>
+          </span>
+          <span class="village-card-due">
+            <small>બાકી</small>
+            <strong>${money(Math.abs(round2(v.receivableOutstanding-v.payableOutstanding)))}</strong>
+          </span>
+          <span class="village-card-arrow">›</span>
+        </button>`).join('')||'<div class="empty">ગામ મળ્યું નથી.</div>';
+      return;
+    }
+
+    if($('customerListView') && !$('customerListView').hidden){
+      const q=($('customerWithinVillageSearch')?.value||'').trim().toLowerCase();
+      const rows=getCustomers().filter(c=>(c.village||'ગામ નથી')===selectedCustomerVillage)
+        .filter(c=>[c.name,c.mobile].join(' ').toLowerCase().includes(q));
+      $('customerCountLabel').textContent=`${rows.length} ગ્રાહકો`;
+      $('customerList').innerHTML=rows.map(c=>`<button type="button" class="customer-card customer-card-button" data-open-customer="${escapeAttr(c.key)}">
+        <span><strong>${escapeHtml(c.name)}</strong><span class="muted">${c.mobile?escapeHtml(c.mobile):'મોબાઇલ નથી'}</span><span class="customer-meta">${c.count} એન્ટ્રી • મજૂરી ${money(c.totalJob)}</span></span>
+        <span class="customer-due"><small>નેટ બાકી</small><strong>${money(Math.abs(round2(c.receivableOutstanding-c.payableOutstanding)))}</strong></span>
+        <span class="customer-card-arrow">›</span>
+      </button>`).join('')||'<div class="empty">ગ્રાહક મળ્યો નથી.</div>';
+    }
   }
 
   function renderHistory(){
@@ -1030,7 +1140,7 @@
     hidePreview();
     hideGrainPreview();
     if (name === 'history') renderHistory();
-    if (name === 'customers') renderCustomers();
+    if (name === 'customers') showCustomerVillageHome();
     if (name === 'home') renderDashboard();
     if (name === 'stock') renderStock();
     if (name === 'reports') { renderReports(); showReportHome(); }
@@ -1126,6 +1236,29 @@
   $('drawerOpenBtn')?.addEventListener('click',openAppDrawer);
   $('drawerCloseBtn')?.addEventListener('click',closeAppDrawer);
   $('drawerBackdrop')?.addEventListener('click',closeAppDrawer);
+  $('headerHomeBtn')?.addEventListener('click',()=>showScreen('home'));
+  $('drawerBrandHomeBtn')?.addEventListener('click',()=>showScreen('home'));
+
+  $('drawerOperatorBtn')?.addEventListener('click',()=>{
+    renderOperatorUI();
+    if($('operatorDetailModal')) $('operatorDetailModal').hidden=false;
+  });
+  $('operatorDetailCloseBtn')?.addEventListener('click',()=>{ if($('operatorDetailModal')) $('operatorDetailModal').hidden=true; });
+  $('operatorModalChangeBtn')?.addEventListener('click',()=>{
+    if($('operatorDetailModal')) $('operatorDetailModal').hidden=true;
+    resetDeviceAssignment();
+  });
+
+  $('customerVillageBackBtn')?.addEventListener('click',showCustomerVillageHome);
+  $('customerDetailBackBtn')?.addEventListener('click',()=>showVillageCustomers(selectedCustomerVillage));
+  $('customerWithinVillageSearch')?.addEventListener('input',renderCustomers);
+
+  $('customerVillageList')?.addEventListener('click',(e)=>{
+    const b=e.target.closest('[data-open-village]');
+    if(b) showVillageCustomers(b.dataset.openVillage);
+  });
+
+
   document.addEventListener('keydown',(e)=>{if(e.key==='Escape') closeAppDrawer();});
 
   document.querySelectorAll('[data-report-business-ui]').forEach(btn=>btn.addEventListener('click',()=>{
@@ -1314,7 +1447,26 @@
   $('customerName').addEventListener('input',renderCustomerSuggestions);
   $('customerName').addEventListener('blur',()=>setTimeout(()=>$('customerSuggestions').hidden=true,180));
   $('customerSuggestions').addEventListener('click',(e)=>{ const b=e.target.closest('[data-customer-key]'); if(b) selectCustomer(b.dataset.customerKey); });
-  $('customerList').addEventListener('click',(e)=>{ const bo=e.target.closest('[data-new-oil-for]'); if(bo){ selectCustomer(bo.dataset.newOilFor); showScreen('new-oil'); return;} const bg=e.target.closest('[data-new-grain-for]'); if(bg){ selectGrainCustomer(bg.dataset.newGrainFor); showScreen('grain'); } });
+  $('customerList').addEventListener('click',(e)=>{
+    const open=e.target.closest('[data-open-customer]');
+    if(open){showCustomerDetail(open.dataset.openCustomer);return;}
+    const bo=e.target.closest('[data-new-oil-for]');
+    if(bo){selectCustomer(bo.dataset.newOilFor);showScreen('new-oil');return;}
+    const bg=e.target.closest('[data-new-grain-for]');
+    if(bg){selectGrainCustomer(bg.dataset.newGrainFor);showScreen('grain');}
+  });
+
+  $('customerDetailCard')?.addEventListener('click',(e)=>{
+    const bo=e.target.closest('[data-new-oil-for]');
+    if(bo){selectCustomer(bo.dataset.newOilFor);showScreen('new-oil');return;}
+    const bg=e.target.closest('[data-new-grain-for]');
+    if(bg){selectGrainCustomer(bg.dataset.newGrainFor);showScreen('grain');return;}
+    const txBtn=e.target.closest('[data-customer-open-tx]');
+    if(txBtn){
+      const r=getTx().find(x=>x.id===txBtn.dataset.customerOpenTx);
+      if(r){ if(r.business==='grain') editGrainRecord(r); else editRecord(r); }
+    }
+  });
   $('historyBody').addEventListener('click',(e)=>{
     const edit=e.target.closest('[data-edit]'); if(edit) return editRecord(edit.dataset.edit);
     const pay=e.target.closest('[data-pay]'); if(pay) return openPaymentModal(pay.dataset.pay);
