@@ -3059,6 +3059,7 @@
     const menu=$('oilSubmenu'),btn=$('oilMenuToggle');
     const shouldOpen=!!menu?.hidden;
     if(menu) menu.hidden=!shouldOpen;
+    btn.setAttribute('aria-expanded',shouldOpen?'true':'false');
     if(btn) btn.setAttribute('aria-expanded',String(shouldOpen));
   });
   document.querySelectorAll('.drawer-sublink').forEach(b=>b.addEventListener('click',()=>showScreen(b.dataset.screen)));
@@ -3066,6 +3067,7 @@
     const menu=$('grainSubmenu'),btn=$('grainMenuToggle');
     const shouldOpen=!!menu?.hidden;
     if(menu) menu.hidden=!shouldOpen;
+    btn.setAttribute('aria-expanded',shouldOpen?'true':'false');
     if(btn) btn.setAttribute('aria-expanded',String(shouldOpen));
   });
 
