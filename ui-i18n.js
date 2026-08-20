@@ -350,8 +350,6 @@
     'ડાઉનલોડ':'Download',
     'ફાઇલ':'File',
     'ફાઇલ તૈયાર છે':'File is ready',
-    'ફાઇલ ખોલો, શેર કરો અથવા ડાઉનલોડ કરો.':'Open, share or download the file.',
-    'ખોલો / App પસંદ કરો':'Open / Choose App',
     'એપ ઇન્સ્ટોલ':'Install App',
     'Internet મળ્યા પછી Auto Sync':'Auto Sync when internet is available',
     'ડેટા':'Data',

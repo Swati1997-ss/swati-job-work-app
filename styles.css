@@ -1207,6 +1207,72 @@ html[lang="en"] select{
   .report-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 
+/* UI Alpha 39 — consistent export and file-sharing actions */
+.section-action-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  margin-bottom:14px
+}
+.section-action-head h2{margin:0}
+.export-action-grid{
+  display:grid;
+  grid-auto-flow:column;
+  grid-auto-columns:minmax(126px,auto);
+  gap:8px
+}
+.export-action-grid button,.share-action-bar button,.share-action-grid button,.file-action-buttons button{
+  min-height:44px;
+  white-space:nowrap
+}
+.share-action-bar{
+  display:grid;
+  grid-template-columns:auto repeat(4,minmax(130px,1fr));
+  align-items:center;
+  justify-content:stretch;
+  gap:8px
+}
+.share-action-grid{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:8px;
+  margin-top:12px
+}
+.whatsapp-btn{
+  border:1px solid #168a4a;
+  background:#168a4a;
+  color:#fff;
+  border-radius:12px;
+  padding:11px 14px;
+  font-weight:800
+}
+.whatsapp-btn:active{background:#11723d}
+.file-action-buttons{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:9px;
+  margin-top:14px
+}
+.file-action-buttons button{width:100%}
+
+@media(max-width:760px){
+  .section-action-head{align-items:stretch;flex-direction:column;gap:12px}
+  .export-action-grid{grid-auto-flow:row;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-columns:auto}
+  .history-export-actions button:last-child{grid-column:1/-1}
+  .share-action-bar{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .share-action-bar .toolbar-back{grid-column:1/-1;justify-self:start;width:auto}
+  .share-action-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .share-action-grid #invoiceCopyBtn{grid-column:1/-1}
+}
+
+@media(max-width:390px){
+  .export-action-grid{grid-template-columns:1fr}
+  .history-export-actions button:last-child{grid-column:auto}
+  .share-action-bar,.share-action-grid,.file-action-buttons{grid-template-columns:1fr}
+  .share-action-bar .toolbar-back,.share-action-grid #invoiceCopyBtn{grid-column:auto;width:100%}
+}
+
 
 /* UI Alpha 29 — Owner Home Dashboard */
 .owner-home-dashboard{margin-bottom:16px}

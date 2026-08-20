@@ -1,6 +1,6 @@
-# Swati Mini Oil Mill App — Alpha 38
+# Swati Mini Oil Mill App — Alpha 39
 
-Alpha 38 keeps all Alpha 37 reliability fixes and introduces a cleaner, more compact interface. See `UI_ALPHA38_UPDATE.md` for the UI-copy changes and `UI_ALPHA37_UPDATE.md` for the repaired stock, finance, backup, sync, reporting and migration behavior.
+Alpha 39 keeps all earlier reliability and compact-interface fixes, and adds a consistent mobile-friendly export and sharing experience. See `UI_ALPHA39_UPDATE.md` for the sharing and layout changes.
 
 ## Added
 - Installable PWA manifest and app icons

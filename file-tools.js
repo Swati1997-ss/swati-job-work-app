@@ -70,25 +70,23 @@
   }
   async function share(blob,name,title='સ્વાતિ',text=''){
     if(await nativeFileShare(blob,name,title,text)){notify('શેર મેનુ ખોલાયું');return true;}
-    notify('આ browser/device direct file sharing સપોર્ટ કરતું નથી. Installed Chrome/Safari appથી ફરી પ્રયાસ કરો અથવા Download પસંદ કરો.');
+    notify('આ browserમાં file sharing ઉપલબ્ધ નથી. Chrome/Safariમાં app ખોલો અથવા ફાઇલ ડાઉનલોડ કરો.');
     return false;
-  }
-  async function openFile(blob,name,title='સ્વાતિ ફાઇલ'){
-    if(blob.type==='application/pdf'){
-      const url=URL.createObjectURL(blob);const w=window.open(url,'_blank');if(w){setTimeout(()=>URL.revokeObjectURL(url),60000);notify('PDF ખોલાઈ રહી છે');return true;}
-    }
-    if(await nativeFileShare(blob,name,title,`ફાઇલ ખોલવા માટે યોગ્ય app પસંદ કરો: ${name}`)){return true;}
-    download(blob,name);notify('આ file type browser સીધી ખોલી શકતી નથી; download કરી છે.');return false;
   }
   function presentBlob(blob,name,opts={}){
     currentFile={blob,name,title:opts.title||'સ્વાતિ ફાઇલ',text:opts.text||''};
     const modal=$('fileActionModal');if(!modal){download(blob,name);return;}
     $('fileActionTitle').textContent=opts.title||'ફાઇલ તૈયાર છે';$('fileActionName').textContent=name;
-    $('fileActionHint').textContent=opts.hint||'ફાઇલ ખોલો, share menuથી WhatsApp / Messages / Mail / Driveમાં મોકલો, અથવા download કરો.';
+    $('fileActionHint').textContent=opts.hint||'WhatsApp, Mail, Drive અથવા બીજી appમાં મોકલો.';
     modal.hidden=false;notify('ફાઇલ તૈયાર છે');
   }
   function presentCsvAsXlsx(csv,name){const rows=parseCsv(csv),xname=name.replace(/\.csv$/i,'.xlsx');presentBlob(makeXlsx(rows,'Swati'),xname,{title:'Excel ફાઇલ તૈયાર છે'});}
-  function whatsappText(text){const url=`https://wa.me/?text=${encodeURIComponent(text)}`;window.open(url,'_blank','noopener');}
+  function whatsappText(text,phone=''){
+    let digits=String(phone||'').replace(/\D/g,'');
+    if(digits.length===10) digits=`91${digits}`;
+    const target=digits?`https://wa.me/${digits}`:'https://wa.me/';
+    window.open(`${target}?text=${encodeURIComponent(text)}`,'_blank','noopener');
+  }
   function copyVisualStyles(source,target){
     const props=[
       'display','position','box-sizing','width','height','min-width','min-height','max-width','max-height',
@@ -184,8 +182,9 @@
       </foreignObject>
     </svg>`;
 
-    const svgBlob=new Blob([svg],{type:'image/svg+xml;charset=utf-8'});
-    const url=URL.createObjectURL(svgBlob);
+    // A blob-backed SVG containing foreignObject taints canvas on Android Chrome.
+    // A same-document data URL keeps the canvas exportable for PDF generation.
+    const url=`data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
     const img=new Image();
     try{
       await new Promise((resolve,reject)=>{
@@ -210,9 +209,7 @@
         canvas.toBlob(b=>b&&b.size>1000?resolve(b):reject(new Error('PDF card image could not be created')),'image/jpeg',0.94);
       });
       return {jpeg,width:canvas.width,height:canvas.height};
-    }finally{
-      URL.revokeObjectURL(url);
-    }
+    }finally{}
   }
 
   function pdfFromJpeg(jpegBytes,w,h){
@@ -254,10 +251,19 @@
   }
   document.addEventListener('DOMContentLoaded',()=>{
     $('fileActionClose')?.addEventListener('click',()=>{$('fileActionModal').hidden=true;});
-    $('fileActionOpen')?.addEventListener('click',()=>{if(currentFile)openFile(currentFile.blob,currentFile.name,currentFile.title);});
     $('fileActionDownload')?.addEventListener('click',()=>{if(currentFile)download(currentFile.blob,currentFile.name);});
-    $('fileActionShare')?.addEventListener('click',()=>{if(currentFile)share(currentFile.blob,currentFile.name,currentFile.title,currentFile.text);});
+    $('fileActionShare')?.addEventListener('click',async()=>{
+      if(!currentFile) return;
+      const btn=$('fileActionShare');
+      btn.disabled=true;btn.textContent='શેર થઈ રહ્યું છે…';
+      try{
+        const ok=await share(currentFile.blob,currentFile.name,currentFile.title,currentFile.text);
+        if(ok) $('fileActionModal').hidden=true;
+      }finally{
+        btn.disabled=false;btn.textContent='ફાઇલ શેર કરો';
+      }
+    });
     $('fileActionModal')?.addEventListener('click',e=>{if(e.target===$('fileActionModal'))$('fileActionModal').hidden=true;});
   });
-  window.SwatiFiles={makeXlsx,parseCsv,presentCsvAsXlsx,presentBlob,download,openFile,share,nativeFileShare,whatsappText,cardPdf,shareCardPdf,presentCardPdf};
+  window.SwatiFiles={makeXlsx,parseCsv,presentCsvAsXlsx,presentBlob,download,share,nativeFileShare,whatsappText,cardPdf,shareCardPdf,presentCardPdf};
 })();

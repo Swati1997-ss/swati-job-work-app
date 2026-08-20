@@ -2402,6 +2402,8 @@
 
   const INVOICE_KEY='swati_invoices_v1';
   let currentInvoice=null;
+  let preparedInvoicePdf=null;
+  let preparingInvoicePdf=null;
 
   function getInvoices(){
     try{return JSON.parse(localStorage.getItem(INVOICE_KEY)||'[]')}catch{return []}
@@ -2536,6 +2538,8 @@
 
   function fillInvoicePreview(inv){
     currentInvoice=inv;
+    preparedInvoicePdf=null;
+    preparingInvoicePdf=null;
     if($('invoicePreviewNo')) $('invoicePreviewNo').textContent=inv.invoiceNo||'—';
     if($('invNo')) $('invNo').textContent=inv.invoiceNo||'—';
     if($('invDate')) $('invDate').textContent=inv.date||'—';
@@ -2558,6 +2562,8 @@
       if($('invNote')) $('invNote').textContent=inv.note||'';
     }
     if($('invoicePreviewPanel')) $('invoicePreviewPanel').hidden=false;
+    setInvoicePdfState('preparing');
+    setTimeout(()=>prepareInvoicePdf(inv),0);
     window.scrollTo({top:0,behavior:'smooth'});
   }
 
@@ -2610,6 +2616,47 @@
       // Fallback cleanup for browsers that do not fire afterprint reliably.
       setTimeout(cleanup,4000);
     }));
+  }
+
+  function invoicePdfName(inv){
+    const no=String(inv?.invoiceNo||todayISO()).replace(/[^\p{L}\p{N}._-]+/gu,'-');
+    return `સ્વાતિ-Invoice-${no}.pdf`;
+  }
+
+  function setInvoicePdfState(state){
+    const shareBtn=$('invoiceSharePdfBtn'),downloadBtn=$('invoiceDownloadPdfBtn');
+    if(state==='preparing'){
+      if(shareBtn){shareBtn.disabled=true;shareBtn.textContent='PDF તૈયાર થઈ રહી છે…';}
+      if(downloadBtn) downloadBtn.disabled=true;
+      return;
+    }
+    if(shareBtn){shareBtn.disabled=false;shareBtn.textContent='PDF શેર કરો';}
+    if(downloadBtn) downloadBtn.disabled=false;
+  }
+
+  async function prepareInvoicePdf(inv=currentInvoice){
+    if(!inv||!window.SwatiFiles) return null;
+    if(preparedInvoicePdf?.id===inv.id) return preparedInvoicePdf;
+    if(preparingInvoicePdf) return preparingInvoicePdf;
+    setInvoicePdfState('preparing');
+    preparingInvoicePdf=(async()=>{
+      try{
+        const card=$('invoicePreviewCard');
+        if(!card) throw new Error('Invoice preview was not found');
+        const blob=await window.SwatiFiles.cardPdf(card,'invoice');
+        const ready={id:inv.id,blob,name:invoicePdfName(inv),title:'સ્વાતિ Invoice',text:invoiceText(inv)};
+        if(currentInvoice?.id===inv.id) preparedInvoicePdf=ready;
+        return ready;
+      }catch(e){
+        console.error('Invoice PDF generation failed',e);
+        toast('Invoice PDF બનાવવામાં સમસ્યા આવી');
+        return null;
+      }finally{
+        preparingInvoicePdf=null;
+        setInvoicePdfState('ready');
+      }
+    })();
+    return preparingInvoicePdf;
   }
 
   function renderInvoices(){
@@ -2952,7 +2999,7 @@
 
   function exportBackup(){
     const data={};ALL_DATA_KEYS.forEach(key=>{try{data[key]=JSON.parse(localStorage.getItem(key)||'null')}catch{data[key]=null}});
-    const payload={version:37,exportedAt:new Date().toISOString(),currentOperator:currentOperator(),deviceId:deviceId(),data};
+    const payload={version:39,exportedAt:new Date().toISOString(),currentOperator:currentOperator(),deviceId:deviceId(),data};
     downloadBlob(JSON.stringify(payload,null,2),'application/json',`swati-job-work-backup-${todayISO()}.json`);
   }
 
@@ -3327,10 +3374,10 @@
       btn.textContent='PDF તૈયાર થઈ રહી છે…';
     }else if(state==='ready'){
       btn.disabled=false;
-      btn.textContent='ફાઇલ શેર';
+      btn.textContent='PDF શેર કરો';
     }else{
       btn.disabled=false;
-      btn.textContent='ફાઇલ શેર';
+      btn.textContent='PDF શેર કરો';
     }
   }
 
@@ -3393,7 +3440,7 @@
         if(shareNow){
           // The PDF had to be generated after this tap, so browser user-activation may be gone.
           // Do not trigger a false download. Ask for one clean second tap now that the file is ready.
-          toast('PDF તૈયાર છે — હવે “ફાઇલ શેર” ફરી દબાવો');
+          toast('PDF તૈયાર છે — હવે “PDF શેર કરો” ફરી દબાવો');
           return;
         }
       }
@@ -3406,14 +3453,12 @@
             hint:'તમારો browser file-share સપોર્ટ કરે તો “શેર કરો”થી native Share menu ખુલશે. Download માત્ર અલગ buttonથી જ થશે.'
           });
         }
-      }else{
-        window.SwatiFiles.presentBlob(ready.blob,ready.name,{title:'PDF તૈયાર છે',text:ready.text});
-      }
+      }else window.SwatiFiles.download(ready.blob,ready.name);
     }catch(e){console.error(e);toast('PDF / Share બનાવવામાં સમસ્યા આવી');}
   }
   function shareBillWhatsApp(business){
     const r=business==='grain'?currentGrainRecord():currentRecord(); if(!r.customer?.name){toast('ગ્રાહકનું નામ જરૂરી છે');return;}
-    if(window.SwatiFiles) window.SwatiFiles.whatsappText(billShareText(r,business)); else window.open(`https://wa.me/?text=${encodeURIComponent(billShareText(r,business))}`,'_blank');
+    if(window.SwatiFiles) window.SwatiFiles.whatsappText(billShareText(r,business),r.customer?.mobile); else window.open(`https://wa.me/?text=${encodeURIComponent(billShareText(r,business))}`,'_blank');
   }
 
   $('printBtn').addEventListener('click', () => printOnly('oil'));
@@ -4438,10 +4483,31 @@
 
   $('invoiceClosePreview')?.addEventListener('click',()=>{
     currentInvoice=null;
+    preparedInvoicePdf=null;
+    preparingInvoicePdf=null;
     if($('invoicePreviewPanel')) $('invoicePreviewPanel').hidden=true;
   });
 
   $('invoicePrintBtn')?.addEventListener('click',()=>printInvoice(currentInvoice));
+
+  $('invoiceSharePdfBtn')?.addEventListener('click',async()=>{
+    if(!currentInvoice||!window.SwatiFiles) return;
+    let ready=preparedInvoicePdf?.id===currentInvoice.id?preparedInvoicePdf:null;
+    if(!ready){
+      ready=await prepareInvoicePdf(currentInvoice);
+      if(!ready) return;
+      toast('PDF તૈયાર છે — હવે “PDF શેર કરો” ફરી દબાવો');
+      return;
+    }
+    const ok=await window.SwatiFiles.share(ready.blob,ready.name,ready.title,ready.text);
+    if(!ok) window.SwatiFiles.presentBlob(ready.blob,ready.name,{title:'PDF શેર માટે તૈયાર છે',text:ready.text});
+  });
+
+  $('invoiceDownloadPdfBtn')?.addEventListener('click',async()=>{
+    if(!currentInvoice||!window.SwatiFiles) return;
+    const ready=preparedInvoicePdf?.id===currentInvoice.id?preparedInvoicePdf:await prepareInvoicePdf(currentInvoice);
+    if(ready) window.SwatiFiles.download(ready.blob,ready.name);
+  });
 
   $('invoiceCopyBtn')?.addEventListener('click',async()=>{
     if(!currentInvoice) return;
@@ -4457,7 +4523,8 @@
   $('invoiceWhatsAppBtn')?.addEventListener('click',()=>{
     if(!currentInvoice) return;
     const text=invoiceText(currentInvoice);
-    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`,'_blank','noopener');
+    if(window.SwatiFiles) window.SwatiFiles.whatsappText(text,currentInvoice.mobile);
+    else window.open(`https://wa.me/?text=${encodeURIComponent(text)}`,'_blank','noopener');
   });
 
 
