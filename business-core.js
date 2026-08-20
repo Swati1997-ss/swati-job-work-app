@@ -9,7 +9,11 @@
     transfers: 'swati_core_internal_transfers_v1',
     cashLedger: 'swati_core_cash_ledger_v1',
     bankLedger: 'swati_core_bank_ledger_v1',
-    meta: 'swati_core_meta_v1'
+    meta: 'swati_core_meta_v1',
+    financeSettings: 'swati_core_finance_settings_v1',
+    bankAccounts: 'swati_core_bank_accounts_v1',
+    partyPayments: 'swati_core_party_payments_v1',
+    usageMovements: 'swati_core_usage_movements_v1'
   };
 
   const DIVISIONS = { oil: 'oil_mill', grain: 'grain_pulse' };
@@ -49,6 +53,150 @@
 
   const today = () => new Date().toISOString().slice(0,10);
 
+
+  const WEIGHT_TO_KG = {
+    kg: 1,
+    ton: 1000,
+    mann: 20
+  };
+
+  function toBaseQty(qty, unitName) {
+    const q = Number(qty || 0);
+    if (WEIGHT_TO_KG[unitName]) return round2(q * WEIGHT_TO_KG[unitName]);
+    return round2(q);
+  }
+
+  function isWeightUnit(unitName) {
+    return !!WEIGHT_TO_KG[unitName];
+  }
+
+  function getPartyKey(name='') {
+    return String(name || '').trim().toLowerCase();
+  }
+
+  function partyLedger(party='') {
+    const key = getPartyKey(party);
+    const purchases = read(KEYS.purchases).filter(r => getPartyKey(r.party) === key);
+    const payments = read(KEYS.partyPayments).filter(r => getPartyKey(r.party) === key);
+
+    const purchaseTotal = round2(purchases.reduce((s,r)=>s+Number(r.amount||0),0));
+    const paymentTotal = round2(payments.reduce((s,r)=>s+Number(r.amount||0),0));
+
+    const net = round2(paymentTotal - purchaseTotal);
+    return {
+      party,
+      purchaseTotal,
+      paymentTotal,
+      advance: net > 0 ? net : 0,
+      payable: net < 0 ? Math.abs(net) : 0,
+      balance: net
+    };
+  }
+
+  function addPartyPayment(input={}) {
+    const rows = read(KEYS.partyPayments);
+    const row = {
+      id: input.id || uid('PAY'),
+      date: input.date || today(),
+      party: input.party || '',
+      amount: round2(input.amount),
+      paymentMode: input.paymentMode || 'cash',
+      refType: input.refType || 'party_payment',
+      refId: input.refId || '',
+      context: normalizeContext(input.context),
+      createdAt: input.createdAt || new Date().toISOString()
+    };
+    rows.push(row);
+    write(KEYS.partyPayments, rows);
+
+    if (row.amount > 0) {
+      addMoneyMovement({
+        date: row.date,
+        amount: row.amount,
+        direction: 'out',
+        mode: row.paymentMode,
+        refType: row.refType,
+        refId: row.id,
+        title: `Party payment - ${row.party}`,
+        context: row.context
+      });
+    }
+    return row;
+  }
+
+  function addUsage(input={}) {
+    const rows = read(KEYS.usageMovements);
+    const row = {
+      id: input.id || uid('USE'),
+      date: input.date || today(),
+      itemId: input.itemId || '',
+      itemName: input.itemName || '',
+      qty: round2(input.qty),
+      baseQty: toBaseQty(input.qty, input.unitName || 'kg'),
+      unitName: input.unitName || 'kg',
+      context: normalizeContext(input.context),
+      note: input.note || '',
+      createdAt: input.createdAt || new Date().toISOString()
+    };
+    rows.push(row);
+    write(KEYS.usageMovements, rows);
+
+    addStockMovement({
+      date: row.date,
+      itemId: row.itemId,
+      itemName: row.itemName,
+      qty: row.baseQty,
+      unitName: isWeightUnit(row.unitName) ? 'kg' : row.unitName,
+      movementType: 'usage_consume',
+      direction: 'out',
+      refType: 'usage',
+      refId: row.id,
+      context: row.context
+    });
+    return row;
+  }
+
+  function getFinanceSettings() {
+    return read(KEYS.financeSettings, {
+      openingCash: 0,
+      loanFacilities: []
+    });
+  }
+
+  function saveFinanceSettings(settings={}) {
+    const clean = {
+      openingCash: round2(settings.openingCash),
+      loanFacilities: Array.isArray(settings.loanFacilities) ? settings.loanFacilities : []
+    };
+    write(KEYS.financeSettings, clean);
+    return clean;
+  }
+
+  function getBankAccounts() {
+    return read(KEYS.bankAccounts, []);
+  }
+
+  function saveBankAccounts(accounts=[]) {
+    write(KEYS.bankAccounts, accounts);
+    return accounts;
+  }
+
+  function addBankAccount(input={}) {
+    const rows = getBankAccounts();
+    const row = {
+      id: input.id || uid('BANK'),
+      bankName: input.bankName || '',
+      accountName: input.accountName || '',
+      accountType: input.accountType || 'current',
+      openingBalance: round2(input.openingBalance),
+      currentBalance: round2(input.currentBalance ?? input.openingBalance),
+      createdAt: input.createdAt || new Date().toISOString()
+    };
+    rows.push(row);
+    saveBankAccounts(rows);
+    return row;
+  }
+
   const normalizeContext = (ctx={}) => ({
     division: ctx.division || '',
     unit: ctx.unit || '',
@@ -87,6 +235,7 @@
     const rate = round2(input.rate);
     const amount = round2(input.amount ?? qty * rate);
     const paid = round2(input.paid);
+    const baseQty = toBaseQty(qty, input.unitName || 'kg');
     const row = {
       id: input.id || uid('PUR'),
       date: input.date || today(),
@@ -94,24 +243,38 @@
       itemId: input.itemId || '',
       itemName: input.itemName || '',
       qty,
+      baseQty,
       unitName: input.unitName || 'kg',
       rate,
       amount,
       paid,
       outstanding: round2(Math.max(0, amount-paid)),
+      advance: round2(Math.max(0, paid-amount)),
       context: normalizeContext(input.context),
       createdAt: input.createdAt || new Date().toISOString()
     };
     rows.push(row);
     write(KEYS.purchases, rows);
 
+    if (row.paid > 0 && input.recordPartyPayment !== false) {
+      addPartyPayment({
+        date: row.date,
+        party: row.party,
+        amount: row.paid,
+        paymentMode: input.paymentMode || 'cash',
+        refType: 'purchase_payment',
+        refId: row.id,
+        context: row.context
+      });
+    }
+
     if (row.itemId && row.qty) {
       addStockMovement({
         date: row.date,
         itemId: row.itemId,
         itemName: row.itemName,
-        qty: row.qty,
-        unitName: row.unitName,
+        qty: row.baseQty,
+        unitName: isWeightUnit(row.unitName) ? 'kg' : row.unitName,
         movementType: MOVEMENT_TYPES.purchaseIn,
         direction: 'in',
         refType: 'purchase',
@@ -152,8 +315,8 @@
         date: row.date,
         itemId: row.itemId,
         itemName: row.itemName,
-        qty: row.qty,
-        unitName: row.unitName,
+        qty: row.baseQty,
+        unitName: isWeightUnit(row.unitName) ? 'kg' : row.unitName,
         movementType: MOVEMENT_TYPES.saleOut,
         direction: 'out',
         refType: 'sale',
@@ -295,14 +458,22 @@
     const p = read(KEYS.purchases);
     const s = read(KEYS.sales);
     const e = read(KEYS.expenses);
+    const settings = getFinanceSettings();
+    const banks = getBankAccounts();
+    const bankOpening = round2(banks.reduce((a,r)=>a+Number(r.openingBalance||0),0));
+    const bankLedgerFlow = moneyBalance('bank');
+    const cashLedgerFlow = moneyBalance('cash');
+    const cashBalance = round2(Number(settings.openingCash||0) + cashLedgerFlow);
+    const bankBalance = round2(bankOpening + bankLedgerFlow);
     return {
       purchaseAmount: round2(p.reduce((a,r)=>a+Number(r.amount||0),0)),
       purchaseOutstanding: round2(p.reduce((a,r)=>a+Number(r.outstanding||0),0)),
       salesAmount: round2(s.reduce((a,r)=>a+Number(r.amount||0),0)),
       salesOutstanding: round2(s.reduce((a,r)=>a+Number(r.outstanding||0),0)),
       expensesAmount: round2(e.reduce((a,r)=>a+Number(r.amount||0),0)),
-      cashBalance: moneyBalance('cash'),
-      bankBalance: moneyBalance('bank')
+      cashBalance,
+      bankBalance,
+      liquidMoney: round2(cashBalance + bankBalance)
     };
   }
 
@@ -330,6 +501,8 @@
     KEYS, DIVISIONS, UNITS, MOVEMENT_TYPES,
     addPurchase, addSale, addExpense,
     addStockMovement, addInternalTransfer, addMoneyMovement,
-    stockBalance, stockSnapshot, moneyBalance, financeSummary, list
+    stockBalance, stockSnapshot, moneyBalance, financeSummary, list,
+    toBaseQty, isWeightUnit, partyLedger, addPartyPayment, addUsage,
+    getFinanceSettings, saveFinanceSettings, getBankAccounts, saveBankAccounts, addBankAccount
   };
 })();

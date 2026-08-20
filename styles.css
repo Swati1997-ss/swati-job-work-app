@@ -801,3 +801,35 @@ input:focus,select:focus{border-color:var(--pro-blue);box-shadow:0 0 0 3px rgba(
 .finance-position-list>div{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--ui-line)}
 .finance-position-list>div:last-child{border-bottom:0}
 @media(max-width:800px){.finance-owner-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+
+/* =========================================================
+   UI ALPHA 11 — Consolidation
+   ========================================================= */
+.compact-page-head{margin-bottom:10px}
+.compact-page-head p{margin:0}
+.party-ledger-grid{
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-top:12px
+}
+.party-ledger-grid>div{
+  background:#f7f9fb;border-radius:13px;padding:11px;display:grid;gap:4px
+}
+.party-ledger-grid span{font-size:.68rem;color:var(--text-soft)}
+.party-ledger-grid strong{font-size:.92rem}
+.batch-scope-note{
+  margin-top:10px;padding:9px 11px;border-radius:12px;background:#f6f8fb;
+  font-size:.72rem;font-weight:800;color:var(--text-soft)
+}
+.finance-two-col{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:12px
+}
+.finance-owner-card small{font-size:.62rem;color:var(--text-soft)}
+@media(max-width:760px){
+  .party-ledger-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .finance-two-col{grid-template-columns:1fr}
+}
+
+
+/* UI Alpha 12 — neutral purchase/expense classification
+   Purchases and expenses remain separate modules for workflow,
+   without a forced "Main Purchase vs Extra Cost" business concept. */

@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#8f1736" />
   <title>સ્વાતિ મિની ઓઇલ મિલ</title>
-  <link rel="manifest" href="manifest.webmanifest?v=ui-alpha10" />
+  <link rel="manifest" href="manifest.webmanifest?v=ui-alpha12" />
   <link rel="apple-touch-icon" href="swati-icon-v2-192.png?v=22" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Swati" />
-  <link rel="stylesheet" href="styles.css?v=ui-alpha10" />
+  <link rel="stylesheet" href="styles.css?v=ui-alpha12" />
 </head>
 <body>
   
@@ -20,7 +20,7 @@
         <span></span><span></span><span></span>
       </button>
       <button id="headerHomeBtn" class="header-home-link" type="button" aria-label="મુખ્ય પેજ">
-        <img class="header-logo" src="swati-icon-v2-192.png?v=ui10" alt="સ્વાતિ" />
+        <img class="header-logo" src="swati-icon-v2-192.png?v=ui12" alt="સ્વાતિ" />
         <span class="header-brand-copy">
           <span class="brand">સ્વાતિ મિની ઓઇલ મિલ</span>
           <span class="subbrand">સુલતાનપુર</span>
@@ -37,7 +37,7 @@
   <aside id="appDrawer" class="app-drawer no-print" aria-label="મુખ્ય મેનુ" aria-hidden="true">
     <div class="drawer-head">
       <button id="drawerBrandHomeBtn" class="drawer-brand-row drawer-brand-button" type="button" aria-label="મુખ્ય પેજ">
-        <img class="drawer-logo" src="swati-icon-v2-192.png?v=ui10" alt="સ્વાતિ" />
+        <img class="drawer-logo" src="swati-icon-v2-192.png?v=ui12" alt="સ્વાતિ" />
         <span>
           <span class="drawer-brand">સ્વાતિ મિની ઓઇલ મિલ</span>
           <span class="drawer-subbrand">સુલતાનપુર</span>
@@ -76,18 +76,18 @@
       <button class="drawer-link" data-screen="history" type="button"><span class="drawer-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4a8 8 0 1 1-7.3 4.8H2l3.6-4L9 8.8H6.8A6 6 0 1 0 12 6v4l3 2-1.1 1.7L10 11V4h2Z"/></svg></span><span>હિસ્ટ્રી</span></button>
       <button class="drawer-link" data-screen="stock" type="button"><span class="drawer-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 9 4.5v11L12 22l-9-4.5v-11L12 2Zm0 2.2L6.1 7 12 9.8 17.9 7 12 4.2ZM5 8.6v7.6l6 3v-7.6l-6-3Zm8 10.6 6-3V8.6l-6 3v7.6Z"/></svg></span><span>સ્ટોક / Batch</span></button>
       
-      <button class="drawer-link" data-screen="expenses" type="button">
+      
+      <button class="drawer-link" data-screen="usage" type="button">
+        <span class="drawer-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h14v4H5V3Zm0 6h14v12H5V9Zm2 2v8h10v-8H7Zm2 2h6v2H9v-2Z"/></svg>
+        </span>
+        <span>વપરાશ</span>
+      </button>
+<button class="drawer-link" data-screen="expenses" type="button">
         <span class="drawer-icon">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4V5Zm2 2v10h12V7H6Zm2 2h8v2H8V9Zm0 4h5v2H8v-2Z"/></svg>
         </span>
         <span>ખર્ચ</span>
-      </button>
-
-      <button class="drawer-link" data-screen="internal-transfer" type="button">
-        <span class="drawer-icon">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h11l-3-3 1.4-1.4L22 8l-5.6 5.4L15 12l3-3H7V7Zm10 10H6l3 3-1.4 1.4L2 16l5.6-5.4L9 12l-3 3h11v2Z"/></svg>
-        </span>
-        <span>આંતરિક ટ્રાન્સફર</span>
       </button>
       <button class="drawer-link" data-screen="finance" type="button">
         <span class="drawer-icon">
@@ -318,7 +318,9 @@
           <div class="item-box">
             <div class="row-between"><h3>તેલ વેચાણ</h3><label class="switch-line"><input id="oilSaleEnabled" type="checkbox" /> ઉમેરવું</label></div>
             <div id="oilSaleFields" class="grid three disabled-zone">
-              <label>એકમ<select id="oilSaleUnit"><option value="tin">ડબો</option><option value="kg">કિલો</option><option value="litre">લિટર</option></select></label>
+              <label>એકમ<select id="oilSaleUnit"><option value="tin">ડબો</option><option value="kg">કિલો</option>
+                <option value="ton">ટન (TON)</option>
+                <option value="mann">મણ</option><option value="litre">લિટર</option></select></label>
               <label>જથ્થો<input id="oilSaleQty" type="number" min="0" step="0.01" value="0" /></label>
               <label>ભાવ ₹ / એકમ<input id="oilSaleRate" type="number" min="0" step="0.01" value="0" /></label>
             </div>
@@ -414,7 +416,7 @@
     
     <section class="screen" id="screen-production">
       <div class="module-head">
-        <div><h2>કંપની પ્રોડક્શન</h2><p>કંપનીના પોતાના કાચા માલમાંથી પ્રોડક્શન બેચ બનાવો.</p></div>
+        <div><p>કંપનીના પોતાના કાચા માલમાંથી પ્રોડક્શન બેચ બનાવો.</p></div>
       </div>
 
       <div class="production-grid">
@@ -442,7 +444,7 @@
           <div class="row-between"><h2>નવો પ્રોડક્શન બેચ</h2><span class="module-badge maroon">Production</span></div>
           <div class="grid two">
             <label>તારીખ<input id="productionDate" type="date" /></label>
-            <label>Batch No.<input id="productionBatchNo" readonly /></label>
+            <label>Oil + Khali Batch No.<input id="productionBatchNo" readonly /></label>
             <label>મગફળી વપરાઈ (કિલો)<input id="productionInputKg" type="number" min="0.01" step="0.01" /></label>
             <label>તેલ બન્યું (કિલો)<input id="productionOilKg" type="number" min="0" step="0.01" /></label>
             <label>ખોળ બન્યો (કિલો)<input id="productionKhaliKg" type="number" min="0" step="0.01" /></label>
@@ -450,6 +452,7 @@
             <label>15 કિલો ટીન ભર્યા<input id="productionTinCount" type="number" min="0" step="1" value="0" /></label>
             <label>Operator<select id="productionOperator"></select></label>
           </div>
+          <div class="batch-scope-note">એક Production Run = એક Batch = Oil + Khali</div>
           <label>નોંધ<input id="productionNote" placeholder="Optional" /></label>
           <div class="production-summary">
             <div><span>Oil Yield</span><strong id="productionOilYield">0%</strong></div>
@@ -475,7 +478,7 @@
 
     <section class="screen" id="screen-company-stock">
       <div class="module-head">
-        <div><h2>કંપની સ્ટોક</h2><p>કાચા માલ અને કંપનીના તૈયાર માલનો અલગ સ્ટોક.</p></div>
+        <div><p>કાચા માલ અને કંપનીના તૈયાર માલનો અલગ સ્ટોક.</p></div>
       </div>
 
       <div class="company-stock-grid">
@@ -498,7 +501,7 @@
 
     <section class="screen" id="screen-company-sales">
       <div class="module-head">
-        <div><h2>કંપની વેચાણ</h2><p>કંપનીના પોતાના તૈયાર તેલનું વેચાણ.</p></div>
+        <div><p>કંપનીના પોતાના તૈયાર તેલનું વેચાણ.</p></div>
       </div>
 
       <form id="companySaleForm" class="card section-card">
@@ -695,12 +698,18 @@
                 <option value="tin">ટીન</option>
                 <option value="bag">બેગ / કોથળો</option>
                 <option value="piece">નંગ</option>
-                <option value="lot">લોટ</option>
+                
               </select>
             </label>
 
             <label>ભાવ ₹ / Unit<input id="purchaseRate" type="number" min="0" step="0.01" /></label>
             <label>ચૂકવેલ ₹<input id="purchasePaid" type="number" min="0" step="0.01" value="0" /></label>
+            <label>Payment
+              <select id="purchasePaymentMode">
+                <option value="cash">રોકડ</option>
+                <option value="bank">બેંક / UPI</option>
+              </select>
+            </label>
           </div>
 
           <div class="purchase-extra-costs">
@@ -724,6 +733,7 @@
             <div><span>Extra ખર્ચ</span><strong id="purchaseExtraTotal">₹0</strong></div>
             <div><span>Landed Cost</span><strong id="purchaseLandedTotal">₹0</strong></div>
             <div><span>Supplier બાકી</span><strong id="purchaseOutstanding">₹0</strong></div>
+            <div><span>Advance / જમા</span><strong id="purchaseAdvance">₹0</strong></div>
           </div>
 
           <div class="sticky-actions">
@@ -731,7 +741,21 @@
           </div>
         </form>
 
-        <div class="card section-card">
+        
+        <div id="purchasePartyLedger" class="card section-card" hidden>
+          <div class="row-between">
+            <div><h2>Party Ledger</h2><small id="purchasePartyLedgerName"></small></div>
+            <span class="module-badge blue">Running</span>
+          </div>
+          <div class="party-ledger-grid">
+            <div><span>કુલ ખરીદી</span><strong id="partyPurchaseTotal">₹0</strong></div>
+            <div><span>કુલ પેમેન્ટ</span><strong id="partyPaymentTotal">₹0</strong></div>
+            <div><span>બાકી</span><strong id="partyPayable">₹0</strong></div>
+            <div><span>Advance / જમા</span><strong id="partyAdvance">₹0</strong></div>
+          </div>
+        </div>
+
+<div class="card section-card">
           <div class="row-between">
             <h2>તાજેતરની ખરીદી</h2>
             <strong id="purchaseRecentCount">0</strong>
@@ -876,6 +900,52 @@
 
     
     
+    
+    <section class="screen" id="screen-usage">
+      <div class="module-head compact-page-head">
+        <div><p>Company-wide stockમાંથી કયા division/unitમાં માલ વપરાયો તે નોંધો.</p></div>
+      </div>
+
+      <form id="usageForm" class="card section-card">
+        <div class="grid two">
+          <label>તારીખ<input id="usageDate" type="date" /></label>
+          <label>આઇટમ<input id="usageItemName" placeholder="ઉદાહરણ: ખાલી 15 કિલો ટીન" /></label>
+          <label>Item ID<input id="usageItemId" placeholder="ઉદાહરણ: oil.packaging.empty_tin_15kg" /></label>
+          <label>જથ્થો<input id="usageQty" type="number" min="0" step="0.01" /></label>
+          <label>Unit
+            <select id="usageUnit">
+              <option value="kg">કિલો</option>
+              <option value="ton">ટન (TON)</option>
+              <option value="mann">મણ</option>
+              <option value="tin">ટીન</option>
+              <option value="bag">બેગ</option>
+              <option value="piece">નંગ</option>
+            </select>
+          </label>
+          <label>વિભાગ
+            <select id="usageDivision">
+              <option value="oil_mill">તેલ મીલ</option>
+              <option value="grain_pulse">અનાજ / કઠોળ</option>
+            </select>
+          </label>
+          <label>યુનિટ
+            <select id="usageBusinessUnit">
+              <option value="job_work">મજૂરી કામ</option>
+              <option value="production">ઉત્પાદન / પ્રોસેસિંગ</option>
+            </select>
+          </label>
+        </div>
+        <label>નોંધ<input id="usageNote" placeholder="Optional" /></label>
+        <div id="usageStockInfo" class="notice" hidden></div>
+        <div class="sticky-actions"><button class="primary" type="submit">વપરાશ સાચવો</button></div>
+      </form>
+
+      <div class="card section-card">
+        <div class="row-between"><h2>તાજેતરનો વપરાશ</h2><strong id="usageCount">0</strong></div>
+        <div id="usageRecentList" class="mini-list"></div>
+      </div>
+    </section>
+
     <section class="screen" id="screen-expenses">
       <div class="module-head">
         <div>
@@ -1014,112 +1084,76 @@
         <div id="expenseHistoryList" class="purchase-history-list"></div>
       </div>
     </section>
-
     
-    <section class="screen" id="screen-internal-transfer">
-      <div class="module-head">
-        <div>
-          <h2>આંતરિક સ્ટોક ટ્રાન્સફર</h2>
-          <p>કંપનીની અંદર એક unitમાંથી બીજા unitમાં માલ ખસેડો.</p>
-        </div>
-      </div>
-
-      <form id="internalTransferForm" class="card section-card">
-        <div class="grid two">
-          <label>તારીખ<input id="transferDate" type="date" /></label>
-          <label>આઇટમ<input id="transferItemName" placeholder="ઉદાહરણ: ખાલી 15 કિલો ટીન" /></label>
-
-          <label>Item ID<input id="transferItemId" placeholder="ઉદાહરણ: oil.packaging.empty_tin_15kg" /></label>
-          <label>જથ્થો<input id="transferQty" type="number" min="0" step="0.01" /></label>
-
-          <label>Unit
-            <select id="transferQtyUnit">
-              <option value="kg">કિલો</option>
-              <option value="tin">ટીન</option>
-              <option value="bag">બેગ</option>
-              <option value="piece">નંગ</option>
-            </select>
-          </label>
-
-          <label>From Division
-            <select id="transferFromDivision">
-              <option value="oil_mill">તેલ મીલ</option>
-              <option value="grain_pulse">અનાજ / કઠોળ</option>
-            </select>
-          </label>
-
-          <label>From Unit
-            <select id="transferFromUnit">
-              <option value="production">ઉત્પાદન / પ્રોસેસિંગ</option>
-              <option value="job_work">મજૂરી કામ</option>
-            </select>
-          </label>
-
-          <label>To Division
-            <select id="transferToDivision">
-              <option value="oil_mill">તેલ મીલ</option>
-              <option value="grain_pulse">અનાજ / કઠોળ</option>
-            </select>
-          </label>
-
-          <label>To Unit
-            <select id="transferToUnit">
-              <option value="job_work">મજૂરી કામ</option>
-              <option value="production">ઉત્પાદન / પ્રોસેસિંગ</option>
-            </select>
-          </label>
-        </div>
-
-        <label>નોંધ<input id="transferNote" placeholder="Optional" /></label>
-
-        <div id="transferStockInfo" class="notice" hidden></div>
-
-        <div class="sticky-actions">
-          <button class="primary" type="submit">ટ્રાન્સફર સાચવો</button>
-        </div>
-      </form>
-
-      <div class="card section-card">
-        <div class="row-between"><h2>તાજેતરના ટ્રાન્સફર</h2><strong id="transferCount">0</strong></div>
-        <div id="transferRecentList" class="mini-list"></div>
-      </div>
-    </section>
-
     <section class="screen" id="screen-finance">
-      <div class="module-head">
-        <div>
-          <h2>ફાઇનાન્સ</h2>
-          <p>Owner માટે company-level financial position.</p>
-        </div>
+      <div class="module-head compact-page-head">
+        <div><p>Company-wide money position, liquidity, stock value અને borrowing visibility.</p></div>
       </div>
 
       <div class="finance-owner-grid">
-        <div class="finance-owner-card"><span>Cash Balance</span><strong id="financeCashBalance">₹0</strong></div>
+        <div class="finance-owner-card"><span>Cash in Hand</span><strong id="financeCashBalance">₹0</strong></div>
         <div class="finance-owner-card"><span>Bank Balance</span><strong id="financeBankBalance">₹0</strong></div>
+        <div class="finance-owner-card highlight"><span>Liquid Money</span><strong id="financeLiquid">₹0</strong></div>
         <div class="finance-owner-card"><span>લેવાના</span><strong id="financeReceivable">₹0</strong></div>
         <div class="finance-owner-card"><span>આપવાના</span><strong id="financePayable">₹0</strong></div>
-        <div class="finance-owner-card"><span>કુલ Sales</span><strong id="financeSales">₹0</strong></div>
-        <div class="finance-owner-card"><span>કુલ Purchase</span><strong id="financePurchases">₹0</strong></div>
+        <div class="finance-owner-card"><span>Stock Value</span><strong id="financeStockValue">₹0</strong><small>Current estimation</small></div>
+        <div class="finance-owner-card"><span>કુલ ખરીદી</span><strong id="financePurchases">₹0</strong></div>
         <div class="finance-owner-card"><span>કુલ ખર્ચ</span><strong id="financeExpenses">₹0</strong></div>
-        <div class="finance-owner-card highlight"><span>Net Operating Flow</span><strong id="financeNetFlow">₹0</strong></div>
+      </div>
+
+      <div class="finance-two-col">
+        <form id="financeOpeningForm" class="card section-card">
+          <div class="row-between"><h2>Opening Finance</h2><span class="module-badge blue">Owner Setup</span></div>
+          <label>Opening Cash in Hand ₹<input id="financeOpeningCash" type="number" min="0" step="0.01" /></label>
+          <div class="sticky-actions"><button class="primary" type="submit">Opening Cash સાચવો</button></div>
+        </form>
+
+        <form id="bankAccountForm" class="card section-card">
+          <div class="row-between"><h2>Bank Account</h2><span class="module-badge blue">Add</span></div>
+          <div class="grid two">
+            <label>Bank<input id="bankName" placeholder="Bank name" /></label>
+            <label>Account Name<input id="bankAccountName" placeholder="Optional" /></label>
+            <label>Account Type
+              <select id="bankAccountType">
+                <option value="current">Current</option>
+                <option value="savings">Savings</option>
+                <option value="cc">Cash Credit</option>
+                <option value="od">OD</option>
+                <option value="loan">Loan</option>
+              </select>
+            </label>
+            <label>Opening Balance ₹<input id="bankOpeningBalance" type="number" step="0.01" /></label>
+          </div>
+          <div class="sticky-actions"><button class="primary" type="submit">Bank Account ઉમેરો</button></div>
+        </form>
+      </div>
+
+      <div class="card section-card">
+        <div class="row-between"><h2>Bank Accounts</h2><strong id="financeBankCount">0</strong></div>
+        <div id="financeBankList" class="finance-stock-list"></div>
+      </div>
+
+      <form id="loanFacilityForm" class="card section-card">
+        <div class="row-between"><h2>Loan / Credit Facility</h2><span class="module-badge blue">Optional</span></div>
+        <div class="grid three">
+          <label>Facility<input id="loanFacilityName" placeholder="CC / OD / Loan" /></label>
+          <label>Sanctioned Limit ₹<input id="loanSanctioned" type="number" min="0" step="0.01" /></label>
+          <label>Used / Outstanding ₹<input id="loanUsed" type="number" min="0" step="0.01" /></label>
+        </div>
+        <div class="sticky-actions"><button class="primary" type="submit">Facility ઉમેરો</button></div>
+      </form>
+
+      <div class="card section-card">
+        <div class="row-between"><h2>Borrowing Capacity</h2><strong id="financeBorrowingAvailable">₹0</strong></div>
+        <div id="financeLoanList" class="finance-stock-list"></div>
       </div>
 
       <div class="card section-card">
         <div class="row-between"><h2>Stock Snapshot</h2><strong id="financeStockItemCount">0 Items</strong></div>
         <div id="financeStockList" class="finance-stock-list"></div>
       </div>
-
-      <div class="card section-card">
-        <h2>Money Position</h2>
-        <div class="finance-position-list">
-          <div><span>Liquid Money</span><strong id="financeLiquid">₹0</strong></div>
-          <div><span>Receivable</span><strong id="financeReceivable2">₹0</strong></div>
-          <div><span>Payable</span><strong id="financePayable2">₹0</strong></div>
-        </div>
-      </div>
     </section>
-
-    <section class="screen" id="screen-reports">
+<section class="screen" id="screen-reports">
       <div class="report-mobile-head no-print">
         <div>
           
@@ -1215,6 +1249,19 @@
     </section>
 
     <section class="screen" id="screen-settings">
+      <div class="card section-card">
+        <div class="row-between">
+          <div><h2 data-i18n="languageTitle">ઇન્ટરફેસ ભાષા</h2><small data-i18n="languageHelp">ફક્ત app interface બદલાશે; business data/PDF Gujaratiમાં જ રહેશે.</small></div>
+          <span class="module-badge blue">ગુજરાતી / English</span>
+        </div>
+        <label data-i18n="languageLabel">ભાષા
+          <select id="interfaceLanguage">
+            <option value="gu">ગુજરાતી</option>
+            <option value="en">English</option>
+          </select>
+        </label>
+      </div>
+
       <div class="card section-card core-architecture-card no-print">
         <div class="row-between">
           <div>
@@ -1368,13 +1415,13 @@
       <div id="deviceOperatorButtons" class="device-operator-buttons"></div>
     </div>
   </div>
-  <script src="sync-config.js?v=ui-alpha10"></script>
-  <script src="offline-sync.js?v=ui-alpha10"></script>
-  <script src="file-tools.js?v=ui-alpha10"></script>
-  <script src="business-core.js?v=ui-alpha10"></script>
-  <script src="business-core-bridge.js?v=ui-alpha10"></script>
-  <script src="app.js?v=ui-alpha10"></script>
-  <script src="pwa.js?v=ui-alpha10"></script>
+  <script src="sync-config.js?v=ui-alpha12"></script>
+  <script src="offline-sync.js?v=ui-alpha12"></script>
+  <script src="file-tools.js?v=ui-alpha12"></script>
+  <script src="business-core.js?v=ui-alpha12"></script>
+  <script src="business-core-bridge.js?v=ui-alpha12"></script>
+  <script src="app.js?v=ui-alpha12"></script>
+  <script src="pwa.js?v=ui-alpha12"></script>
 
 </body>
 </html>
