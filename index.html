@@ -7,13 +7,13 @@
   <meta name="application-name" content="Swati Mini Oil Mill" />
   <meta name="mobile-web-app-capable" content="yes" />
   <title>Swati Mini Oil Mill</title>
-  <link rel="manifest" href="manifest.webmanifest?v=alpha40" />
+  <link rel="manifest" href="manifest.webmanifest?v=alpha41" />
   <link rel="apple-touch-icon" href="swati-icon-v2-192.png?v=alpha33-brand-v2" />
-  <link rel="icon" type="image/png" href="swati-icon-v2-192.png?v=alpha40" />
+  <link rel="icon" type="image/png" href="swati-icon-v2-192.png?v=alpha41" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Swati Mini Oil Mill" />
-  <link rel="stylesheet" href="styles.css?v=ui-alpha40" />
+  <link rel="stylesheet" href="styles.css?v=ui-alpha41-v3" />
 </head>
 <body>
   
@@ -115,7 +115,7 @@
 
       <button class="drawer-link" data-screen="costing" type="button">
         <span class="drawer-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v16H4V4Zm3 3v2h10V7H7Zm0 5v5h4v-5H7Zm7 0v2h3v-2h-3Zm0 3v2h3v-2h-3Z"/></svg></span>
-        <span data-i18n="costing">Costing / Valuation</span>
+        <span>ભાવ અને નફો</span>
       </button>
 <button class="drawer-link" data-screen="finance" type="button">
         <span class="drawer-icon">
@@ -208,7 +208,7 @@
             </div>
           </div>
 
-          <div class="card section-card owner-home-card">
+          <div class="card section-card owner-home-card alpha41-home-secondary">
             <div class="row-between">
               <div>
                 <h2 data-i18n="productionSnapshot">Production Snapshot</h2>
@@ -245,21 +245,6 @@
           <div id="ownerAttentionList" class="owner-attention-list"></div>
         </div>
 
-        <div class="card section-card owner-home-card">
-          <div class="row-between">
-            <div>
-              <h2 data-i18n="quickOwnerLinks">Quick Owner Links</h2>
-            </div>
-          </div>
-          <div class="owner-link-grid no-print">
-            <button type="button" data-go="finance">Finance</button>
-            <button type="button" data-go="costing">Costing</button>
-            <button type="button" data-go="stock-management">Stock</button>
-            <button type="button" data-go="reports">Reports</button>
-            <button type="button" data-go="invoices">Invoices</button>
-            <button type="button" data-go="staff">Staff</button>
-          </div>
-        </div>
       </div>
 
       <div class="home-welcome no-print">
@@ -268,7 +253,7 @@
         <span id="homeTodayDate" class="home-date"></span>
       </div>
 
-      <div class="home-action-grid no-print">
+      <div class="home-action-grid no-print alpha41-home-repeated" hidden>
         <button class="home-action-card job" data-go="new-oil" type="button">
           <span class="home-action-icon">
             <svg viewBox="0 0 24 24"><path d="M7 3h10v4h4v14H3V7h4V3Zm2 4h6V5H9v2Zm-4 2v10h14V9H5Zm3 3h8v2H8v-2Zm0 4h5v2H8v-2Z"/></svg>
@@ -355,7 +340,7 @@
 
         <button class="home-action-card" data-go="costing" type="button">
           <span class="home-action-icon"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4V4Zm3 3v2h10V7H7Zm0 5v5h4v-5H7Zm7 0v2h3v-2h-3Zm0 3v2h3v-2h-3Z"/></svg></span>
-          <span><strong data-i18n="costing">Costing / Valuation</strong></span>
+          <span><strong>ભાવ અને નફો</strong></span>
           <span class="home-action-arrow">›</span>
         </button>
 
@@ -372,13 +357,13 @@
         </button>
 </div>
 
-      <div class="home-section-title no-print">
+      <div class="home-section-title no-print alpha41-home-repeated" hidden>
         <div>
           <h3>આજનો સારાંશ</h3>
         </div>
       </div>
 
-      <div class="today-business-grid no-print">
+      <div class="today-business-grid no-print alpha41-home-repeated" hidden>
         <button class="today-business-card" data-go="new-oil" type="button">
           <span class="today-card-label">આજનું મજૂરી કામ</span>
           <strong id="todayJobWorkAmount">₹0</strong>
@@ -404,7 +389,7 @@
         </button>
       </div>
 
-      <div class="home-mini-summary no-print">
+      <div class="home-mini-summary no-print alpha41-home-repeated" hidden>
         <div><span>આજનું બાકી</span><strong id="todayOutstanding">₹0</strong></div>
         <div><span>કુલ ગ્રાહકો</span><strong id="allCustomers">0</strong></div>
         <div><span>કુલ ટ્રાન્ઝેક્શન</span><strong id="allTxCount">0</strong></div>
@@ -1261,9 +1246,11 @@
           <label>ગ્રાહક<input id="retailCustomer" placeholder="ગ્રાહકનું નામ" /></label>
           <label>ગામ<input id="retailVillage" placeholder="ગામ" /></label>
           <label>મોબાઇલ<input id="retailMobile" inputmode="tel" /></label>
-          <label>આઇટમ<input id="retailItem" placeholder="Groundnut Oil / Moong" /></label>
+          <label id="retailOilItemField">આઇટમ<input id="retailItem" value="મગફળીનું તેલ" readonly /></label>
+          <label id="retailGrainItemField" hidden>આઇટમ<select id="retailGrainItem"><option value="">પસંદ કરો</option><option>મગ</option><option>ચણા</option><option>તુવેર</option><option>અડદ</option><option>મસૂર</option><option>વાલ</option><option>મઠ</option><option>વટાણા</option><option>ઘઉં</option><option>ચોખા</option><option value="other">અન્ય</option></select></label>
+          <label id="retailOtherItemField" hidden>અન્ય આઇટમ<input id="retailOtherItem" placeholder="આઇટમનું નામ" /></label>
           <label>જથ્થો<input id="retailQty" type="number" min="0" step="0.01" /></label>
-          <label>Unit<select id="retailUnit"><option value="kg">કિલો</option><option value="tin">ટીન</option><option value="bag">બેગ</option><option value="piece">નંગ</option></select></label>
+          <label>Unit<select id="retailUnit"><option value="kg">કિલો</option><option value="litre">લિટર</option><option value="tin">ટીન</option><option value="bag">બેગ</option><option value="piece">નંગ</option></select></label>
           <label>ભાવ ₹ / Unit<input id="retailRate" type="number" min="0" step="0.01" /></label>
           <label>ચૂકવેલ ₹<input id="retailPaid" type="number" min="0" step="0.01" value="0" /></label>
           <label>ચુકવણી રીત<select id="retailPaymentMode"><option value="cash">રોકડ</option><option value="bank">બેંક / UPI</option></select></label>
@@ -1574,42 +1561,38 @@
 
 
     <section class="screen" id="screen-costing">
-      <div class="stock-summary-grid">
-        <div class="card stock-kpi">
-          <span data-i18n="totalStockValue">કુલ Stock Value</span>
-          <strong id="costingTotalStockValue">₹0</strong>
-        </div>
-        <div class="card stock-kpi">
-          <span data-i18n="totalPurchaseValue">કુલ Purchase Value</span>
-          <strong id="costingTotalPurchaseValue">₹0</strong>
-        </div>
-        <div class="card stock-kpi">
-          <span data-i18n="totalProcessingCost">કુલ Processing Cost</span>
-          <strong id="costingTotalProcessingCost">₹0</strong>
-        </div>
+      <div class="profit-hero card">
+        <div><small>બેચનો નિર્ણય</small><h2>ભાવ અને નફો</h2></div>
+        <span>Processing Unit</span>
       </div>
 
-      <div class="card section-card">
-        <div class="row-between">
-          <div>
-            <h2 data-i18n="inventoryValuation">Inventory Valuation</h2>
-            <small data-i18n="valuationNote">આ operational estimate છે; final accounting valuation rules પછી refine કરી શકાશે.</small>
-          </div>
-          <input id="costingSearch" class="compact-search" placeholder="શોધો" />
+      <form id="profitPlannerForm" class="card section-card profit-planner">
+        <div class="row-between"><h2>મગફળી તેલ બેચ</h2><button id="profitUseLatestBtn" class="ghost" type="button">છેલ્લો બેચ</button></div>
+        <div class="grid two">
+          <label>મગફળી Input (કિલો)<input id="profitRawKg" type="number" min="0" step="0.01" /></label>
+          <label>મગફળીનો કુલ ખર્ચ ₹<input id="profitRawCost" type="number" min="0" step="0.01" /></label>
+          <label>તેલ Output (કિલો)<input id="profitOilKg" type="number" min="0" step="0.01" /></label>
+          <label>Processing ખર્ચ ₹<input id="profitProcessCost" type="number" min="0" step="0.01" /></label>
+          <label>ખોળ Output (કિલો)<input id="profitKholKg" type="number" min="0" step="0.01" /></label>
+          <label>ખોળ વેચાણ ભાવ ₹/કિલો<input id="profitKholRate" type="number" min="0" step="0.01" /></label>
+          <label>ઇચ્છિત નફો %<input id="profitMargin" type="number" min="0" step="0.1" value="10" /></label>
+          <label>હાલનો તેલ ભાવ ₹/કિલો<input id="profitSellingRate" type="number" min="0" step="0.01" /></label>
         </div>
+      </form>
 
+      <div class="profit-result-grid">
+        <div class="card profit-result"><span>ખોળની આવક</span><strong id="profitKholCredit">₹0</strong></div>
+        <div class="card profit-result"><span>તેલનો Cost / kg</span><strong id="profitOilCostKg">₹0</strong></div>
+        <div class="card profit-result recommended"><span>ભલામણ ભાવ / kg</span><strong id="profitRecommendedRate">₹0</strong></div>
+        <div class="card profit-result" id="profitPositionCard"><span>આ ભાવ પર બેચ નફો</span><strong id="profitExpectedProfit">₹0</strong></div>
+      </div>
+
+      <details class="card section-card costing-breakdown">
+        <summary>Stock Cost Breakdown</summary>
+        <div class="row-between costing-search-row"><strong id="costingMoneyTied">₹0</strong><input id="costingSearch" class="compact-search" placeholder="આઇટમ શોધો" /></div>
+        <div class="alpha41-hidden-metrics" hidden><strong id="costingTotalStockValue">₹0</strong><strong id="costingTotalPurchaseValue">₹0</strong><strong id="costingTotalProcessingCost">₹0</strong></div>
         <div id="costingList" class="costing-list"></div>
-      </div>
-
-      <div class="card section-card">
-        <div class="row-between">
-          <div>
-            <h2 data-i18n="moneyTiedInStock">Stockમાં અટવાયેલું Money</h2>
-            <small data-i18n="moneyTiedHelp">Available stock × estimated unit cost.</small>
-          </div>
-          <strong id="costingMoneyTied">₹0</strong>
-        </div>
-      </div>
+      </details>
     </section>
 
 
@@ -1964,6 +1947,31 @@
       </div>
 
       <div id="reportHomeView">
+        <div class="analysis-hero">
+          <div><small>Business Overview</small><h2>આંકડામાં ધંધો</h2></div>
+          <strong id="analysisNetPosition">₹0</strong>
+        </div>
+        <div class="analysis-grid">
+          <div class="card analysis-card analysis-bars-card">
+            <div class="row-between"><strong>આવક અને ખર્ચ</strong><small>કુલ</small></div>
+            <div class="analysis-bars">
+              <div><span id="analysisSalesBar" style="height:8%"></span><small>વેચાણ</small><strong id="analysisSalesValue">₹0</strong></div>
+              <div><span id="analysisJobBar" style="height:8%"></span><small>મજૂરી</small><strong id="analysisJobValue">₹0</strong></div>
+              <div><span id="analysisExpenseBar" style="height:8%"></span><small>ખર્ચ</small><strong id="analysisExpenseValue">₹0</strong></div>
+            </div>
+          </div>
+          <div class="card analysis-card">
+            <div class="row-between"><strong>Processing Unit Stock</strong><small>કિલો</small></div>
+            <div class="stock-visual-row"><span>મગફળી</span><div><i id="analysisRawStockBar"></i></div><strong id="analysisRawStock">0</strong></div>
+            <div class="stock-visual-row"><span>તેલ</span><div><i id="analysisOilStockBar"></i></div><strong id="analysisOilStock">0</strong></div>
+            <div class="stock-visual-row"><span>ખોળ</span><div><i id="analysisKholStockBar"></i></div><strong id="analysisKholStock">0</strong></div>
+          </div>
+          <div class="card analysis-card analysis-balance-card">
+            <div class="analysis-donut" id="analysisDonut"><span id="analysisCollectionPct">0%</span></div>
+            <div><small>વસૂલાત</small><strong id="analysisReceivable">₹0 બાકી</strong></div>
+          </div>
+        </div>
+        <h3 class="analysis-report-title">વિગતવાર રિપોર્ટ</h3>
         <div class="report-card-grid">
           <button class="report-card report-sales" type="button" data-report-type="sales">
             <strong data-i18n="salesReport">Sales Report</strong>
@@ -2140,10 +2148,24 @@
   <nav class="mobile-bottom-nav no-print" aria-label="ઝડપી મેનુ">
     <button class="mobile-nav-item active" type="button" data-mobile-screen="home"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3V10.5Z"/></svg><span>મુખ્ય</span></button>
     <button class="mobile-nav-item" type="button" data-mobile-screen="customers"><svg viewBox="0 0 24 24"><path d="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm7-1a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM2 21c0-4.4 2.7-7 7-7s7 2.6 7 7H2Zm14-7c3.8.2 6 2.6 6 6v1h-4c0-2.8-.7-5.1-2-7Z"/></svg><span>ગ્રાહકો</span></button>
-    <button class="mobile-nav-item mobile-nav-create" type="button" data-mobile-screen="new-oil"><span class="mobile-nav-plus">＋</span><span>નવી એન્ટ્રી</span></button>
+    <button class="mobile-nav-item mobile-nav-create" type="button" data-mobile-screen="retail-sales"><span class="mobile-nav-plus">₹</span><span>રિટેલ વેચાણ</span></button>
     <button class="mobile-nav-item" type="button" data-mobile-screen="reports"><svg viewBox="0 0 24 24"><path d="M4 3h16v18H4V3Zm3 13h2V9H7v7Zm4 0h2V6h-2v10Zm4 0h2v-4h-2v4Z"/></svg><span>રિપોર્ટ્સ</span></button>
-    <button id="mobileMoreBtn" class="mobile-nav-item" type="button"><svg viewBox="0 0 24 24"><path d="M5 10a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/></svg><span>વધુ</span></button>
+    <button id="mobileToolsBtn" class="mobile-nav-item" type="button"><svg viewBox="0 0 24 24"><path d="M9.6 3h4.8l.7 2.3 2.1 1.2 2.3-.5 2.4 4.1-1.6 1.8v2.4l1.6 1.8-2.4 4.1-2.3-.5-2.1 1.2-.7 2.3H9.6l-.7-2.3-2.1-1.2-2.3.5L2.1 16l1.6-1.8v-2.4L2.1 10l2.4-4.1 2.3.5 2.1-1.2L9.6 3ZM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"/></svg><span>ટૂલ્સ</span></button>
   </nav>
+
+  <div id="mobileToolsModal" class="modal no-print" hidden>
+    <div class="modal-card mobile-tools-card">
+      <div class="row-between"><h2>Business Tools</h2><button id="mobileToolsClose" class="ghost" type="button">✕</button></div>
+      <div class="mobile-tools-grid">
+        <button type="button" data-go="costing"><span>↗</span><strong>ભાવ અને નફો</strong></button>
+        <button type="button" data-go="finance"><span>₹</span><strong>ફાઇનાન્સ</strong></button>
+        <button type="button" data-go="stock-management"><span>▣</span><strong>સ્ટોક મેનેજમેન્ટ</strong></button>
+        <button type="button" data-go="staff"><span>♙</span><strong>Staff / Labour</strong></button>
+        <button type="button" data-go="invoices"><span>PDF</span><strong>Invoices</strong></button>
+        <button type="button" data-go="settings"><span>⚙</span><strong>સેટિંગ્સ</strong></button>
+      </div>
+    </div>
+  </div>
 
   <div id="paymentModal" class="modal no-print" hidden>
     <div class="modal-card">
@@ -2198,14 +2220,14 @@
       <div id="deviceOperatorButtons" class="device-operator-buttons"></div>
     </div>
   </div>
-  <script src="sync-config.js?v=ui-alpha40"></script>
-  <script src="offline-sync.js?v=ui-alpha40"></script>
-  <script src="file-tools.js?v=ui-alpha40"></script>
-  <script src="business-core.js?v=ui-alpha40"></script>
-  <script src="business-core-bridge.js?v=ui-alpha40"></script>
-  <script src="ui-i18n.js?v=ui-alpha40"></script>
-  <script src="app.js?v=ui-alpha40"></script>
-  <script src="pwa.js?v=ui-alpha40"></script>
+  <script src="sync-config.js?v=ui-alpha41"></script>
+  <script src="offline-sync.js?v=ui-alpha41"></script>
+  <script src="file-tools.js?v=ui-alpha41"></script>
+  <script src="business-core.js?v=ui-alpha41"></script>
+  <script src="business-core-bridge.js?v=ui-alpha41"></script>
+  <script src="ui-i18n.js?v=ui-alpha41"></script>
+  <script src="app.js?v=ui-alpha41-v6"></script>
+  <script src="pwa.js?v=ui-alpha41"></script>
 
 </body>
 </html>

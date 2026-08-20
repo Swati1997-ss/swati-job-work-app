@@ -123,12 +123,40 @@
     const oilSoldKg=round2(sales.filter(x=>(x.product||'oil')==='oil').reduce((s,x)=>s+Number(x.oilKg||0),0));
     const khaliSoldKg=round2(sales.filter(x=>x.product==='khol').reduce((s,x)=>s+Number(x.kg||0),0));
     const tinsSold=sales.reduce((s,x)=>s+Number(x.tinCount||0),0);
-    return {
-      rawPurchased,rawUsed,rawAvailable:round2(rawPurchased-rawUsed),
-      oilProduced,oilSoldKg,oilAvailableKg:round2(oilProduced-oilSoldKg),
-      tinsFilled,tinsSold,tinsAvailable:tinsFilled-tinsSold,
-      khaliProduced,khaliSoldKg,khaliAvailable:round2(khaliProduced-khaliSoldKg)
+    const coreBalance=id=>{
+      if(!window.SwatiCore?.stockSnapshot) return null;
+      const row=window.SwatiCore.stockSnapshot().find(x=>x.itemId===id);
+      return row?Number(row.balance||0):null;
     };
+    const rawCore=coreBalance('oil.raw.groundnut'),oilCore=coreBalance('oil.finished.oil'),tinCore=coreBalance('oil.packaging.filled_tin_15kg'),khaliCore=coreBalance('oil.byproduct.khali');
+    return {
+      rawPurchased,rawUsed,rawAvailable:rawCore===null?round2(rawPurchased-rawUsed):round2(rawCore),
+      oilProduced,oilSoldKg,oilAvailableKg:oilCore===null?round2(oilProduced-oilSoldKg):round2(oilCore),
+      tinsFilled,tinsSold,tinsAvailable:tinCore===null?tinsFilled-tinsSold:round2(tinCore),
+      khaliProduced,khaliSoldKg,khaliAvailable:khaliCore===null?round2(khaliProduced-khaliSoldKg):round2(khaliCore)
+    };
+  }
+
+  function oilQtyInKg(qty,unit){
+    const q=Number(qty||0);
+    if(unit==='tin') return round2(q*Number(settings.tinKg||15));
+    if(unit==='ton') return round2(q*1000);
+    if(unit==='mann') return round2(q*20);
+    if(unit==='litre') return round2(q*.92);
+    return round2(q);
+  }
+
+  function linkedJobWorkOilIssue(id){
+    return (window.SwatiCore?.list('sales')||[]).find(s=>s.context?.sourceModule==='jobwork_oil_stock_alpha41'&&s.context?.notes===id);
+  }
+
+  function syncJobWorkOilStock(r){
+    if(!window.SwatiCore) return;
+    const existing=linkedJobWorkOilIssue(r.id);
+    const kg=r.oilSale?.enabled?oilQtyInKg(r.oilSale.qty,r.oilSale.unit):0;
+    const payload={date:r.date,party:r.customer?.name||'',itemId:'oil.finished.oil',itemName:'મગફળીનું તેલ',qty:kg,unitName:'kg',rate:0,amount:0,received:0,paymentMode:'cash',context:{division:'oil_mill',unit:'production',activity:'jobwork_oil_stock_issue',sourceModule:'jobwork_oil_stock_alpha41',operator:r.updatedBy||r.createdBy||currentOperator(),notes:r.id}};
+    if(existing&&window.SwatiCore.updateSale) window.SwatiCore.updateSale(existing.id,payload);
+    else if(kg>0) window.SwatiCore.addSale(payload);
   }
 
   function nextProductionBatchNo(){
@@ -584,8 +612,13 @@
     const rows = getTx();
     const idx = rows.findIndex(x => x.id === r.id);
     const wasExisting = idx >= 0;
+    const requestedOilKg=r.oilSale?.enabled?oilQtyInKg(r.oilSale.qty,r.oilSale.unit):0;
+    const priorIssue=linkedJobWorkOilIssue(r.id);
+    const availableOil=Number(window.SwatiCore?.stockBalance?.('oil.finished.oil')||0)+Number(priorIssue?.baseQty||0);
+    if(requestedOilKg>availableOil+.001){toast(`Processing Unitમાં માત્ર ${round2(availableOil)} કિલો તેલ ઉપલબ્ધ છે`);return;}
     if (wasExisting) rows[idx] = r; else rows.push(r);
     setTx(rows);
+    syncJobWorkOilStock(r);
     addAudit(wasExisting?'TX_UPDATE':'TX_CREATE','transaction',r.id,`${r.billNo} • ${r.customer?.name||''} • તેલ મિલ`);
     lastSavedId = r.id;
     $('paidAmount').value = paymentTotal(r);
@@ -748,15 +781,15 @@
   }
 
   function ownerTodayPurchaseTotal(){
-    if(!window.SwatiCore?.getPurchases) return 0;
+    if(!window.SwatiCore?.list) return 0;
     const today=ownerTodayISO();
-    return round2(window.SwatiCore.getPurchases().filter(r=>r.date===today).reduce((s,r)=>s+Number(r.amount||0),0));
+    return round2((window.SwatiCore.list('purchases')||[]).filter(r=>r.date===today).reduce((s,r)=>s+Number(r.amount||0),0));
   }
 
   function ownerTodayExpenseTotal(){
-    if(!window.SwatiCore?.getExpenses) return 0;
+    if(!window.SwatiCore?.list) return 0;
     const today=ownerTodayISO();
-    return round2(window.SwatiCore.getExpenses().filter(r=>r.date===today).reduce((s,r)=>s+Number(r.amount||0),0));
+    return round2((window.SwatiCore.list('expenses')||[]).filter(r=>r.date===today).reduce((s,r)=>s+Number(r.amount||0),0));
   }
 
   function ownerTodayJobWorkTotal(){
@@ -1617,6 +1650,36 @@
           <div><span>Estimated Unit Cost</span><strong>${money(r.estimatedUnitCost||0)}</strong></div>
         </div>
       </div>`).join('')||'<div class="empty">Costing માટે હજી પૂરતો data નથી.</div>';
+    if(!$('profitRawKg')?.value && !$('profitOilKg')?.value) useLatestProfitBatch();
+    else profitPlannerCalc();
+  }
+
+  function profitPlannerCalc(){
+    const rawKg=Number($('profitRawKg')?.value||0),rawCost=Number($('profitRawCost')?.value||0),oilKg=Number($('profitOilKg')?.value||0);
+    const processCost=Number($('profitProcessCost')?.value||0),kholKg=Number($('profitKholKg')?.value||0),kholRate=Number($('profitKholRate')?.value||0);
+    const margin=Number($('profitMargin')?.value||0),sellingRate=Number($('profitSellingRate')?.value||0);
+    const kholCredit=round2(kholKg*kholRate),batchCost=round2(rawCost+processCost),netOilCost=round2(Math.max(0,batchCost-kholCredit));
+    const oilCostKg=oilKg>0?round2(netOilCost/oilKg):0,recommended=round2(oilCostKg*(1+margin/100));
+    const expected=round2((sellingRate*oilKg)+kholCredit-batchCost);
+    if($('profitKholCredit')) $('profitKholCredit').textContent=money(kholCredit);
+    if($('profitOilCostKg')) $('profitOilCostKg').textContent=money(oilCostKg);
+    if($('profitRecommendedRate')) $('profitRecommendedRate').textContent=money(recommended);
+    if($('profitExpectedProfit')) $('profitExpectedProfit').textContent=`${expected<0?'Loss ':'Profit '}${money(Math.abs(expected))}`;
+    $('profitPositionCard')?.classList.toggle('loss',expected<0);
+    return {rawKg,rawCost,oilKg,processCost,kholCredit,oilCostKg,recommended,expected};
+  }
+
+  function useLatestProfitBatch(){
+    const latest=getCompanyBatches().slice().sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))||String(b.createdAt||'').localeCompare(String(a.createdAt||'')))[0];
+    const purchases=(window.SwatiCore?.list('purchases')||[]).filter(p=>p.itemId==='oil.raw.groundnut');
+    const pq=purchases.reduce((s,p)=>s+Number(p.baseQty||p.qty||0),0),pv=purchases.reduce((s,p)=>s+Number(p.amount||0),0),avg=pq>0?pv/pq:0;
+    const expenses=(window.SwatiCore?.list('expenses')||[]).filter(e=>latest&&(e.context?.notes===latest.id)).reduce((s,e)=>s+Number(e.amount||0),0);
+    const oilSales=getRetailSales().filter(r=>r.category==='oil'&&Number(r.qty||0)>0);
+    const recent=oilSales[oilSales.length-1],recentKg=recent?oilQtyInKg(recent.qty,recent.unit):0;
+    if(latest){$('profitRawKg').value=latest.inputKg||0;$('profitRawCost').value=round2(Number(latest.inputKg||0)*avg);$('profitOilKg').value=latest.oilKg||0;$('profitKholKg').value=latest.khaliKg||latest.kholKg||0;$('profitProcessCost').value=expenses;}
+    $('profitKholRate').value=$('profitKholRate').value||settings.kholRate||0;
+    if(recentKg>0) $('profitSellingRate').value=round2(Number(recent.total||0)/recentKg);
+    profitPlannerCalc();
   }
 
   function renderFinance(){
@@ -1777,6 +1840,25 @@
   const RETAIL_SALES_KEY='swati_retail_sales_v1';
   function getRetailSales(){try{return JSON.parse(localStorage.getItem(RETAIL_SALES_KEY)||'[]')}catch{return []}}
   function saveRetailSales(rows){localStorage.setItem(RETAIL_SALES_KEY,JSON.stringify(rows));notifyDataChanged('retail_sales');}
+  function retailSelectedItem(){
+    if(($('retailCategory')?.value||'oil')==='oil') return 'મગફળીનું તેલ';
+    const selected=$('retailGrainItem')?.value||'';
+    return selected==='other'?($('retailOtherItem')?.value||'').trim():selected;
+  }
+  function setRetailCategoryUI(category='oil',item=''){
+    const oil=category==='oil';
+    $('retailCategory').value=oil?'oil':'grain';
+    $('retailOilItemField').hidden=!oil;$('retailGrainItemField').hidden=oil;
+    if(oil){$('retailItem').value='મગફળીનું તેલ';$('retailUnit').value=$('retailUnit').value==='litre'||$('retailUnit').value==='tin'?'tin':'kg';$('retailOtherItemField').hidden=true;}
+    else{
+      $('retailUnit').value='kg';
+      const opts=[...$('retailGrainItem').options].map(o=>o.value);
+      $('retailGrainItem').value=opts.includes(item)?item:(item?'other':'');
+      $('retailOtherItem').value=opts.includes(item)?'':item;
+      $('retailOtherItemField').hidden=$('retailGrainItem').value!=='other';
+    }
+    document.querySelectorAll('[data-retail-category]').forEach(b=>b.classList.toggle('active',b.dataset.retailCategory===(oil?'oil':'grain')));
+  }
   function retailCalc(){
     const qty=Number($('retailQty')?.value||0),rate=Number($('retailRate')?.value||0),paid=Number($('retailPaid')?.value||0);
     const total=round2(qty*rate),out=round2(Math.max(0,total-paid));
@@ -2771,7 +2853,7 @@
 
   function purchaseReportData(){
     if(!window.SwatiCore) return [];
-    return window.SwatiCore.getPurchases().map(r=>({
+    return (window.SwatiCore.list('purchases')||[]).map(r=>({
       date:r.date,title:r.party||'Supplier',meta:`${r.itemName||'Item'} • ${r.qty||0} ${r.unitName||''}`,
       amount:Number(r.amount||0),outstanding:Number(r.outstanding||0)
     }));
@@ -2779,7 +2861,7 @@
 
   function expenseReportData(){
     if(!window.SwatiCore) return [];
-    return window.SwatiCore.getExpenses().map(r=>({
+    return (window.SwatiCore.list('expenses')||[]).map(r=>({
       date:r.date,title:r.name||r.category||'Expense',meta:r.category||'',
       amount:Number(r.amount||0),outstanding:0
     }));
@@ -2975,7 +3057,24 @@
 
   function renderReports(){
     if(!$('reportHomeView')) return;
+    renderReportVisuals();
     if(activeExpandedReport) renderExpandedReport();
+  }
+
+  function renderReportVisuals(){
+    const salesRows=salesReportData(),sales=round2(salesRows.reduce((s,r)=>s+Number(r.amount||0),0));
+    const job=round2(getTx().reduce((s,r)=>s+Number(r.jobWorkAmount||0),0));
+    const expenses=round2(expenseReportData().reduce((s,r)=>s+Number(r.amount||0),0));
+    const receivable=round2(salesRows.reduce((s,r)=>s+Number(r.outstanding||0),0)+getTx().filter(r=>r.settlement?.net>0).reduce((s,r)=>s+remainingFor(r),0));
+    const revenue=round2(sales+job),collected=Math.max(0,revenue-receivable),collectionPct=revenue>0?Math.max(0,Math.min(100,Math.round(collected/revenue*100))):0;
+    const max=Math.max(sales,job,expenses,1),height=v=>`${Math.max(8,Math.round(Number(v||0)/max*100))}%`;
+    if($('analysisSalesValue')) $('analysisSalesValue').textContent=money(sales);if($('analysisJobValue')) $('analysisJobValue').textContent=money(job);if($('analysisExpenseValue')) $('analysisExpenseValue').textContent=money(expenses);
+    if($('analysisSalesBar')) $('analysisSalesBar').style.height=height(sales);if($('analysisJobBar')) $('analysisJobBar').style.height=height(job);if($('analysisExpenseBar')) $('analysisExpenseBar').style.height=height(expenses);
+    if($('analysisNetPosition')) $('analysisNetPosition').textContent=money(revenue-expenses);
+    if($('analysisCollectionPct')) $('analysisCollectionPct').textContent=`${collectionPct}%`;if($('analysisReceivable')) $('analysisReceivable').textContent=`${money(receivable)} બાકી`;
+    if($('analysisDonut')) $('analysisDonut').style.background=`conic-gradient(var(--alpha40-green) ${collectionPct}%,#e5ebf2 0)`;
+    const stock=companyStock(),values=[Math.max(0,stock.rawAvailable),Math.max(0,stock.oilAvailableKg),Math.max(0,stock.khaliAvailable)],stockMax=Math.max(...values,1);
+    [['analysisRawStock','analysisRawStockBar',values[0]],['analysisOilStock','analysisOilStockBar',values[1]],['analysisKholStock','analysisKholStockBar',values[2]]].forEach(([valueId,barId,value])=>{if($(valueId)) $(valueId).textContent=round2(value);if($(barId)) $(barId).style.width=`${Math.max(3,Math.round(value/stockMax*100))}%`;});
   }
 
   function setLegacyReportRange(kind){
@@ -3001,7 +3100,7 @@
 
   function exportBackup(){
     const data={};ALL_DATA_KEYS.forEach(key=>{try{data[key]=JSON.parse(localStorage.getItem(key)||'null')}catch{data[key]=null}});
-    const payload={version:40,exportedAt:new Date().toISOString(),currentOperator:currentOperator(),deviceId:deviceId(),data};
+    const payload={version:41,exportedAt:new Date().toISOString(),currentOperator:currentOperator(),deviceId:deviceId(),data};
     downloadBlob(JSON.stringify(payload,null,2),'application/json',`swati-job-work-backup-${todayISO()}.json`);
   }
 
@@ -3059,7 +3158,7 @@
     usage:'વપરાશ',
     expenses:'ખર્ચ',
     'stock-management':'સ્ટોક મેનેજમેન્ટ',
-    costing:'Costing / Valuation',
+    costing:'ભાવ અને નફો',
     finance:'ફાઇનાન્સ',
     invoices:'Invoice / Billing',
     staff:'Staff / Labour',
@@ -3845,7 +3944,7 @@
       purchase:'ખરીદી',
       expense:'ખર્ચ',
       'stock-management':'સ્ટોક મેનેજમેન્ટ',
-    costing:'Costing / Valuation',
+    costing:'ભાવ અને નફો',
     finance:'ફાઇનાન્સ',
       usage:'વપરાશ',
       customers:'ગ્રાહકો',
@@ -4115,29 +4214,32 @@
     $('companySaleUnit').value=khali?'kg':'tin';$('companySaleTinField').hidden=khali;$('companySaleKgField').hidden=!khali;companySaleCalc();
   }));
   document.querySelectorAll('[data-retail-category]').forEach(btn=>btn.addEventListener('click',()=>{
-    document.querySelectorAll('[data-retail-category]').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');$('retailCategory').value=btn.dataset.retailCategory;
-    if(btn.dataset.retailCategory==='oil'){$('retailItem').value='Groundnut Oil';$('retailUnit').value='tin';}
-    else{$('retailItem').value='';$('retailUnit').value='kg';}
+    setRetailCategoryUI(btn.dataset.retailCategory);
     renderRetailSales();
   }));
+  $('retailGrainItem')?.addEventListener('change',()=>{$('retailOtherItemField').hidden=$('retailGrainItem').value!=='other';});
   ['retailQty','retailRate','retailPaid'].forEach(id=>$(id)?.addEventListener('input',retailCalc));
-  $('retailSaleForm')?.addEventListener('submit',(e)=>{
-    e.preventDefault();const c=retailCalc(),item=$('retailItem').value.trim();
+  const saveRetailSale=(e)=>{
+    e.preventDefault();const c=retailCalc(),item=retailSelectedItem();
     if(c.qty<=0){toast('જથ્થો દાખલ કરો');return;} if(!item){toast('આઇટમ દાખલ કરો');return;}
+    if($('retailCategory').value==='grain'&&$('retailUnit').value!=='kg'){toast('અનાજ / કઠોળ માટે Unit કિલો રાખો');return;}
     const retailEditId=$('retailEditId')?.value||'';
     const row={id:retailEditId||`RTL-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,date:$('retailSaleDate').value||todayISO(),category:$('retailCategory').value||'oil',customer:$('retailCustomer').value.trim(),village:$('retailVillage').value.trim(),mobile:$('retailMobile').value.trim(),item,qty:round2(c.qty),unit:$('retailUnit').value,rate:round2(c.rate),total:c.total,paid:round2(c.paid),outstanding:c.out,paymentMode:$('retailPaymentMode').value,note:$('retailNote').value.trim(),operator:currentOperator(),createdAt:new Date().toISOString()};
-    const rows=getRetailSales();if(retailEditId){const i=rows.findIndex(x=>x.id===retailEditId);if(i>=0) rows[i]={...rows[i],...row,updatedAt:new Date().toISOString()};}else rows.push(row);saveRetailSales(rows);
+    const rows=getRetailSales();if(retailEditId){const i=rows.findIndex(x=>x.id===retailEditId);if(i>=0) rows[i]={...rows[i],...row,updatedAt:new Date().toISOString()};}else rows.push(row);
     if(window.SwatiCore){
-      const itemId=row.category==='oil'?(row.unit==='tin'?'oil.packaging.filled_tin_15kg':'oil.finished.oil'):`grain.retail.${row.item.toLowerCase().replace(/\s+/g,'_')}`;
-      const salePayload={date:row.date,party:row.customer,itemId,itemName:row.item,qty:row.qty,unitName:row.unit,rate:row.rate,amount:row.total,received:row.paid,paymentMode:row.paymentMode,context:{division:row.category==='oil'?'oil_mill':'grain_pulse',unit:'production',activity:'retail_sale',sourceModule:'retail_sales_alpha16',operator:row.operator,notes:row.id}};
       const linked=retailEditId?linkedCoreSaleBySourceId(row.id):null;
-      if(linked && window.SwatiCore.updateSale) window.SwatiCore.updateSale(linked.id,salePayload); else if(!retailEditId) window.SwatiCore.addSale(salePayload);
+      const stockQty=row.category==='oil'?oilQtyInKg(row.qty,row.unit):row.qty;
+      const itemId=row.category==='oil'?'oil.finished.oil':grainStockItemId(row.item,'processed');
+      const available=Number(window.SwatiCore.stockBalance(itemId)||0)+(linked?.itemId===itemId?Number(linked?.baseQty||0):0);
+      if(stockQty>available+.001){toast(`સ્ટોક માત્ર ${round2(available)} કિલો ઉપલબ્ધ છે`);return;}
+      const salePayload={date:row.date,party:row.customer,itemId,itemName:row.item,qty:stockQty,unitName:'kg',rate:stockQty>0?round2(row.total/stockQty):0,amount:row.total,received:row.paid,paymentMode:row.paymentMode,context:{division:row.category==='oil'?'oil_mill':'grain_pulse',unit:'production',activity:'retail_sale',sourceModule:'retail_sales_alpha41',operator:row.operator,notes:row.id}};
+      if(linked && window.SwatiCore.updateSale) window.SwatiCore.updateSale(linked.id,salePayload); else window.SwatiCore.addSale(salePayload);
     }
-    $('retailSaleForm').reset();$('retailSaleDate').value=todayISO();$('retailCategory').value='oil';$('retailItem').value='Groundnut Oil';$('retailUnit').value='tin';$('retailPaid').value='0';
-    document.querySelectorAll('[data-retail-category]').forEach(b=>b.classList.toggle('active',b.dataset.retailCategory==='oil'));
+    saveRetailSales(rows);
+    $('retailSaleForm').reset();$('retailSaleDate').value=todayISO();$('retailPaid').value='0';setRetailCategoryUI('oil');
     renderRetailSales();toast('રિટેલ વેચાણ સાચવાયું');
-  });
+  };
+  $('retailSaleForm')?.addEventListener('submit',saveRetailSale);
 
   document.querySelectorAll('[data-customer-list-mode]').forEach(btn=>btn.addEventListener('click',()=>{
     setCustomerMode(btn.dataset.customerListMode,true);
@@ -4357,6 +4459,8 @@
   });
 
   $('costingSearch')?.addEventListener('input',renderCosting);
+  ['profitRawKg','profitRawCost','profitOilKg','profitProcessCost','profitKholKg','profitKholRate','profitMargin','profitSellingRate'].forEach(id=>$(id)?.addEventListener('input',profitPlannerCalc));
+  $('profitUseLatestBtn')?.addEventListener('click',useLatestProfitBatch);
 
 
   document.querySelectorAll('[data-staff-tab]').forEach(btn=>btn.addEventListener('click',()=>setStaffTab(btn.dataset.staffTab)));
@@ -4519,7 +4623,11 @@
   });
 
   document.querySelectorAll('[data-mobile-screen]').forEach(btn=>btn.addEventListener('click',()=>showScreen(btn.dataset.mobileScreen)));
-  $('mobileMoreBtn')?.addEventListener('click',openAppDrawer);
+  const closeMobileTools=()=>{if($('mobileToolsModal')) $('mobileToolsModal').hidden=true;};
+  $('mobileToolsBtn')?.addEventListener('click',()=>{if($('mobileToolsModal')) $('mobileToolsModal').hidden=false;});
+  $('mobileToolsClose')?.addEventListener('click',closeMobileTools);
+  $('mobileToolsModal')?.addEventListener('click',e=>{if(e.target===$('mobileToolsModal')) closeMobileTools();});
+  $('mobileToolsModal')?.querySelectorAll('[data-go]').forEach(btn=>btn.addEventListener('click',closeMobileTools));
 
 
   document.querySelectorAll('[data-report-type]').forEach(btn=>btn.addEventListener('click',()=>openExpandedReport(btn.dataset.reportType)));
@@ -4601,11 +4709,10 @@
     const btn=e.target.closest('[data-edit-retail]'); if(!btn) return;
     const r=getRetailSales().find(x=>x.id===btn.dataset.editRetail); if(!r) return;
     $('retailSaleDate').value=r.date||todayISO();$('retailCategory').value=r.category||'oil';$('retailCustomer').value=r.customer||'';$('retailVillage').value=r.village||'';$('retailMobile').value=r.mobile||'';
-    $('retailItem').value=r.item||'';$('retailQty').value=r.qty||0;$('retailUnit').value=r.unit||'kg';$('retailRate').value=r.rate||0;$('retailPaid').value=r.paid||0;$('retailPaymentMode').value=r.paymentMode||'cash';$('retailNote').value=r.note||'';
-    document.querySelectorAll('[data-retail-category]').forEach(b=>b.classList.toggle('active',b.dataset.retailCategory===(r.category||'oil')));
+    setRetailCategoryUI(r.category||'oil',r.item||'');$('retailQty').value=r.qty||0;$('retailUnit').value=r.unit||'kg';$('retailRate').value=r.rate||0;$('retailPaid').value=r.paid||0;$('retailPaymentMode').value=r.paymentMode||'cash';$('retailNote').value=r.note||'';
     setEditMode('retail',r.id,'વેચાણ Update કરો');retailCalc();window.scrollTo({top:0,behavior:'smooth'});
   });
-  $('retailEditCancelBtn')?.addEventListener('click',()=>{$('retailSaleForm')?.reset();clearEditMode('retail','વેચાણ સાચવો');renderRetailSales();});
+  $('retailEditCancelBtn')?.addEventListener('click',()=>{$('retailSaleForm')?.reset();setRetailCategoryUI('oil');clearEditMode('retail','વેચાણ સાચવો');renderRetailSales();});
 
   $('grainSalesList')?.addEventListener('click',(e)=>{
     const btn=e.target.closest('[data-edit-grain-sale]'); if(!btn) return;

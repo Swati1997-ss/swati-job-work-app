@@ -1691,3 +1691,67 @@ body{background:var(--alpha40-bg);color:#172235}
 }
 
 @media print{.mobile-bottom-nav{display:none!important}}
+
+/* UI Alpha 41 — focused operator home, business analytics and profit decisions */
+.alpha41-home-secondary,.alpha41-home-repeated{display:none!important}
+.owner-home-section-grid{grid-template-columns:1fr}
+.owner-home-card{margin-bottom:10px}
+.owner-attention-list:empty::after{content:"હાલ કોઈ ધ્યાન આપવાની બાબત નથી";display:block;padding:12px 0;color:var(--text-soft);font-size:.82rem}
+
+.profit-hero{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:12px;color:#fff;border:0;
+  background:linear-gradient(135deg,#0b63b6,#084b8b)
+}
+.profit-hero small{opacity:.8}.profit-hero h2{margin:3px 0 0;font-size:1.55rem}.profit-hero>span{padding:7px 10px;border:1px solid rgba(255,255,255,.35);border-radius:999px;font-size:.68rem;font-weight:800}
+.profit-planner{border-top:4px solid var(--alpha40-blue)}
+.profit-result-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:12px 0}
+.profit-result{display:grid;gap:5px;padding:14px;border-top:3px solid var(--alpha40-green)}
+.profit-result span{font-size:.7rem;color:var(--text-soft)}.profit-result strong{font-size:1.04rem}
+.profit-result.recommended{background:#eaf4ff;border-color:var(--alpha40-blue)}
+.profit-result.loss{background:#fff1f0;border-color:#bd3b32;color:#a32c25}
+.costing-breakdown summary{cursor:pointer;font-weight:900;color:#26364a}
+.costing-search-row{margin:14px 0 4px}.costing-search-row>strong{color:var(--brand);font-size:1.12rem}
+
+.analysis-hero{
+  display:flex;justify-content:space-between;align-items:flex-end;
+  min-height:118px;margin-bottom:12px;padding:20px;border-radius:21px;color:#fff;
+  background:linear-gradient(135deg,#0b63b6 0%,#07549b 62%,#083d70 100%);
+  box-shadow:0 9px 24px rgba(11,99,182,.22)
+}
+.analysis-hero small{opacity:.78}.analysis-hero h2{margin:4px 0 0;font-size:1.65rem}.analysis-hero>strong{font-size:1.28rem}
+.analysis-grid{display:grid;grid-template-columns:1.25fr 1fr .75fr;gap:12px;margin-bottom:18px}
+.analysis-card{min-height:210px}.analysis-card>.row-between{margin-bottom:12px}.analysis-card small{color:var(--text-soft)}
+.analysis-bars{height:150px;display:flex;align-items:end;justify-content:space-around;gap:12px;border-bottom:1px solid #dbe4ee;padding:8px 8px 0}
+.analysis-bars>div{height:100%;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:5px}
+.analysis-bars span{display:block;width:min(46px,75%);min-height:8px;border-radius:8px 8px 2px 2px;background:linear-gradient(#2b8de5,#0b63b6);transition:height .25s ease}
+.analysis-bars>div:nth-child(2) span{background:linear-gradient(#3bb990,#168a62)}.analysis-bars>div:nth-child(3) span{background:linear-gradient(#f1b84a,#d78b09)}
+.analysis-bars strong{font-size:.62rem}.analysis-bars small{font-size:.65rem}
+.stock-visual-row{display:grid;grid-template-columns:62px minmax(0,1fr) 45px;gap:8px;align-items:center;margin:22px 0;font-size:.72rem}
+.stock-visual-row>div{height:9px;border-radius:999px;background:#e7edf3;overflow:hidden}.stock-visual-row i{display:block;height:100%;border-radius:inherit;background:var(--alpha40-blue)}
+.stock-visual-row:nth-child(3) i{background:var(--alpha40-green)}.stock-visual-row:nth-child(4) i{background:var(--alpha40-amber)}
+.stock-visual-row strong{text-align:right;font-size:.72rem}
+.analysis-balance-card{display:grid;place-items:center;text-align:center;align-content:center;gap:14px}
+.analysis-donut{width:112px;height:112px;border-radius:50%;display:grid;place-items:center;position:relative;background:#e5ebf2}
+.analysis-donut::after{content:"";position:absolute;inset:15px;border-radius:50%;background:#fff}.analysis-donut span{position:relative;z-index:1;font-size:1.2rem;font-weight:900;color:#17324d}
+.analysis-balance-card>div:last-child{display:grid;gap:4px}.analysis-report-title{font-size:1rem;margin:4px 0 10px}
+
+.mobile-tools-card{border-top:5px solid var(--alpha40-blue)}
+.mobile-tools-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:16px}
+.mobile-tools-grid button{min-height:100px;border:1px solid #dfe7f0;border-radius:16px;background:#fff;display:grid;place-items:center;align-content:center;gap:9px;color:#26364a;font-weight:800}
+.mobile-tools-grid button>span{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:var(--alpha40-blue-soft);color:var(--alpha40-blue);font-weight:900}
+.mobile-tools-grid button:nth-child(2n)>span{background:#eaf8f3;color:var(--alpha40-green)}.mobile-tools-grid button:nth-child(3n)>span{background:#fff4df;color:#bf7600}
+.mobile-tools-grid button strong{font-size:.72rem}
+#retailItem[readonly]{background:#edf7ff;color:#0b63b6;font-weight:850;border-color:#c8e0f5}
+
+@media(max-width:760px){
+  .sticky-actions{bottom:calc(76px + env(safe-area-inset-bottom));z-index:44}
+  .owner-home-dashboard{margin-bottom:0}.owner-home-top{margin-top:0}
+  .owner-home-kpi{min-height:82px}.owner-home-kpi small{display:none}
+  .profit-result-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .analysis-grid{grid-template-columns:1fr}
+  .analysis-card{min-height:190px}.analysis-balance-card{grid-template-columns:auto 1fr;min-height:145px;text-align:left;padding:16px}
+  .analysis-donut{width:96px;height:96px}.analysis-donut::after{inset:13px}
+  .mobile-tools-card{position:absolute;left:12px;right:12px;bottom:calc(76px + env(safe-area-inset-bottom));margin:0;max-height:70vh}
+}
+@media(max-width:390px){.mobile-tools-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.analysis-hero{min-height:105px;padding:16px}.analysis-hero h2{font-size:1.4rem}}
