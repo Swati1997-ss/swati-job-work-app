@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#8f1736" />
   <title>સ્વાતિ મિની ઓઇલ મિલ — મજૂરી કામ</title>
-  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="manifest" href="manifest.webmanifest?v=alpha29" />
   <link rel="apple-touch-icon" href="swati-icon-v2-192.png?v=22" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Swati" />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=alpha29" />
 </head>
 <body>
   <header class="app-header no-print">
@@ -175,6 +175,9 @@
         <div class="print-toolbar no-print">
           <button id="backToForm" class="ghost">← પાછા</button>
           <button id="printBtn" class="primary">પ્રિન્ટ / PDF</button>
+          <button id="oilPdfFileBtn" class="secondary">PDF ફાઇલ</button>
+          <button id="oilShareBtn" class="secondary">ફાઇલ શેર</button>
+          <button id="oilWhatsAppBtn" class="ghost">WhatsApp</button>
         </div>
 
         <div class="physical-card">
@@ -297,7 +300,7 @@
       </form>
 
       <div id="grainPrintArea" class="print-area">
-        <div class="print-toolbar no-print"><button id="grainBackToForm" class="ghost">← પાછા</button><button id="grainPrintBtn" class="primary">પ્રિન્ટ / PDF</button></div>
+        <div class="print-toolbar no-print"><button id="grainBackToForm" class="ghost">← પાછા</button><button id="grainPrintBtn" class="primary">પ્રિન્ટ / PDF</button><button id="grainPdfFileBtn" class="secondary">PDF ફાઇલ</button><button id="grainShareBtn" class="secondary">ફાઇલ શેર</button><button id="grainWhatsAppBtn" class="ghost">WhatsApp</button></div>
         <div class="physical-card single-print-card">
           <div class="card-face card-back">
             <div class="card-brand">સ્વાતિ મિની ઓઇલ મિલ</div><div class="card-place">સુલતાનપુર — અનાજ / કઠોળ સફાઈ</div>
@@ -533,6 +536,16 @@
     </div>
   </div>
 
+
+  <div id="fileActionModal" class="modal no-print" hidden>
+    <div class="modal-card file-action-card">
+      <div class="row-between"><h2 id="fileActionTitle">ફાઇલ તૈયાર છે</h2><button id="fileActionClose" class="ghost" type="button">✕</button></div>
+      <div class="file-ready-box"><span>ફાઇલ</span><strong id="fileActionName">—</strong></div>
+      <p id="fileActionHint" class="muted">ફાઇલ ખોલો, શેર કરો અથવા ડાઉનલોડ કરો.</p>
+      <div class="button-row file-action-buttons"><button id="fileActionOpen" class="ghost" type="button">ખોલો / App પસંદ કરો</button><button id="fileActionShare" class="primary" type="button">શેર કરો</button><button id="fileActionDownload" class="secondary" type="button">ડાઉનલોડ</button></div>
+    </div>
+  </div>
+
   <div id="toast" class="toast no-print" role="status"></div>
 
   <div id="deviceSetupModal" class="device-modal" hidden>
@@ -543,10 +556,11 @@
     </div>
   </div>
 
-  <script src="sync-config.js"></script>
-  <script src="offline-sync.js"></script>
-  <script src="app.js"></script>
-  <script src="pwa.js"></script>
+  <script src="sync-config.js?v=alpha29"></script>
+  <script src="offline-sync.js?v=alpha29"></script>
+  <script src="file-tools.js?v=alpha29"></script>
+  <script src="app.js?v=alpha29"></script>
+  <script src="pwa.js?v=alpha29"></script>
 
 </body>
 </html>

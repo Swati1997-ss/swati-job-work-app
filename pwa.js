@@ -14,6 +14,8 @@
     }
     if($('pwaInstallActionBtn')) $('pwaInstallActionBtn').hidden=isStandalone();
   }
+  let reloading=false;
+  if('serviceWorker' in navigator){navigator.serviceWorker.addEventListener('controllerchange',()=>{if(reloading)return;reloading=true;location.reload();});window.addEventListener('load',()=>navigator.serviceWorker.getRegistration().then(r=>r?.update()).catch(()=>{}));}
   document.addEventListener('DOMContentLoaded',()=>{
     render();
     $('pwaInstallActionBtn')?.addEventListener('click',()=>{

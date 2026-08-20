@@ -237,3 +237,7 @@ th{color:var(--muted);font-size:.8rem}
   body.print-grain #printArea{display:none!important}
   body.print-grain #screen-new-oil{display:none!important}
 }
+
+/* Alpha 27 — card-preserving PDF/file actions and restored sharing */
+.file-ready-box{border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin:14px 0;display:grid;gap:4px}.file-ready-box span{font-size:.78rem;color:var(--muted)}.file-ready-box strong{overflow-wrap:anywhere}.file-action-buttons{margin-top:14px}.print-toolbar{flex-wrap:wrap}.print-toolbar button{min-height:42px}
+@media(max-width:760px){.print-toolbar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.print-toolbar button{width:100%;min-width:0}.file-action-buttons{display:grid;grid-template-columns:1fr}.file-action-buttons button{width:100%}}

@@ -486,6 +486,8 @@
     fillPreview(r);
     $('oilForm').style.display = 'none';
     $('printArea').classList.add('visible');
+    clearPreparedBillPdf('oil');
+    setTimeout(()=>prepareBillPdf('oil'),0);
     window.scrollTo({top:0,behavior:'smooth'});
   }
 
@@ -606,7 +608,7 @@
 
   function showGrainPreview(){
     const r=currentGrainRecord(); if(!r.customer.name){toast('ગ્રાહકનું નામ જરૂરી છે');return;} if((r.customer.mobile||'').length>10){toast('મોબાઇલ નંબર મહત્તમ 10 અંકનો રાખો');return;}
-    fillGrainPreview(r); $('grainForm').style.display='none'; $('grainPrintArea').classList.add('visible'); window.scrollTo({top:0,behavior:'smooth'});
+    fillGrainPreview(r); $('grainForm').style.display='none'; $('grainPrintArea').classList.add('visible'); clearPreparedBillPdf('grain'); setTimeout(()=>prepareBillPdf('grain'),0); window.scrollTo({top:0,behavior:'smooth'});
   }
   function hideGrainPreview(){ $('grainPrintArea').classList.remove('visible'); $('grainForm').style.display=''; }
 
@@ -974,10 +976,10 @@
   }
 
   function downloadBlob(content,type,name){
+    if(type.includes('text/csv') && window.SwatiFiles){ window.SwatiFiles.presentCsvAsXlsx(content,name.replace(/\.csv$/i,'.xlsx')); return; }
     const blob = new Blob([content], {type});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob); a.download=name; a.click();
-    setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+    if(window.SwatiFiles){ window.SwatiFiles.presentBlob(blob,name,{title:'ફાઇલ તૈયાર છે'}); return; }
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download=name; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000);
   }
 
   function escapeHtml(s=''){ return String(s).replace(/[&<>'"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
@@ -1087,7 +1089,7 @@
 
   document.querySelectorAll('.tab').forEach(b => b.addEventListener('click',()=>showScreen(b.dataset.screen)));
   document.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click',()=>showScreen(b.dataset.go)));
-  $('oilForm').addEventListener('input', calculate);
+  $('oilForm').addEventListener('input', ()=>{ clearPreparedBillPdf('oil'); calculate(); });
   $('customerMobile').addEventListener('input',()=>{
     const clean = $('customerMobile').value.replace(/\D/g,'').slice(0,10);
     if ($('customerMobile').value !== clean) $('customerMobile').value = clean;
@@ -1104,7 +1106,69 @@
     setTimeout(cleanup,1500);
   }
 
+
+  const preparedBillPdf={oil:null,grain:null};
+
+  function clearPreparedBillPdf(business){
+    if(business) preparedBillPdf[business]=null;
+    else { preparedBillPdf.oil=null; preparedBillPdf.grain=null; }
+  }
+
+  async function prepareBillPdf(business){
+    try{
+      const r=business==='grain'?currentGrainRecord():currentRecord();
+      if(!r.customer?.name || !window.SwatiFiles) return null;
+      if(business==='grain'){ fillGrainPreview(r); $('grainPrintArea').classList.add('visible'); }
+      else { fillPreview(r); $('printArea').classList.add('visible'); }
+      const root=business==='grain'?$('grainPrintArea'):$('printArea');
+      const card=root.querySelector('.physical-card');
+      const name=`સ્વાતિ-${business==='grain'?'અનાજ-કઠોળ':'તેલ-મિલ'}-${r.billNo||todayISO()}.pdf`;
+      const text=billShareText(r,business);
+      const blob=await window.SwatiFiles.cardPdf(card,business);
+      const ready={blob,name,text,title:'સ્વાતિ બિલ'};
+      preparedBillPdf[business]=ready;
+      return ready;
+    }catch(e){ console.warn('Bill PDF pre-generation failed',e); return null; }
+  }
+
+  function billShareText(r,business){
+    const b=business==='grain'?'અનાજ / કઠોળ':'તેલ મિલ';
+    return `સ્વાતિ મિની ઓઇલ મિલ\n${b}\nબિલ: ${r?.billNo||'—'}\nતારીખ: ${r?.date||'—'}\nગ્રાહક: ${r?.customer?.name||'—'}\nગામ: ${r?.customer?.village||'—'}\nમજૂરી: ${money(r?.jobWorkAmount||0)}\nબાકી: ${money(remainingFor(r))}`;
+  }
+  async function makeCardPdfAction(business,shareNow=false){
+    try{
+      const r=business==='grain'?currentGrainRecord():currentRecord();
+      if(!r.customer?.name){toast('ગ્રાહકનું નામ જરૂરી છે');return;}
+      if(!window.SwatiFiles){toast('File sharing module ઉપલબ્ધ નથી');return;}
+      let ready=preparedBillPdf[business];
+      if(!ready){
+        toast('PDF તૈયાર થઈ રહી છે…');
+        ready=await prepareBillPdf(business);
+      }
+      if(!ready){toast('PDF બનાવવામાં સમસ્યા આવી');return;}
+      if(shareNow){
+        const ok=await window.SwatiFiles.share(ready.blob,ready.name,ready.title,ready.text);
+        if(!ok){
+          window.SwatiFiles.presentBlob(ready.blob,ready.name,{
+            title:'PDF શેર માટે તૈયાર છે',
+            text:ready.text,
+            hint:'હવે “શેર કરો” દબાવો. Android / iPhoneનું native Share menu ખોલવાનો ફરી પ્રયાસ થશે. Direct share ન ચાલે તો Download અલગથી પસંદ કરી શકો.'
+          });
+        }
+      }else{
+        window.SwatiFiles.presentBlob(ready.blob,ready.name,{title:'PDF તૈયાર છે',text:ready.text});
+      }
+    }catch(e){console.error(e);toast('PDF / Share બનાવવામાં સમસ્યા આવી');}
+  }
+  function shareBillWhatsApp(business){
+    const r=business==='grain'?currentGrainRecord():currentRecord(); if(!r.customer?.name){toast('ગ્રાહકનું નામ જરૂરી છે');return;}
+    if(window.SwatiFiles) window.SwatiFiles.whatsappText(billShareText(r,business)); else window.open(`https://wa.me/?text=${encodeURIComponent(billShareText(r,business))}`,'_blank');
+  }
+
   $('printBtn').addEventListener('click', () => printOnly('oil'));
+  $('oilPdfFileBtn')?.addEventListener('click',()=>makeCardPdfAction('oil',false));
+  $('oilShareBtn')?.addEventListener('click',()=>makeCardPdfAction('oil',true));
+  $('oilWhatsAppBtn')?.addEventListener('click',()=>shareBillWhatsApp('oil'));
   $('resetBtn').addEventListener('click', resetForm);
   $('historySearch').addEventListener('input', renderHistory);
   $('customerSearch').addEventListener('input', renderCustomers);
@@ -1143,7 +1207,7 @@
   $('grainCustomerSuggestions').addEventListener('click',(e)=>{const b=e.target.closest('[data-grain-customer-key]'); if(b) selectGrainCustomer(b.dataset.grainCustomerKey);});
   $('grainLeftoverEnabled').addEventListener('change',()=>{ $('grainLeftoverFields').classList.toggle('enabled',$('grainLeftoverEnabled').checked); $('grainPurchaseKg').dataset.manual=''; calculateGrain(); });
   $('grainPurchaseKg').addEventListener('input',()=>{$('grainPurchaseKg').dataset.manual='1';});
-  $('grainPreviewBtn').addEventListener('click',showGrainPreview); $('grainBackToForm').addEventListener('click',hideGrainPreview); $('grainPrintBtn').addEventListener('click',()=>printOnly('grain')); $('grainResetBtn').addEventListener('click',resetGrainForm);
+  $('grainPreviewBtn').addEventListener('click',showGrainPreview); $('grainBackToForm').addEventListener('click',hideGrainPreview); $('grainPrintBtn').addEventListener('click',()=>printOnly('grain')); $('grainPdfFileBtn')?.addEventListener('click',()=>makeCardPdfAction('grain',false)); $('grainShareBtn')?.addEventListener('click',()=>makeCardPdfAction('grain',true)); $('grainWhatsAppBtn')?.addEventListener('click',()=>shareBillWhatsApp('grain')); $('grainResetBtn').addEventListener('click',resetGrainForm);
   $('grainTxDate').addEventListener('change',()=>{if(!lastSavedGrainId)$('grainBillNo').value=nextGrainBillNo();});
   $('batchForm').addEventListener('input',calculateBatch);
   $('batchForm').addEventListener('change',calculateBatch);
