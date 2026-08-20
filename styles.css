@@ -1341,3 +1341,7 @@ html[lang="en"] select{
     height:19px;
   }
 }
+
+
+/* UI Alpha 31 — cleanup of duplicate legacy sidebar arrows + splash branding */
+.drawer-group-arrow{display:none !important;}
