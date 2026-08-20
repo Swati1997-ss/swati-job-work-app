@@ -901,3 +901,11 @@ html[lang="en"] input,
 html[lang="en"] select{
   letter-spacing:0;
 }
+
+
+/* UI Alpha 16 */
+.home-action-card.retail .home-action-icon{background:#f5efff;color:#7252b8}
+.sale-product-switch,.retail-category-switch{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-bottom:12px}
+.sale-product-btn,.retail-category-btn{min-height:46px;border:1px solid var(--ui-line);background:#fff;border-radius:13px;font-weight:850;color:var(--text-strong)}
+.sale-product-btn.active,.retail-category-btn.active{border-color:var(--pro-blue);background:var(--pro-blue-soft);color:var(--pro-blue)}
+.module-inline-actions{display:flex;justify-content:flex-end;margin-bottom:10px}

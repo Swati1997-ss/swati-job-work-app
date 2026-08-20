@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#8f1736" />
   <title>સ્વાતિ મિની ઓઇલ મિલ</title>
-  <link rel="manifest" href="manifest.webmanifest?v=ui-alpha15" />
+  <link rel="manifest" href="manifest.webmanifest?v=ui-alpha16" />
   <link rel="apple-touch-icon" href="swati-icon-v2-192.png?v=22" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Swati" />
-  <link rel="stylesheet" href="styles.css?v=ui-alpha15" />
+  <link rel="stylesheet" href="styles.css?v=ui-alpha16" />
 </head>
 <body>
   
@@ -20,7 +20,7 @@
         <span></span><span></span><span></span>
       </button>
       <button id="headerHomeBtn" class="header-home-link" type="button" aria-label="મુખ્ય પેજ">
-        <img class="header-logo" src="swati-icon-v2-192.png?v=ui15" alt="સ્વાતિ" />
+        <img class="header-logo" src="swati-icon-v2-192.png?v=ui16" alt="સ્વાતિ" />
         <span class="header-brand-copy">
           <span class="brand">સ્વાતિ મિની ઓઇલ મિલ</span>
           <span class="subbrand">સુલતાનપુર</span>
@@ -37,7 +37,7 @@
   <aside id="appDrawer" class="app-drawer no-print" aria-label="મુખ્ય મેનુ" aria-hidden="true">
     <div class="drawer-head">
       <button id="drawerBrandHomeBtn" class="drawer-brand-row drawer-brand-button" type="button" aria-label="મુખ્ય પેજ">
-        <img class="drawer-logo" src="swati-icon-v2-192.png?v=ui15" alt="સ્વાતિ" />
+        <img class="drawer-logo" src="swati-icon-v2-192.png?v=ui16" alt="સ્વાતિ" />
         <span>
           <span class="drawer-brand">સ્વાતિ મિની ઓઇલ મિલ</span>
           <span class="drawer-subbrand">સુલતાનપુર</span>
@@ -87,8 +87,12 @@
         </span>
         <span data-i18n="purchase">ખરીદી</span>
       </button>
-<button class="drawer-link" data-screen="customers" type="button"><span class="drawer-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm7-1a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM2 21v-2c0-3.3 2.7-6 6-6h1c3.3 0 6 2.7 6 6v2H2Zm13.7 0v-2c0-1.8-.6-3.6-1.7-4.9.6-.1 1.2-.1 1.8-.1 3.4 0 6.2 2.2 6.2 5v2h-6.3Z"/></svg></span><span data-i18n="customers">ગ્રાહકો</span></button>
-      <button class="drawer-link" data-screen="history" type="button"><span class="drawer-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4a8 8 0 1 1-7.3 4.8H2l3.6-4L9 8.8H6.8A6 6 0 1 0 12 6v4l3 2-1.1 1.7L10 11V4h2Z"/></svg></span><span data-i18n="history">હિસ્ટ્રી</span></button>
+      
+      <button class="drawer-link" data-screen="retail-sales" type="button">
+        <span class="drawer-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18v4H3V5Zm2 6h14v8H5v-8Zm3 2v4h8v-4H8Z"/></svg></span>
+        <span data-i18n="retailSales">રિટેલ વેચાણ</span>
+      </button>
+<button class="drawer-link" data-screen="history" type="button"><span class="drawer-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4a8 8 0 1 1-7.3 4.8H2l3.6-4L9 8.8H6.8A6 6 0 1 0 12 6v4l3 2-1.1 1.7L10 11V4h2Z"/></svg></span><span data-i18n="history">હિસ્ટ્રી</span></button>
       <button class="drawer-link" data-screen="stock" type="button"><span class="drawer-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 9 4.5v11L12 22l-9-4.5v-11L12 2Zm0 2.2L6.1 7 12 9.8 17.9 7 12 4.2ZM5 8.6v7.6l6 3v-7.6l-6-3Zm8 10.6 6-3V8.6l-6 3v7.6Z"/></svg></span><span>સ્ટોક / Batch</span></button>
       
       
@@ -216,6 +220,12 @@
           <span><strong data-i18n="finance">ફાઇનાન્સ</strong><small>Cash, bank, payable, receivable</small></span>
           <span class="home-action-arrow">›</span>
         </button>
+
+        <button class="home-action-card retail" data-go="retail-sales" type="button">
+          <span class="home-action-icon"><svg viewBox="0 0 24 24"><path d="M4 4h16v4H4V4Zm2 6h12v10H6V10Zm3 2v6h6v-6H9Z"/></svg></span>
+          <span><strong data-i18n="retailSales">રિટેલ વેચાણ</strong><small data-i18n="retailSalesHelp">તેલ અને અનાજ / કઠોળનું રિટેલ વેચાણ</small></span>
+          <span class="home-action-arrow">›</span>
+        </button>
 </div>
 
       <div class="home-section-title no-print">
@@ -269,6 +279,10 @@
     </section>
 
     <section class="screen" id="screen-new-oil">
+      <div class="module-inline-actions no-print">
+        <button class="secondary" type="button" data-go="customers" data-customer-mode="jobwork">મજૂરી કામના ગ્રાહકો</button>
+      </div>
+
       <form id="oilForm" class="form-layout no-print" autocomplete="off">
         <div class="card section-card">
           <div class="section-title"><span>1</span><h2>ગ્રાહક</h2></div>
@@ -518,7 +532,12 @@
         <div><p>કંપનીના પોતાના તૈયાર તેલનું વેચાણ.</p></div>
       </div>
 
-      <form id="companySaleForm" class="card section-card">
+      <div class="sale-product-switch">
+          <button type="button" class="sale-product-btn active" data-sale-product="oil" data-i18n="oil">તેલ</button>
+          <button type="button" class="sale-product-btn" data-sale-product="khali" data-i18n="khali">ખોળ</button>
+        </div>
+        <input id="companySaleProduct" type="hidden" value="oil" />
+        <form id="companySaleForm" class="card section-card">
         <div class="grid two">
           <label>તારીખ<input id="companySaleDate" type="date" /></label>
           <label>ગ્રાહક<input id="companySaleCustomer" placeholder="ગ્રાહકનું નામ" /></label>
@@ -547,6 +566,10 @@
     </section>
 
     <section class="screen" id="screen-grain">
+      <div class="module-inline-actions no-print">
+        <button class="secondary" type="button" data-go="customers" data-customer-mode="jobwork">મજૂરી કામના ગ્રાહકો</button>
+      </div>
+
       <form id="grainForm" class="form-layout no-print" autocomplete="off">
         <div class="card section-card">
           <div class="section-title"><span>1</span><h2>ગ્રાહક</h2></div>
@@ -912,7 +935,52 @@
       </div>
     </section>
 
-    <section class="screen" id="screen-history">
+    
+    <section class="screen" id="screen-retail-sales">
+      <div class="module-inline-actions no-print">
+        <button class="secondary" type="button" data-go="customers" data-customer-mode="retail">રિટેલ ગ્રાહકો</button>
+      </div>
+
+      <div class="module-head compact-page-head"><div><p data-i18n="retailSalesHelp">તેલ અને અનાજ / કઠોળનું રિટેલ વેચાણ એક જ જગ્યાએ.</p></div></div>
+
+      <div class="retail-category-switch">
+        <button class="retail-category-btn active" type="button" data-retail-category="oil" data-i18n="oilRetail">તેલ રિટેલ</button>
+        <button class="retail-category-btn" type="button" data-retail-category="grain" data-i18n="grainRetail">અનાજ / કઠોળ રિટેલ</button>
+      </div>
+
+      <form id="retailSaleForm" class="card section-card">
+        <input id="retailCategory" type="hidden" value="oil" />
+        <div class="grid two">
+          <label>તારીખ<input id="retailSaleDate" type="date" /></label>
+          <label>ગ્રાહક<input id="retailCustomer" placeholder="ગ્રાહકનું નામ" /></label>
+          <label>ગામ<input id="retailVillage" placeholder="ગામ" /></label>
+          <label>મોબાઇલ<input id="retailMobile" inputmode="tel" /></label>
+          <label>આઇટમ<input id="retailItem" placeholder="Groundnut Oil / Moong" /></label>
+          <label>જથ્થો<input id="retailQty" type="number" min="0" step="0.01" /></label>
+          <label>Unit<select id="retailUnit"><option value="kg">કિલો</option><option value="tin">ટીન</option><option value="bag">બેગ</option><option value="piece">નંગ</option></select></label>
+          <label>ભાવ ₹ / Unit<input id="retailRate" type="number" min="0" step="0.01" /></label>
+          <label>ચૂકવેલ ₹<input id="retailPaid" type="number" min="0" step="0.01" value="0" /></label>
+          <label>ચુકવણી રીત<select id="retailPaymentMode"><option value="cash">રોકડ</option><option value="bank">બેંક / UPI</option></select></label>
+        </div>
+        <div class="purchase-totals">
+          <div><span>કુલ વેચાણ</span><strong id="retailTotal">₹0</strong></div>
+          <div><span>બાકી</span><strong id="retailOutstanding">₹0</strong></div>
+        </div>
+        <label>નોંધ<input id="retailNote" placeholder="Optional" /></label>
+        <div class="sticky-actions"><button class="primary" type="submit">વેચાણ સાચવો</button></div>
+      </form>
+
+      <div class="card section-card">
+        <div class="row-between"><h2>તાજેતરનું રિટેલ વેચાણ</h2><strong id="retailSalesCount">0</strong></div>
+        <div id="retailSalesList" class="mini-list"></div>
+      </div>
+
+      <div class="card section-card">
+        <div class="row-between"><h2>રિટેલ ગ્રાહકો</h2><strong id="retailCustomerCount">0</strong></div>
+        <div id="retailCustomerList" class="mini-list"></div>
+      </div>
+    </section>
+<section class="screen" id="screen-history">
       <div class="card no-print">
         <div class="row-between"><h2>મજૂરી History</h2><div class="button-row"><button id="backupBtn" class="ghost">Backup</button><button id="exportOilBtn" class="secondary">તેલ મિલ Excel</button><button id="exportGrainBtn" class="secondary">અનાજ / કઠોળ Excel</button></div></div>
         <input id="historySearch" class="search" placeholder="નામ, મોબાઇલ, ગામ અથવા બિલ નંબર શોધો" />
@@ -1477,14 +1545,14 @@
       <div id="deviceOperatorButtons" class="device-operator-buttons"></div>
     </div>
   </div>
-  <script src="sync-config.js?v=ui-alpha15"></script>
-  <script src="offline-sync.js?v=ui-alpha15"></script>
-  <script src="file-tools.js?v=ui-alpha15"></script>
-  <script src="business-core.js?v=ui-alpha15"></script>
-  <script src="business-core-bridge.js?v=ui-alpha15"></script>
-  <script src="ui-i18n.js?v=ui-alpha15"></script>
-  <script src="app.js?v=ui-alpha15"></script>
-  <script src="pwa.js?v=ui-alpha15"></script>
+  <script src="sync-config.js?v=ui-alpha16"></script>
+  <script src="offline-sync.js?v=ui-alpha16"></script>
+  <script src="file-tools.js?v=ui-alpha16"></script>
+  <script src="business-core.js?v=ui-alpha16"></script>
+  <script src="business-core-bridge.js?v=ui-alpha16"></script>
+  <script src="ui-i18n.js?v=ui-alpha16"></script>
+  <script src="app.js?v=ui-alpha16"></script>
+  <script src="pwa.js?v=ui-alpha16"></script>
 
 </body>
 </html>

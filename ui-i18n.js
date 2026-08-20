@@ -2,6 +2,16 @@
   'use strict';
 
   const GU_TO_EN = {
+    'રિટેલ વેચાણ':'Retail Sales',
+    'તેલ રિટેલ':'Oil Retail',
+    'અનાજ / કઠોળ રિટેલ':'Grain / Pulse Retail',
+    'તાજેતરનું રિટેલ વેચાણ':'Recent Retail Sales',
+    'રિટેલ ગ્રાહકો':'Retail Customers',
+    'મજૂરી કામના ગ્રાહકો':'Job Work Customers',
+    'તેલ':'Oil',
+    'ખોળ':'Khali',
+    'કુલ વેચાણ':'Total Sale',
+    'બાકી':'Outstanding',
     'મુખ્ય':'Home',
     'મજૂરી કામ':'Job Work',
     'કંપની પ્રોડક્શન':'Company Production',
