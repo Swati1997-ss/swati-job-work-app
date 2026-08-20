@@ -3,17 +3,17 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#8f1736" />
+  <meta name="theme-color" content="#0b63b6" />
   <meta name="application-name" content="Swati Mini Oil Mill" />
   <meta name="mobile-web-app-capable" content="yes" />
   <title>Swati Mini Oil Mill</title>
-  <link rel="manifest" href="manifest.webmanifest?v=alpha39-share" />
+  <link rel="manifest" href="manifest.webmanifest?v=alpha40" />
   <link rel="apple-touch-icon" href="swati-icon-v2-192.png?v=alpha33-brand-v2" />
-  <link rel="icon" type="image/png" href="swati-icon-v2-192.png?v=alpha39-share" />
+  <link rel="icon" type="image/png" href="swati-icon-v2-192.png?v=alpha40" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Swati Mini Oil Mill" />
-  <link rel="stylesheet" href="styles.css?v=ui-alpha39" />
+  <link rel="stylesheet" href="styles.css?v=ui-alpha40" />
 </head>
 <body>
   
@@ -546,7 +546,7 @@
         <div class="print-toolbar share-action-bar no-print">
           <button id="backToForm" class="ghost toolbar-back">← પાછા</button>
           <button id="oilShareBtn" class="primary">PDF શેર કરો</button>
-          <button id="oilWhatsAppBtn" class="whatsapp-btn">WhatsApp મેસેજ</button>
+          <button id="oilWhatsAppBtn" class="whatsapp-btn">WhatsApp PDF</button>
           <button id="oilPdfFileBtn" class="secondary">PDF ડાઉનલોડ</button>
           <button id="printBtn" class="ghost">પ્રિન્ટ</button>
         </div>
@@ -787,7 +787,7 @@
       </form>
 
       <div id="grainPrintArea" class="print-area">
-        <div class="print-toolbar share-action-bar no-print"><button id="grainBackToForm" class="ghost toolbar-back">← પાછા</button><button id="grainShareBtn" class="primary">PDF શેર કરો</button><button id="grainWhatsAppBtn" class="whatsapp-btn">WhatsApp મેસેજ</button><button id="grainPdfFileBtn" class="secondary">PDF ડાઉનલોડ</button><button id="grainPrintBtn" class="ghost">પ્રિન્ટ</button></div>
+        <div class="print-toolbar share-action-bar no-print"><button id="grainBackToForm" class="ghost toolbar-back">← પાછા</button><button id="grainShareBtn" class="primary">PDF શેર કરો</button><button id="grainWhatsAppBtn" class="whatsapp-btn">WhatsApp PDF</button><button id="grainPdfFileBtn" class="secondary">PDF ડાઉનલોડ</button><button id="grainPrintBtn" class="ghost">પ્રિન્ટ</button></div>
         <div class="physical-card single-print-card">
           <div class="card-face card-back">
             <div class="card-brand">સ્વાતિ મિની ઓઇલ મિલ</div><div class="card-place">સુલતાનપુર — અનાજ / કઠોળ સફાઈ</div>
@@ -1951,7 +1951,7 @@
 
         <div class="invoice-actions share-action-grid no-print">
           <button id="invoiceSharePdfBtn" class="primary" type="button">PDF શેર કરો</button>
-          <button id="invoiceWhatsAppBtn" class="whatsapp-btn" type="button">WhatsApp મેસેજ</button>
+          <button id="invoiceWhatsAppBtn" class="whatsapp-btn" type="button">WhatsApp PDF</button>
           <button id="invoiceDownloadPdfBtn" class="secondary" type="button">PDF ડાઉનલોડ</button>
           <button id="invoicePrintBtn" class="ghost" type="button">પ્રિન્ટ</button>
           <button id="invoiceCopyBtn" class="ghost" type="button" data-i18n="copyBillText">Copy Bill Text</button>
@@ -1965,31 +1965,31 @@
 
       <div id="reportHomeView">
         <div class="report-card-grid">
-          <button class="report-card" type="button" data-report-type="sales">
+          <button class="report-card report-sales" type="button" data-report-type="sales">
             <strong data-i18n="salesReport">Sales Report</strong>
           </button>
-          <button class="report-card" type="button" data-report-type="purchases">
+          <button class="report-card report-purchases" type="button" data-report-type="purchases">
             <strong data-i18n="purchaseReport">Purchase Report</strong>
           </button>
-          <button class="report-card" type="button" data-report-type="expenses">
+          <button class="report-card report-expenses" type="button" data-report-type="expenses">
             <strong data-i18n="expenseReport">Expense Report</strong>
           </button>
-          <button class="report-card" type="button" data-report-type="jobwork">
+          <button class="report-card report-jobwork" type="button" data-report-type="jobwork">
             <strong data-i18n="jobWorkReport">Job Work Report</strong>
           </button>
-          <button class="report-card" type="button" data-report-type="production">
+          <button class="report-card report-production" type="button" data-report-type="production">
             <strong data-i18n="productionReport">Production Report</strong>
           </button>
-          <button class="report-card" type="button" data-report-type="stock">
+          <button class="report-card report-stock" type="button" data-report-type="stock">
             <strong data-i18n="stockReport">Stock Report</strong>
           </button>
-          <button class="report-card" type="button" data-report-type="parties">
+          <button class="report-card report-parties" type="button" data-report-type="parties">
             <strong data-i18n="partyReport">Receivable / Payable</strong>
           </button>
-          <button class="report-card" type="button" data-report-type="staff">
+          <button class="report-card report-staff" type="button" data-report-type="staff">
             <strong data-i18n="staffReport">Staff Report</strong>
           </button>
-          <button class="report-card" type="button" data-report-type="invoices">
+          <button class="report-card report-invoices" type="button" data-report-type="invoices">
             <strong data-i18n="invoiceReport">Invoice Report</strong>
           </button>
         </div>
@@ -2137,6 +2137,14 @@
     </section>
   </main>
 
+  <nav class="mobile-bottom-nav no-print" aria-label="ઝડપી મેનુ">
+    <button class="mobile-nav-item active" type="button" data-mobile-screen="home"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3V10.5Z"/></svg><span>મુખ્ય</span></button>
+    <button class="mobile-nav-item" type="button" data-mobile-screen="customers"><svg viewBox="0 0 24 24"><path d="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm7-1a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM2 21c0-4.4 2.7-7 7-7s7 2.6 7 7H2Zm14-7c3.8.2 6 2.6 6 6v1h-4c0-2.8-.7-5.1-2-7Z"/></svg><span>ગ્રાહકો</span></button>
+    <button class="mobile-nav-item mobile-nav-create" type="button" data-mobile-screen="new-oil"><span class="mobile-nav-plus">＋</span><span>નવી એન્ટ્રી</span></button>
+    <button class="mobile-nav-item" type="button" data-mobile-screen="reports"><svg viewBox="0 0 24 24"><path d="M4 3h16v18H4V3Zm3 13h2V9H7v7Zm4 0h2V6h-2v10Zm4 0h2v-4h-2v4Z"/></svg><span>રિપોર્ટ્સ</span></button>
+    <button id="mobileMoreBtn" class="mobile-nav-item" type="button"><svg viewBox="0 0 24 24"><path d="M5 10a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/></svg><span>વધુ</span></button>
+  </nav>
+
   <div id="paymentModal" class="modal no-print" hidden>
     <div class="modal-card">
       <div class="row-between"><h2>ચુકવણી ઉમેરો</h2><button id="closePaymentModal" class="ghost">✕</button></div>
@@ -2157,7 +2165,7 @@
       <div class="row-between"><h2 id="fileActionTitle">ફાઇલ તૈયાર છે</h2><button id="fileActionClose" class="ghost" type="button">✕</button></div>
       <div class="file-ready-box"><span>ફાઇલ</span><strong id="fileActionName">—</strong></div>
       <p id="fileActionHint" class="muted">WhatsApp, Mail, Drive અથવા બીજી appમાં મોકલો.</p>
-      <div class="file-action-buttons"><button id="fileActionShare" class="primary" type="button">ફાઇલ શેર કરો</button><button id="fileActionDownload" class="secondary" type="button">ફાઇલ ડાઉનલોડ</button></div>
+      <div class="file-action-buttons"><button id="fileActionShare" class="primary" type="button">ફાઇલ શેર કરો</button><button id="fileActionWhatsApp" class="whatsapp-btn" type="button" hidden>WhatsApp ખોલો</button><button id="fileActionDownload" class="secondary" type="button">ફરી ડાઉનલોડ</button></div>
     </div>
   </div>
 
@@ -2190,14 +2198,14 @@
       <div id="deviceOperatorButtons" class="device-operator-buttons"></div>
     </div>
   </div>
-  <script src="sync-config.js?v=ui-alpha39"></script>
-  <script src="offline-sync.js?v=ui-alpha39"></script>
-  <script src="file-tools.js?v=ui-alpha39-pdf2"></script>
-  <script src="business-core.js?v=ui-alpha39"></script>
-  <script src="business-core-bridge.js?v=ui-alpha39"></script>
-  <script src="ui-i18n.js?v=ui-alpha39"></script>
-  <script src="app.js?v=ui-alpha39"></script>
-  <script src="pwa.js?v=ui-alpha39"></script>
+  <script src="sync-config.js?v=ui-alpha40"></script>
+  <script src="offline-sync.js?v=ui-alpha40"></script>
+  <script src="file-tools.js?v=ui-alpha40"></script>
+  <script src="business-core.js?v=ui-alpha40"></script>
+  <script src="business-core-bridge.js?v=ui-alpha40"></script>
+  <script src="ui-i18n.js?v=ui-alpha40"></script>
+  <script src="app.js?v=ui-alpha40"></script>
+  <script src="pwa.js?v=ui-alpha40"></script>
 
 </body>
 </html>

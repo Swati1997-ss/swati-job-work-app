@@ -2569,18 +2569,20 @@
 
   function invoiceText(inv){
     const lines=[
-      'સ્વાતિ મિની ઓઈલ મિલ',
-      'Pure Oil. Pure Trust.',
-      `બિલ નં.: ${inv.invoiceNo||'—'}`,
-      `તારીખ: ${inv.date||'—'}`,
-      `ગ્રાહક: ${inv.customer||'—'}`,
-      `ગામ: ${inv.village||'—'}`,
-      ''
+      '*સ્વાતિ મિની ઓઈલ મિલ*',
+      '_Invoice / બિલ_',
+      '',
+      '━━━━━━━━━━━━',
+      `*બિલ નં.:* ${inv.invoiceNo||'—'}`,
+      `*તારીખ:* ${inv.date||'—'}`,
+      `*ગ્રાહક:* ${inv.customer||'—'}`,
+      `*ગામ:* ${inv.village||'—'}`,
+      '━━━━━━━━━━━━'
     ];
-    (inv.items||[]).forEach(i=>lines.push(`${i.description}: ${i.qty||''} × ${i.rate?money(i.rate):''} = ${money(i.amount||0)}`));
-    lines.push('',`કુલ: ${money(inv.total||0)}`,`ચૂકવેલ: ${money(inv.paid||0)}`,`બાકી: ${money(inv.outstanding||0)}`);
-    if(inv.note) lines.push(`નોંધ: ${inv.note}`);
-    lines.push('આભાર');
+    (inv.items||[]).forEach(i=>lines.push(`• ${i.description}: ${i.qty||''} × ${i.rate?money(i.rate):''} = *${money(i.amount||0)}*`));
+    lines.push('━━━━━━━━━━━━',`*કુલ:* ${money(inv.total||0)}`,`*ચૂકવેલ:* ${money(inv.paid||0)}`,`*બાકી:* ${money(inv.outstanding||0)}`);
+    if(inv.note) lines.push(`_નોંધ: ${inv.note}_`);
+    lines.push('━━━━━━━━━━━━','આભાર 🙏');
     return lines.join('\n');
   }
 
@@ -2999,7 +3001,7 @@
 
   function exportBackup(){
     const data={};ALL_DATA_KEYS.forEach(key=>{try{data[key]=JSON.parse(localStorage.getItem(key)||'null')}catch{data[key]=null}});
-    const payload={version:39,exportedAt:new Date().toISOString(),currentOperator:currentOperator(),deviceId:deviceId(),data};
+    const payload={version:40,exportedAt:new Date().toISOString(),currentOperator:currentOperator(),deviceId:deviceId(),data};
     downloadBlob(JSON.stringify(payload,null,2),'application/json',`swati-job-work-backup-${todayISO()}.json`);
   }
 
@@ -3087,6 +3089,7 @@
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.screen === name));
     document.querySelectorAll('.drawer-link').forEach(t => t.classList.toggle('active', t.dataset.screen === name));
+    document.querySelectorAll('[data-mobile-screen]').forEach(t => t.classList.toggle('active', t.dataset.mobileScreen === name));
     target.classList.add('active');
     const pageTitle=$('currentPageTitle');
     if(pageTitle) pageTitle.textContent=SCREEN_TITLES[name]||'સ્વાતિ';
@@ -3425,7 +3428,7 @@
 
   function billShareText(r,business){
     const b=business==='grain'?'અનાજ / કઠોળ':'તેલ મિલ';
-    return `સ્વાતિ મિની ઓઇલ મિલ\n${b}\nબિલ: ${r?.billNo||'—'}\nતારીખ: ${r?.date||'—'}\nગ્રાહક: ${r?.customer?.name||'—'}\nગામ: ${r?.customer?.village||'—'}\nમજૂરી: ${money(r?.jobWorkAmount||0)}\nબાકી: ${money(remainingFor(r))}`;
+    return `*સ્વાતિ મિની ઓઇલ મિલ*\n_${b} મજૂરી બિલ_\n\n━━━━━━━━━━━━\n*બિલ નં.:* ${r?.billNo||'—'}\n*તારીખ:* ${r?.date||'—'}\n*ગ્રાહક:* ${r?.customer?.name||'—'}\n*ગામ:* ${r?.customer?.village||'—'}\n━━━━━━━━━━━━\n*કુલ મજૂરી:* ${money(r?.jobWorkAmount||0)}\n*ચૂકવેલ:* ${money(paymentTotal(r))}\n*બાકી:* ${money(remainingFor(r))}\n━━━━━━━━━━━━\nઆભાર 🙏`;
   }
   async function makeCardPdfAction(business,shareNow=false){
     try{
@@ -3437,28 +3440,18 @@
         toast('PDF તૈયાર થઈ રહી છે…');
         ready=await prepareBillPdf(business);
         if(!ready){toast('PDF બનાવવામાં સમસ્યા આવી');return;}
-        if(shareNow){
-          // The PDF had to be generated after this tap, so browser user-activation may be gone.
-          // Do not trigger a false download. Ask for one clean second tap now that the file is ready.
-          toast('PDF તૈયાર છે — હવે “PDF શેર કરો” ફરી દબાવો');
-          return;
-        }
       }
       if(shareNow){
-        const ok=await window.SwatiFiles.share(ready.blob,ready.name,ready.title,ready.text);
-        if(!ok){
-          window.SwatiFiles.presentBlob(ready.blob,ready.name,{
-            title:'PDF શેર માટે તૈયાર છે',
-            text:ready.text,
-            hint:'તમારો browser file-share સપોર્ટ કરે તો “શેર કરો”થી native Share menu ખુલશે. Download માત્ર અલગ buttonથી જ થશે.'
-          });
-        }
+        await window.SwatiFiles.shareOrDownload(ready.blob,ready.name,ready.title,ready.text,r.customer?.mobile);
       }else window.SwatiFiles.download(ready.blob,ready.name);
     }catch(e){console.error(e);toast('PDF / Share બનાવવામાં સમસ્યા આવી');}
   }
-  function shareBillWhatsApp(business){
+  async function shareBillWhatsApp(business){
     const r=business==='grain'?currentGrainRecord():currentRecord(); if(!r.customer?.name){toast('ગ્રાહકનું નામ જરૂરી છે');return;}
-    if(window.SwatiFiles) window.SwatiFiles.whatsappText(billShareText(r,business),r.customer?.mobile); else window.open(`https://wa.me/?text=${encodeURIComponent(billShareText(r,business))}`,'_blank');
+    if(!window.SwatiFiles){window.open(`https://wa.me/?text=${encodeURIComponent(billShareText(r,business))}`,'_blank');return;}
+    const ready=preparedBillPdf[business]||await prepareBillPdf(business);
+    if(!ready){toast('PDF બનાવવામાં સમસ્યા આવી');return;}
+    await window.SwatiFiles.shareOrDownload(ready.blob,ready.name,ready.title,ready.text,r.customer?.mobile);
   }
 
   $('printBtn').addEventListener('click', () => printOnly('oil'));
@@ -4496,11 +4489,8 @@
     if(!ready){
       ready=await prepareInvoicePdf(currentInvoice);
       if(!ready) return;
-      toast('PDF તૈયાર છે — હવે “PDF શેર કરો” ફરી દબાવો');
-      return;
     }
-    const ok=await window.SwatiFiles.share(ready.blob,ready.name,ready.title,ready.text);
-    if(!ok) window.SwatiFiles.presentBlob(ready.blob,ready.name,{title:'PDF શેર માટે તૈયાર છે',text:ready.text});
+    await window.SwatiFiles.shareOrDownload(ready.blob,ready.name,ready.title,ready.text,currentInvoice.mobile);
   });
 
   $('invoiceDownloadPdfBtn')?.addEventListener('click',async()=>{
@@ -4520,12 +4510,16 @@
     }
   });
 
-  $('invoiceWhatsAppBtn')?.addEventListener('click',()=>{
+  $('invoiceWhatsAppBtn')?.addEventListener('click',async()=>{
     if(!currentInvoice) return;
     const text=invoiceText(currentInvoice);
-    if(window.SwatiFiles) window.SwatiFiles.whatsappText(text,currentInvoice.mobile);
-    else window.open(`https://wa.me/?text=${encodeURIComponent(text)}`,'_blank','noopener');
+    if(!window.SwatiFiles){window.open(`https://wa.me/?text=${encodeURIComponent(text)}`,'_blank','noopener');return;}
+    const ready=preparedInvoicePdf?.id===currentInvoice.id?preparedInvoicePdf:await prepareInvoicePdf(currentInvoice);
+    if(ready) await window.SwatiFiles.shareOrDownload(ready.blob,ready.name,ready.title,ready.text,currentInvoice.mobile);
   });
+
+  document.querySelectorAll('[data-mobile-screen]').forEach(btn=>btn.addEventListener('click',()=>showScreen(btn.dataset.mobileScreen)));
+  $('mobileMoreBtn')?.addEventListener('click',openAppDrawer);
 
 
   document.querySelectorAll('[data-report-type]').forEach(btn=>btn.addEventListener('click',()=>openExpandedReport(btn.dataset.reportType)));

@@ -59,6 +59,7 @@
         return true;
       }catch(e){
         if(e&&e.name==='AbortError') return true;
+        if(e&&e.name==='NotAllowedError') return false;
         console.warn('Native file share attempt failed',e);
       }
     }
@@ -70,15 +71,35 @@
   }
   async function share(blob,name,title='સ્વાતિ',text=''){
     if(await nativeFileShare(blob,name,title,text)){notify('શેર મેનુ ખોલાયું');return true;}
-    notify('આ browserમાં file sharing ઉપલબ્ધ નથી. Chrome/Safariમાં app ખોલો અથવા ફાઇલ ડાઉનલોડ કરો.');
     return false;
   }
+  function setFileModalMode(mode='ready'){
+    const shareBtn=$('fileActionShare'),waBtn=$('fileActionWhatsApp');
+    if(shareBtn) shareBtn.hidden=mode==='downloaded';
+    if(waBtn) waBtn.hidden=mode!=='downloaded';
+  }
   function presentBlob(blob,name,opts={}){
-    currentFile={blob,name,title:opts.title||'સ્વાતિ ફાઇલ',text:opts.text||''};
+    currentFile={blob,name,title:opts.title||'સ્વાતિ ફાઇલ',text:opts.text||'',phone:opts.phone||''};
     const modal=$('fileActionModal');if(!modal){download(blob,name);return;}
     $('fileActionTitle').textContent=opts.title||'ફાઇલ તૈયાર છે';$('fileActionName').textContent=name;
     $('fileActionHint').textContent=opts.hint||'WhatsApp, Mail, Drive અથવા બીજી appમાં મોકલો.';
+    setFileModalMode('ready');
     modal.hidden=false;notify('ફાઇલ તૈયાર છે');
+  }
+  function showDownloadedGuide(){
+    if(!currentFile) return;
+    $('fileActionTitle').textContent='ફાઇલ ડાઉનલોડ થઈ';
+    $('fileActionHint').textContent='WhatsAppમાં 📎 દબાવો → Document પસંદ કરો → Downloadsમાંથી ઉપરની ફાઇલ જોડો.';
+    setFileModalMode('downloaded');
+    $('fileActionModal').hidden=false;
+    notify('ફાઇલ તૈયાર છે — WhatsAppમાં Document તરીકે જોડો');
+  }
+  async function shareOrDownload(blob,name,title='સ્વાતિ',text='',phone=''){
+    currentFile={blob,name,title,text,phone};
+    if(await nativeFileShare(blob,name,title,text)){notify('શેર મેનુ ખોલાયું');return 'shared';}
+    download(blob,name);
+    showDownloadedGuide();
+    return 'downloaded';
   }
   function presentCsvAsXlsx(csv,name){const rows=parseCsv(csv),xname=name.replace(/\.csv$/i,'.xlsx');presentBlob(makeXlsx(rows,'Swati'),xname,{title:'Excel ફાઇલ તૈયાર છે'});}
   function whatsappText(text,phone=''){
@@ -252,18 +273,22 @@
   document.addEventListener('DOMContentLoaded',()=>{
     $('fileActionClose')?.addEventListener('click',()=>{$('fileActionModal').hidden=true;});
     $('fileActionDownload')?.addEventListener('click',()=>{if(currentFile)download(currentFile.blob,currentFile.name);});
+    $('fileActionWhatsApp')?.addEventListener('click',()=>{
+      if(!currentFile) return;
+      whatsappText(currentFile.text||`સ્વાતિ મિની ઓઇલ મિલ\n\nફાઇલ: ${currentFile.name}`,currentFile.phone);
+    });
     $('fileActionShare')?.addEventListener('click',async()=>{
       if(!currentFile) return;
       const btn=$('fileActionShare');
       btn.disabled=true;btn.textContent='શેર થઈ રહ્યું છે…';
       try{
-        const ok=await share(currentFile.blob,currentFile.name,currentFile.title,currentFile.text);
-        if(ok) $('fileActionModal').hidden=true;
+        const result=await shareOrDownload(currentFile.blob,currentFile.name,currentFile.title,currentFile.text,currentFile.phone);
+        if(result==='shared') $('fileActionModal').hidden=true;
       }finally{
         btn.disabled=false;btn.textContent='ફાઇલ શેર કરો';
       }
     });
     $('fileActionModal')?.addEventListener('click',e=>{if(e.target===$('fileActionModal'))$('fileActionModal').hidden=true;});
   });
-  window.SwatiFiles={makeXlsx,parseCsv,presentCsvAsXlsx,presentBlob,download,share,nativeFileShare,whatsappText,cardPdf,shareCardPdf,presentCardPdf};
+  window.SwatiFiles={makeXlsx,parseCsv,presentCsvAsXlsx,presentBlob,download,share,shareOrDownload,nativeFileShare,whatsappText,cardPdf,shareCardPdf,presentCardPdf};
 })();
