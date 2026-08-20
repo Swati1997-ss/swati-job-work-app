@@ -833,3 +833,18 @@ input:focus,select:focus{border-color:var(--pro-blue);box-shadow:0 0 0 3px rgba(
 /* UI Alpha 12 — neutral purchase/expense classification
    Purchases and expenses remain separate modules for workflow,
    without a forced "Main Purchase vs Extra Cost" business concept. */
+
+
+/* =========================================================
+   UI ALPHA 13 — Grain submenu + Back navigation + bilingual UI
+   ========================================================= */
+.grain-action-grid{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px
+}
+.grain-action-tile{
+  border:1px solid var(--ui-line);background:#fff;border-radius:15px;padding:14px;
+  display:grid;gap:4px;text-align:left;box-shadow:0 3px 10px rgba(25,33,45,.04)
+}
+.grain-action-tile strong{font-size:.92rem}
+.grain-action-tile small{font-size:.7rem;color:var(--text-soft);line-height:1.35}
+@media(max-width:480px){.grain-action-grid{grid-template-columns:1fr}}

@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#8f1736" />
   <title>સ્વાતિ મિની ઓઇલ મિલ</title>
-  <link rel="manifest" href="manifest.webmanifest?v=ui-alpha12" />
+  <link rel="manifest" href="manifest.webmanifest?v=ui-alpha13" />
   <link rel="apple-touch-icon" href="swati-icon-v2-192.png?v=22" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Swati" />
-  <link rel="stylesheet" href="styles.css?v=ui-alpha12" />
+  <link rel="stylesheet" href="styles.css?v=ui-alpha13" />
 </head>
 <body>
   
@@ -20,7 +20,7 @@
         <span></span><span></span><span></span>
       </button>
       <button id="headerHomeBtn" class="header-home-link" type="button" aria-label="મુખ્ય પેજ">
-        <img class="header-logo" src="swati-icon-v2-192.png?v=ui12" alt="સ્વાતિ" />
+        <img class="header-logo" src="swati-icon-v2-192.png?v=ui13" alt="સ્વાતિ" />
         <span class="header-brand-copy">
           <span class="brand">સ્વાતિ મિની ઓઇલ મિલ</span>
           <span class="subbrand">સુલતાનપુર</span>
@@ -37,7 +37,7 @@
   <aside id="appDrawer" class="app-drawer no-print" aria-label="મુખ્ય મેનુ" aria-hidden="true">
     <div class="drawer-head">
       <button id="drawerBrandHomeBtn" class="drawer-brand-row drawer-brand-button" type="button" aria-label="મુખ્ય પેજ">
-        <img class="drawer-logo" src="swati-icon-v2-192.png?v=ui12" alt="સ્વાતિ" />
+        <img class="drawer-logo" src="swati-icon-v2-192.png?v=ui13" alt="સ્વાતિ" />
         <span>
           <span class="drawer-brand">સ્વાતિ મિની ઓઇલ મિલ</span>
           <span class="drawer-subbrand">સુલતાનપુર</span>
@@ -47,22 +47,37 @@
     </div>
 
     <nav class="drawer-nav">
-      <button class="drawer-link active" data-screen="home" type="button"><span class="drawer-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5v9a1.5 1.5 0 0 1-1.5 1.5H15v-6H9v6H4.5A1.5 1.5 0 0 1 3 19.5z"/></svg></span><span>મુખ્ય</span></button>
+      <button class="drawer-link active" data-screen="home" type="button"><span class="drawer-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5v9a1.5 1.5 0 0 1-1.5 1.5H15v-6H9v6H4.5A1.5 1.5 0 0 1 3 19.5z"/></svg></span><span data-i18n="home">મુખ્ય</span></button>
       
       <div class="drawer-group">
         <button id="oilMenuToggle" class="drawer-link drawer-group-toggle" type="button" aria-expanded="false">
           <span class="drawer-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2s6 6.4 6 12a6 6 0 1 1-12 0c0-5.6 6-12 6-12Zm0 5.2C10.4 9.5 9 12 9 14a3 3 0 0 0 6 0c0-2-1.4-4.5-3-6.8Z"/></svg></span>
-          <span class="drawer-group-label">તેલ મીલ</span>
+          <span class="drawer-group-label" data-i18n="oilMenu">તેલ મીલ</span>
           <span class="drawer-group-arrow">⌄</span>
         </button>
         <div id="oilSubmenu" class="drawer-submenu" hidden>
-          <button class="drawer-sublink" data-screen="new-oil" type="button">મજૂરી કામ</button>
-          <button class="drawer-sublink" data-screen="production" type="button">કંપની પ્રોડક્શન</button>
-          <button class="drawer-sublink" data-screen="company-sales" type="button">વેચાણ</button>
-          <button class="drawer-sublink" data-screen="company-stock" type="button">સ્ટોક</button>
+          <button class="drawer-sublink" data-screen="new-oil" type="button" data-i18n="oilJobWork">મજૂરી કામ</button>
+          <button class="drawer-sublink" data-screen="production" type="button" data-i18n="oilProduction">કંપની પ્રોડક્શન</button>
+          <button class="drawer-sublink" data-screen="company-sales" type="button" data-i18n="oilSales">વેચાણ</button>
+          <button class="drawer-sublink" data-screen="company-stock" type="button" data-i18n="oilStock">સ્ટોક</button>
         </div>
       </div>
-      <button class="drawer-link" data-screen="grain" type="button"><span class="drawer-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 20c0-7 3.5-13 10-17 1 7-1.5 13-8 17H6Zm3.2-3.5c2.4-1.7 4.1-4 5-6.9-2.2 1.8-3.8 4-5 6.9Z"/></svg></span><span>અનાજ / કઠોળ</span></button>
+      
+      <div class="drawer-group">
+        <button id="grainMenuToggle" class="drawer-link drawer-group-toggle" type="button" aria-expanded="false">
+          <span class="drawer-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 20c0-7 3.5-13 10-17 1 7-1.5 13-8 17H6Zm3.2-3.5c2.4-1.7 4.1-4 5-6.9-2.2 1.8-3.8 4-5 6.9Z"/></svg>
+          </span>
+          <span class="drawer-group-label" data-i18n="grainMenu">અનાજ / કઠોળ</span>
+          <span class="drawer-group-arrow">⌄</span>
+        </button>
+        <div id="grainSubmenu" class="drawer-submenu" hidden>
+          <button class="drawer-sublink" data-screen="grain" type="button" data-i18n="grainJobWork">મજૂરી કામ</button>
+          <button class="drawer-sublink" data-screen="grain-production" type="button" data-i18n="grainProduction">કંપની પ્રોડક્શન</button>
+          <button class="drawer-sublink" data-screen="grain-sales" type="button" data-i18n="grainSales">વેચાણ</button>
+          <button class="drawer-sublink" data-screen="grain-stock" type="button" data-i18n="grainStock">સ્ટોક</button>
+        </div>
+      </div>
       
       <button class="drawer-link" data-screen="purchases" type="button">
         <span class="drawer-icon">
@@ -70,10 +85,10 @@
             <path d="M4 4h2l1.4 9.3A2 2 0 0 0 9.4 15H18a2 2 0 0 0 1.9-1.4L22 7H8.2L7.8 4H4Zm5.5 13a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/>
           </svg>
         </span>
-        <span>ખરીદી</span>
+        <span data-i18n="purchase">ખરીદી</span>
       </button>
-<button class="drawer-link" data-screen="customers" type="button"><span class="drawer-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm7-1a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM2 21v-2c0-3.3 2.7-6 6-6h1c3.3 0 6 2.7 6 6v2H2Zm13.7 0v-2c0-1.8-.6-3.6-1.7-4.9.6-.1 1.2-.1 1.8-.1 3.4 0 6.2 2.2 6.2 5v2h-6.3Z"/></svg></span><span>ગ્રાહકો</span></button>
-      <button class="drawer-link" data-screen="history" type="button"><span class="drawer-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4a8 8 0 1 1-7.3 4.8H2l3.6-4L9 8.8H6.8A6 6 0 1 0 12 6v4l3 2-1.1 1.7L10 11V4h2Z"/></svg></span><span>હિસ્ટ્રી</span></button>
+<button class="drawer-link" data-screen="customers" type="button"><span class="drawer-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm7-1a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM2 21v-2c0-3.3 2.7-6 6-6h1c3.3 0 6 2.7 6 6v2H2Zm13.7 0v-2c0-1.8-.6-3.6-1.7-4.9.6-.1 1.2-.1 1.8-.1 3.4 0 6.2 2.2 6.2 5v2h-6.3Z"/></svg></span><span data-i18n="customers">ગ્રાહકો</span></button>
+      <button class="drawer-link" data-screen="history" type="button"><span class="drawer-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4a8 8 0 1 1-7.3 4.8H2l3.6-4L9 8.8H6.8A6 6 0 1 0 12 6v4l3 2-1.1 1.7L10 11V4h2Z"/></svg></span><span data-i18n="history">હિસ્ટ્રી</span></button>
       <button class="drawer-link" data-screen="stock" type="button"><span class="drawer-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 9 4.5v11L12 22l-9-4.5v-11L12 2Zm0 2.2L6.1 7 12 9.8 17.9 7 12 4.2ZM5 8.6v7.6l6 3v-7.6l-6-3Zm8 10.6 6-3V8.6l-6 3v7.6Z"/></svg></span><span>સ્ટોક / Batch</span></button>
       
       
@@ -81,22 +96,22 @@
         <span class="drawer-icon">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h14v4H5V3Zm0 6h14v12H5V9Zm2 2v8h10v-8H7Zm2 2h6v2H9v-2Z"/></svg>
         </span>
-        <span>વપરાશ</span>
+        <span data-i18n="usage">વપરાશ</span>
       </button>
 <button class="drawer-link" data-screen="expenses" type="button">
         <span class="drawer-icon">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4V5Zm2 2v10h12V7H6Zm2 2h8v2H8V9Zm0 4h5v2H8v-2Z"/></svg>
         </span>
-        <span>ખર્ચ</span>
+        <span data-i18n="expense">ખર્ચ</span>
       </button>
       <button class="drawer-link" data-screen="finance" type="button">
         <span class="drawer-icon">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18v14H3V5Zm2 2v10h14V7H5Zm3 2h8v2H8V9Zm0 4h5v2H8v-2Z"/></svg>
         </span>
-        <span>ફાઇનાન્સ</span>
+        <span data-i18n="finance">ફાઇનાન્સ</span>
       </button>
-<button class="drawer-link" data-screen="reports" type="button"><span class="drawer-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3h16a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Zm3 13h2V9H7v7Zm4 0h2V6h-2v10Zm4 0h2v-4h-2v4Z"/></svg></span><span>રિપોર્ટ્સ</span></button>
-      <button class="drawer-link" data-screen="settings" type="button"><span class="drawer-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10.9 2 2.2 0 .5 2.2c.5.2 1 .4 1.5.7l2-1.1 1.6 1.6-1.1 2c.3.5.5 1 .7 1.5l2.2.5v2.2l-2.2.5c-.2.5-.4 1-.7 1.5l1.1 2-1.6 1.6-2-1.1c-.5.3-1 .5-1.5.7l-.5 2.2h-2.2l-.5-2.2c-.5-.2-1-.4-1.5-.7l-2 1.1-1.6-1.6 1.1-2c-.3-.5-.5-1-.7-1.5l-2.2-.5V9.4l2.2-.5c.2-.5.4-1 .7-1.5l-1.1-2L6.9 3.8l2 1.1c.5-.3 1-.5 1.5-.7L10.9 2ZM12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z"/></svg></span><span>સેટિંગ્સ</span></button>
+<button class="drawer-link" data-screen="reports" type="button"><span class="drawer-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3h16a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Zm3 13h2V9H7v7Zm4 0h2V6h-2v10Zm4 0h2v-4h-2v4Z"/></svg></span><span data-i18n="reports">રિપોર્ટ્સ</span></button>
+      <button class="drawer-link" data-screen="settings" type="button"><span class="drawer-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10.9 2 2.2 0 .5 2.2c.5.2 1 .4 1.5.7l2-1.1 1.6 1.6-1.1 2c.3.5.5 1 .7 1.5l2.2.5v2.2l-2.2.5c-.2.5-.4 1-.7 1.5l1.1 2-1.6 1.6-2-1.1c-.5.3-1 .5-1.5.7l-.5 2.2h-2.2l-.5-2.2c-.5-.2-1-.4-1.5-.7l-2 1.1-1.6-1.6 1.1-2c-.3-.5-.5-1-.7-1.5l-2.2-.5V9.4l2.2-.5c.2-.5.4-1 .7-1.5l-1.1-2L6.9 3.8l2 1.1c.5-.3 1-.5 1.5-.7L10.9 2ZM12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z"/></svg></span><span data-i18n="settings">સેટિંગ્સ</span></button>
     </nav>
 
     <div class="drawer-footer">
@@ -135,7 +150,7 @@
           <span class="home-action-icon">
             <svg viewBox="0 0 24 24"><path d="M7 3h10v4h4v14H3V7h4V3Zm2 4h6V5H9v2Zm-4 2v10h14V9H5Zm3 3h8v2H8v-2Zm0 4h5v2H8v-2Z"/></svg>
           </span>
-          <span><strong>મજૂરી કામ</strong><small>તેલ મીલની નવી એન્ટ્રી</small></span>
+          <span><strong data-i18n="oilJobWork">મજૂરી કામ</strong><small>તેલ મીલની નવી એન્ટ્રી</small></span>
           <span class="home-action-arrow">›</span>
         </button>
 
@@ -143,7 +158,7 @@
           <span class="home-action-icon">
             <svg viewBox="0 0 24 24"><path d="M4 20V9l5 3V8l5 3V4h3v5h3v11H4Zm2-2h12v-5h-3v3l-4-3v3l-5-3v5Z"/></svg>
           </span>
-          <span><strong>તેલ પ્રોડક્શન</strong><small>કંપનીનો નવો બેચ</small></span>
+          <span><strong data-i18n="oilProduction">તેલ પ્રોડક્શન</strong><small>કંપનીનો નવો બેચ</small></span>
           <span class="home-action-arrow">›</span>
         </button>
 
@@ -151,7 +166,7 @@
           <span class="home-action-icon">
             <svg viewBox="0 0 24 24"><path d="M3 5h13v3H3V5Zm0 5h13v9H3v-9Zm15-1h2l2 3v7h-5V9h1Zm-12 8a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm13 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/></svg>
           </span>
-          <span><strong>તેલ વેચાણ</strong><small>કંપનીના તેલનું વેચાણ</small></span>
+          <span><strong data-i18n="oilSales">તેલ વેચાણ</strong><small>કંપનીના તેલનું વેચાણ</small></span>
           <span class="home-action-arrow">›</span>
         </button>
 
@@ -159,7 +174,7 @@
           <span class="home-action-icon">
             <svg viewBox="0 0 24 24"><path d="m12 2 9 4.5v11L12 22l-9-4.5v-11L12 2Zm0 2.2L6.1 7 12 9.8 17.9 7 12 4.2ZM5 8.6v7.6l6 3v-7.6l-6-3Zm8 10.6 6-3V8.6l-6 3v7.6Z"/></svg>
           </span>
-          <span><strong>તેલ સ્ટોક</strong><small>Raw + Oil + Tin + Khali</small></span>
+          <span><strong data-i18n="oilStock">તેલ સ્ટોક</strong><small>Raw + Oil + Tin + Khali</small></span>
           <span class="home-action-arrow">›</span>
         </button>
 
@@ -167,7 +182,7 @@
           <span class="home-action-icon">
             <svg viewBox="0 0 24 24"><path d="M6 20c0-7 3.5-13 10-17 1 7-1.5 13-8 17H6Zm3.2-3.5c2.4-1.7 4.1-4 5-6.9-2.2 1.8-3.8 4-5 6.9Z"/></svg>
           </span>
-          <span><strong>અનાજ / કઠોળ</strong><small>મજૂરીની નવી એન્ટ્રી</small></span>
+          <span><strong data-i18n="grainMenu">અનાજ / કઠોળ</strong><small>મજૂરીની નવી એન્ટ્રી</small></span>
           <span class="home-action-arrow">›</span>
         </button>
 
@@ -175,7 +190,7 @@
           <span class="home-action-icon">
             <svg viewBox="0 0 24 24"><path d="M8.5 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm7-1a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM2 21v-2c0-3.3 2.7-6 6-6h1c3.3 0 6 2.7 6 6v2H2Zm13.7 0v-2c0-1.8-.6-3.6-1.7-4.9.6-.1 1.2-.1 1.8-.1 3.4 0 6.2 2.2 6.2 5v2h-6.3Z"/></svg>
           </span>
-          <span><strong>ગ્રાહકો</strong><small>ગામ મુજબ ગ્રાહકો</small></span>
+          <span><strong data-i18n="customers">ગ્રાહકો</strong><small>ગામ મુજબ ગ્રાહકો</small></span>
           <span class="home-action-arrow">›</span>
         </button>
       
@@ -183,7 +198,7 @@
           <span class="home-action-icon">
             <svg viewBox="0 0 24 24"><path d="M4 4h2l1.4 9.3A2 2 0 0 0 9.4 15H18a2 2 0 0 0 1.9-1.4L22 7H8.2L7.8 4H4Zm5.5 13a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/></svg>
           </span>
-          <span><strong>ખરીદી</strong><small>બધા વિભાગની purchase entry</small></span>
+          <span><strong data-i18n="purchase">ખરીદી</strong><small>બધા વિભાગની purchase entry</small></span>
           <span class="home-action-arrow">›</span>
         </button>
 
@@ -191,7 +206,7 @@
           <span class="home-action-icon">
             <svg viewBox="0 0 24 24"><path d="M4 5h16v14H4V5Zm2 2v10h12V7H6Zm2 2h8v2H8V9Zm0 4h5v2H8v-2Z"/></svg>
           </span>
-          <span><strong>ખર્ચ</strong><small>Electricity, labour, transport વગેરે</small></span>
+          <span><strong data-i18n="expense">ખર્ચ</strong><small>Electricity, labour, transport વગેરે</small></span>
           <span class="home-action-arrow">›</span>
         </button>
 
@@ -199,7 +214,7 @@
           <span class="home-action-icon">
             <svg viewBox="0 0 24 24"><path d="M3 5h18v14H3V5Zm2 2v10h14V7H5Zm3 2h8v2H8V9Zm0 4h5v2H8v-2Z"/></svg>
           </span>
-          <span><strong>ફાઇનાન્સ</strong><small>Cash, bank, payable, receivable</small></span>
+          <span><strong data-i18n="finance">ફાઇનાન્સ</strong><small>Cash, bank, payable, receivable</small></span>
           <span class="home-action-arrow">›</span>
         </button>
 </div>
@@ -803,7 +818,68 @@
       </div>
     </section>
 
-    <section class="screen" id="screen-customers">
+    
+    <section class="screen" id="screen-grain-production">
+      <div class="module-head compact-page-head">
+        <div><p data-i18n="grainProdHelp">કંપનીના અનાજ / કઠોળ processing માટેનું production workspace.</p></div>
+      </div>
+
+      <div class="card section-card">
+        <div class="row-between">
+          <h2 data-i18n="grainProduction">કંપની પ્રોડક્શન</h2>
+          <span class="module-badge blue">Processing</span>
+        </div>
+        <div class="grain-action-grid">
+          <button class="grain-action-tile" data-go="purchases" type="button">
+            <strong data-i18n="purchase">ખરીદી</strong>
+            <small data-i18n="grainRawPurchaseHelp">અનાજ / કઠોળ અને empty bags ખરીદો</small>
+          </button>
+          <button class="grain-action-tile" data-go="usage" type="button">
+            <strong data-i18n="usage">વપરાશ</strong>
+            <small data-i18n="grainUsageHelp">Packaging / consumables usage નોંધો</small>
+          </button>
+          <button class="grain-action-tile" data-go="grain-stock" type="button">
+            <strong data-i18n="stock">સ્ટોક</strong>
+            <small data-i18n="grainStockHelp">Raw / Processed / Waste stock જુઓ</small>
+          </button>
+          <button class="grain-action-tile" data-go="grain-sales" type="button">
+            <strong data-i18n="sales">વેચાણ</strong>
+            <small data-i18n="grainSalesHelp">Processed goods / waste sale</small>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-grain-sales">
+      <div class="module-head compact-page-head">
+        <div><p data-i18n="grainSalesHelp">Processed grain/pulse અને waste/by-product sales માટેનું workspace.</p></div>
+      </div>
+      <div class="card section-card">
+        <div class="row-between">
+          <h2 data-i18n="grainSales">વેચાણ</h2>
+          <span class="module-badge blue">Grain / Pulse</span>
+        </div>
+        <div class="notice">
+          <span data-i18n="grainSalesFoundation">આ screen Grain/Pulse sales માટે અલગ રાખવામાં આવી છે. Detailed sale-entry workflow next functional expansionમાં જોડાશે.</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-grain-stock">
+      <div class="module-head compact-page-head">
+        <div><p data-i18n="grainStockHelp">Company-wide ledgerમાંથી Grain/Pulse stock view.</p></div>
+      </div>
+
+      <div class="card section-card">
+        <div class="row-between">
+          <h2 data-i18n="grainStock">સ્ટોક</h2>
+          <strong id="grainStockItemCount">0</strong>
+        </div>
+        <div id="grainStockList" class="finance-stock-list"></div>
+      </div>
+    </section>
+
+<section class="screen" id="screen-customers">
       <div id="customerVillageView" class="customer-view">
         <div class="customer-page-head no-print">
           <div>
@@ -1415,13 +1491,13 @@
       <div id="deviceOperatorButtons" class="device-operator-buttons"></div>
     </div>
   </div>
-  <script src="sync-config.js?v=ui-alpha12"></script>
-  <script src="offline-sync.js?v=ui-alpha12"></script>
-  <script src="file-tools.js?v=ui-alpha12"></script>
-  <script src="business-core.js?v=ui-alpha12"></script>
-  <script src="business-core-bridge.js?v=ui-alpha12"></script>
-  <script src="app.js?v=ui-alpha12"></script>
-  <script src="pwa.js?v=ui-alpha12"></script>
+  <script src="sync-config.js?v=ui-alpha13"></script>
+  <script src="offline-sync.js?v=ui-alpha13"></script>
+  <script src="file-tools.js?v=ui-alpha13"></script>
+  <script src="business-core.js?v=ui-alpha13"></script>
+  <script src="business-core-bridge.js?v=ui-alpha13"></script>
+  <script src="app.js?v=ui-alpha13"></script>
+  <script src="pwa.js?v=ui-alpha13"></script>
 
 </body>
 </html>

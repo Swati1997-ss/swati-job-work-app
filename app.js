@@ -1326,6 +1326,19 @@
     return round2(total);
   }
 
+
+  function renderGrainStock(){
+    if(!window.SwatiCore || !$('grainStockList')) return;
+    const rows=window.SwatiCore.stockSnapshot()
+      .filter(x=>String(x.itemId||'').startsWith('grain.') || String(x.itemName||'').includes('અનાજ') || String(x.itemName||'').includes('કઠોળ'));
+    $('grainStockItemCount').textContent=String(rows.length);
+    $('grainStockList').innerHTML=rows.map(x=>`
+      <div class="finance-stock-row">
+        <span><strong>${escapeHtml(x.itemName||x.itemId||'Item')}</strong><small>${escapeHtml(x.unitName||'')}</small></span>
+        <span><strong>${x.balance}</strong><small>In ${x.inQty} • Out ${x.outQty}</small></span>
+      </div>`).join('')||'<div class="empty">હજુ Grain/Pulse stock movement નથી.</div>';
+  }
+
   function renderHistory(){
     const q = ($('historySearch')?.value || '').trim().toLowerCase();
     const rows = getTx().slice().reverse().filter(r => {
@@ -1621,6 +1634,9 @@
     home:'મુખ્ય',
     'new-oil':'તેલ મીલ',
     grain:'અનાજ / કઠોળ',
+    'grain-production':'અનાજ / કઠોળ પ્રોડક્શન',
+    'grain-sales':'અનાજ / કઠોળ વેચાણ',
+    'grain-stock':'અનાજ / કઠોળ સ્ટોક',
     production:'કંપની પ્રોડક્શન',
     'company-sales':'કંપની વેચાણ',
     'company-stock':'કંપની સ્ટોક',
@@ -1651,7 +1667,7 @@
     document.body.classList.add('drawer-open');
   }
 
-  function showScreen(name){
+  function showScreenInternal(name){
     const target=$(`screen-${name}`);
     if(!target) return;
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -1677,6 +1693,55 @@
     if (name === 'reports') { renderReports(); showReportHome(); }
     window.scrollTo({top:0,behavior:'smooth'});
   }
+
+  const APP_HISTORY_KEY='swati_app_nav_history_v1';
+  let appNavStack=['home'];
+  let suppressHistoryPush=false;
+
+  function activeScreenName(){
+    const el=document.querySelector('.screen.active');
+    return el?.id?.replace(/^screen-/,'')||'home';
+  }
+
+  function showScreen(name, options={}){
+    const current=activeScreenName();
+    const push=options.push!==false;
+    if(push && current && current!==name){
+      appNavStack.push(current);
+      if(appNavStack.length>40) appNavStack=appNavStack.slice(-40);
+      history.pushState({swati:true,screen:name},'',`#${name}`);
+    } else if(options.replaceHistory){
+      history.replaceState({swati:true,screen:name},'',`#${name}`);
+    }
+    showScreenInternal(name);
+  }
+
+  function goBackInsideApp(){
+    if(appNavStack.length){
+      const prev=appNavStack.pop();
+      showScreen(prev,{push:false});
+      history.replaceState({swati:true,screen:prev},'',`#${prev}`);
+      return true;
+    }
+    const current=activeScreenName();
+    if(current!=='home'){
+      showScreen('home',{push:false});
+      history.replaceState({swati:true,screen:'home'},'','#home');
+      return true;
+    }
+    return false;
+  }
+
+  window.addEventListener('popstate',()=>{
+    if(goBackInsideApp()) return;
+  });
+
+  document.addEventListener('DOMContentLoaded',()=>{
+    const initial=location.hash.replace('#','');
+    history.replaceState({swati:true,screen:initial||'home'},'',`#${initial||'home'}`);
+  });
+
+
 
   function initSettingsForm(){
     $('settingTinKg').value = settings.tinKg;
@@ -1774,6 +1839,13 @@
     if(btn) btn.setAttribute('aria-expanded',String(shouldOpen));
   });
   document.querySelectorAll('.drawer-sublink').forEach(b=>b.addEventListener('click',()=>showScreen(b.dataset.screen)));
+  $('grainMenuToggle')?.addEventListener('click',()=>{
+    const menu=$('grainSubmenu'),btn=$('grainMenuToggle');
+    const shouldOpen=!!menu?.hidden;
+    if(menu) menu.hidden=!shouldOpen;
+    if(btn) btn.setAttribute('aria-expanded',String(shouldOpen));
+  });
+
 
   $('headerHomeBtn')?.addEventListener('click',()=>showScreen('home'));
   $('drawerBrandHomeBtn')?.addEventListener('click',()=>showScreen('home'));
@@ -2298,8 +2370,27 @@
       finance:'ફાઇનાન્સ',
       usage:'વપરાશ',
       customers:'ગ્રાહકો',
+      history:'હિસ્ટ્રી',
       reports:'રિપોર્ટ્સ',
-      settings:'સેટિંગ્સ'
+      settings:'સેટિંગ્સ',
+      sales:'વેચાણ',
+      stock:'સ્ટોક',
+      oilMenu:'તેલ મીલ',
+      oilJobWork:'મજૂરી કામ',
+      oilProduction:'કંપની પ્રોડક્શન',
+      oilSales:'વેચાણ',
+      oilStock:'સ્ટોક',
+      grainMenu:'અનાજ / કઠોળ',
+      grainJobWork:'મજૂરી કામ',
+      grainProduction:'કંપની પ્રોડક્શન',
+      grainSales:'વેચાણ',
+      grainStock:'સ્ટોક',
+      grainProdHelp:'કંપનીના અનાજ / કઠોળ processing માટેનું production workspace.',
+      grainRawPurchaseHelp:'અનાજ / કઠોળ અને empty bags ખરીદો',
+      grainUsageHelp:'Packaging / consumables usage નોંધો',
+      grainStockHelp:'Raw / Processed / Waste stock જુઓ',
+      grainSalesHelp:'Processed grain/pulse અને waste/by-product sales માટેનું workspace.',
+      grainSalesFoundation:'આ screen Grain/Pulse sales માટે અલગ રાખવામાં આવી છે. Detailed sale-entry workflow next functional expansionમાં જોડાશે.'
     },
     en:{
       languageTitle:'Interface Language',
@@ -2311,43 +2402,76 @@
       finance:'Finance',
       usage:'Usage',
       customers:'Customers',
+      history:'History',
       reports:'Reports',
-      settings:'Settings'
+      settings:'Settings',
+      sales:'Sales',
+      stock:'Stock',
+      oilMenu:'Oil Mill',
+      oilJobWork:'Job Work',
+      oilProduction:'Company Production',
+      oilSales:'Sales',
+      oilStock:'Stock',
+      grainMenu:'Grain / Pulse',
+      grainJobWork:'Job Work',
+      grainProduction:'Company Processing',
+      grainSales:'Sales',
+      grainStock:'Stock',
+      grainProdHelp:'Workspace for company-owned grain and pulse processing.',
+      grainRawPurchaseHelp:'Purchase grain, pulses and empty bags',
+      grainUsageHelp:'Record packaging and consumable usage',
+      grainStockHelp:'View raw, processed and waste stock',
+      grainSalesHelp:'Workspace for processed grain/pulse and by-product sales.',
+      grainSalesFoundation:'This screen is reserved for Grain/Pulse sales. The detailed sales-entry workflow will be added in the next functional expansion.'
     }
   };
 
   function applyInterfaceLanguage(lang){
     const l=lang==='en'?'en':'gu';
     localStorage.setItem('swati_interface_language_v1',l);
+    const op=(typeof currentOperator==='function'?currentOperator():'')||'device';
+    localStorage.setItem(`swati_interface_language_v1_${op}`,l);
     document.documentElement.lang=l==='en'?'en':'gu';
+
     document.querySelectorAll('[data-i18n]').forEach(el=>{
       const key=el.dataset.i18n;
       if(UI_TEXT[l][key]) el.textContent=UI_TEXT[l][key];
     });
 
-    const screenLabels={
+    const translatedTitles={
       home:UI_TEXT[l].home,
+      'new-oil':UI_TEXT[l].oilJobWork,
+      production:UI_TEXT[l].oilProduction,
+      'company-sales':UI_TEXT[l].oilSales,
+      'company-stock':UI_TEXT[l].oilStock,
+      grain:UI_TEXT[l].grainJobWork,
+      'grain-production':UI_TEXT[l].grainProduction,
+      'grain-sales':UI_TEXT[l].grainSales,
+      'grain-stock':UI_TEXT[l].grainStock,
       purchases:UI_TEXT[l].purchase,
+      usage:UI_TEXT[l].usage,
       expenses:UI_TEXT[l].expense,
       finance:UI_TEXT[l].finance,
-      usage:UI_TEXT[l].usage,
       customers:UI_TEXT[l].customers,
+      history:UI_TEXT[l].history,
       reports:UI_TEXT[l].reports,
       settings:UI_TEXT[l].settings
     };
-    document.querySelectorAll('[data-screen]').forEach(btn=>{
-      const s=btn.dataset.screen;
-      const label=screenLabels[s];
-      if(!label) return;
-      const spans=btn.querySelectorAll('span');
-      if(spans.length) spans[spans.length-1].textContent=label;
-    });
+
+    if(typeof screenTitles==='object'){
+      Object.keys(translatedTitles).forEach(k=>screenTitles[k]=translatedTitles[k]);
+    }
+
+    const current=activeScreenName();
+    if($('pageTitle') && translatedTitles[current]) $('pageTitle').textContent=translatedTitles[current];
+
     if($('interfaceLanguage')) $('interfaceLanguage').value=l;
   }
 
   document.addEventListener('DOMContentLoaded',()=>{
     enforceMobileInputs();
-    applyInterfaceLanguage(localStorage.getItem('swati_interface_language_v1')||'gu');
+    const op=(typeof currentOperator==='function'?currentOperator():'')||'device';
+    applyInterfaceLanguage(localStorage.getItem(`swati_interface_language_v1_${op}`)||localStorage.getItem('swati_interface_language_v1')||'gu');
   });
 
   $('interfaceLanguage')?.addEventListener('change',()=>applyInterfaceLanguage($('interfaceLanguage').value));
