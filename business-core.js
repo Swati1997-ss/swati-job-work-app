@@ -486,28 +486,90 @@
   }
 
   function stockSnapshot() {
+    const purchases = read(KEYS.purchases);
+    const sales = read(KEYS.sales);
+    const movements = read(KEYS.stockMovements);
+    const usages = read(KEYS.usageMovements);
+
     const map = new Map();
-    read(KEYS.stockMovements).forEach(r => {
-      const key = r.itemId || r.itemName || 'unknown';
-      const x = map.get(key) || {
-        itemId: r.itemId || '',
-        itemName: r.itemName || '',
-        unitName: r.unitName || '',
-        inQty: 0,
-        outQty: 0,
-        balance: 0
-      };
-      if (r.direction === 'in') x.inQty += Number(r.qty||0);
-      else x.outQty += Number(r.qty||0);
-      x.balance = round2(x.inQty - x.outQty);
-      map.set(key,x);
+
+    function ensure(itemId,itemName,unitName){
+      const id=itemId||itemName||'unknown';
+      if(!map.has(id)){
+        map.set(id,{
+          itemId:id,
+          itemName:itemName||id,
+          unitName:unitName||'kg',
+          openingQty:0,
+          purchaseIn:0,
+          productionIn:0,
+          adjustmentIn:0,
+          saleOut:0,
+          productionConsumption:0,
+          usageOut:0,
+          adjustmentOut:0,
+          inQty:0,
+          outQty:0,
+          balance:0
+        });
+      }
+      return map.get(id);
+    }
+
+    purchases.forEach(r=>{
+      const x=ensure(r.itemId,r.itemName,r.baseUnitName||r.unitName);
+      x.purchaseIn=round2(x.purchaseIn+Number(r.baseQty??r.qty??0));
     });
-    return [...map.values()].map(x => ({
-      ...x,
-      inQty: round2(x.inQty),
-      outQty: round2(x.outQty),
-      balance: round2(x.balance)
-    }));
+
+    sales.forEach(r=>{
+      const x=ensure(r.itemId,r.itemName,r.baseUnitName||r.unitName);
+      x.saleOut=round2(x.saleOut+Number(r.baseQty??r.qty??0));
+    });
+
+    usages.forEach(r=>{
+      const x=ensure(r.itemId,r.itemName,r.baseUnitName||r.unitName);
+      x.usageOut=round2(x.usageOut+Number(r.baseQty??r.qty??0));
+    });
+
+    movements.forEach(r=>{
+      const x=ensure(r.itemId,r.itemName,r.baseUnitName||r.unitName);
+      const q=Number(r.baseQty??r.qty??0);
+      const t=r.movementType||r.type||'';
+      if(t==='opening_in') x.openingQty=round2(x.openingQty+q);
+      else if(t==='production_in') x.productionIn=round2(x.productionIn+q);
+      else if(t==='production_out' || t==='production_consumption') x.productionConsumption=round2(x.productionConsumption+q);
+      else if(t==='adjustment_in') x.adjustmentIn=round2(x.adjustmentIn+q);
+      else if(t==='adjustment_out') x.adjustmentOut=round2(x.adjustmentOut+q);
+      else if(t==='sale_out') x.saleOut=round2(x.saleOut+q);
+      else if(t==='usage_out') x.usageOut=round2(x.usageOut+q);
+      else if(t==='purchase_in') x.purchaseIn=round2(x.purchaseIn+q);
+    });
+
+    const rows=[...map.values()].map(x=>{
+      x.inQty=round2(x.openingQty+x.purchaseIn+x.productionIn+x.adjustmentIn);
+      x.outQty=round2(x.saleOut+x.productionConsumption+x.usageOut+x.adjustmentOut);
+      x.balance=round2(x.inQty-x.outQty);
+      return x;
+    });
+
+    return rows.sort((a,b)=>String(a.itemName).localeCompare(String(b.itemName)));
+  }
+
+  function addStockAdjustment(input={}) {
+    const qty=round2(input.qty);
+    const unitName=input.unitName||'kg';
+    const baseQty=toBaseQty(qty,unitName);
+    return addStockMovement({
+      date:input.date,
+      itemId:input.itemId,
+      itemName:input.itemName,
+      qty,
+      baseQty,
+      unitName,
+      baseUnitName:isWeightUnit(unitName)?'kg':unitName,
+      movementType:input.direction==='out'?'adjustment_out':input.direction==='opening'?'opening_in':'adjustment_in',
+      context:normalizeContext(input.context)
+    });
   }
 
   function moneyBalance(mode='cash') {

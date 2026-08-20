@@ -1,7 +1,7 @@
-const CACHE='swati-job-work-ui-alpha20-v1';
+const CACHE='swati-job-work-ui-alpha22-v1';
 const APP_SHELL=[
-  './','./index.html','./styles.css?v=ui-alpha20','./file-tools.js?v=ui-alpha20','./business-core.js?v=ui-alpha20','./business-core-bridge.js?v=ui-alpha20','./ui-i18n.js?v=ui-alpha20','./app.js?v=ui-alpha20','./sync-config.js?v=ui-alpha20','./offline-sync.js?v=ui-alpha20','./pwa.js?v=ui-alpha20',
-  './manifest.webmanifest?v=ui-alpha20','./swati-icon-v2-192.png','./swati-icon-v2-512.png','./swati-icon-maskable-v2-192.png','./swati-icon-maskable-v2-512.png'
+  './','./index.html','./styles.css?v=ui-alpha22','./file-tools.js?v=ui-alpha22','./business-core.js?v=ui-alpha22','./business-core-bridge.js?v=ui-alpha22','./ui-i18n.js?v=ui-alpha22','./app.js?v=ui-alpha22','./sync-config.js?v=ui-alpha22','./offline-sync.js?v=ui-alpha22','./pwa.js?v=ui-alpha22',
+  './manifest.webmanifest?v=ui-alpha22','./swati-icon-v2-192.png','./swati-icon-v2-512.png','./swati-icon-maskable-v2-192.png','./swati-icon-maskable-v2-512.png'
 ];
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(APP_SHELL)).then(()=>self.skipWaiting()));

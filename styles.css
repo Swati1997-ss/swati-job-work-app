@@ -947,3 +947,40 @@ html[lang="en"] select{
 .customer-mode-summary{margin-bottom:12px}
 .customer-mode-summary h2{margin:3px 0 0;font-size:1rem}
 @media(max-width:480px){.customer-mode-tabs,.customer-inline-actions{grid-template-columns:1fr}}
+
+
+/* UI Alpha 21 — company-wide stock management */
+.stock-summary-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:12px}
+.stock-kpi{padding:14px;display:grid;gap:4px}
+.stock-kpi span{font-size:.72rem;color:var(--text-soft)}
+.stock-kpi strong{font-size:1.2rem}
+.compact-search{max-width:220px;min-height:40px}
+.stock-management-list{display:grid;gap:10px;margin-top:12px}
+.stock-mgmt-card{border:1px solid var(--ui-line);border-radius:14px;padding:12px;background:#fff}
+.stock-mgmt-head,.stock-mgmt-total{display:flex;justify-content:space-between;gap:12px;align-items:center}
+.stock-mgmt-head>span{display:grid;gap:3px}
+.stock-mgmt-head small{color:var(--text-soft);font-size:.7rem}
+.stock-movement-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:12px 0}
+.stock-movement-grid>div{padding:8px;background:#f7f9fb;border-radius:10px;display:grid;gap:3px}
+.stock-movement-grid span{font-size:.66rem;color:var(--text-soft)}
+.stock-movement-grid strong{font-size:.82rem}
+.stock-mgmt-total{border-top:1px solid var(--ui-line);padding-top:10px}
+.stock-positive{color:#157347}
+.stock-zero{color:#6b7280}
+.stock-negative{color:#b42318}
+@media(max-width:640px){
+  .stock-summary-grid{grid-template-columns:1fr 1fr}
+  .stock-movement-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .compact-search{max-width:100%;width:100%}
+}
+
+
+/* UI Alpha 22 — Grain/Pulse Company Production */
+.stock-context-box{margin-top:12px;padding:12px 14px;border:1px solid #dce7ef;border-radius:13px;background:#f7fbff;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.stock-context-box span{font-size:.76rem;color:var(--text-soft)}
+.production-balance-box{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:12px}
+.production-balance-box>div,.field-summary-box{padding:10px;border-radius:11px;background:#f7f9fb;display:grid;gap:4px}
+.production-balance-box span,.field-summary-box span{font-size:.68rem;color:var(--text-soft)}
+.production-balance-box strong,.field-summary-box strong{font-size:.9rem}
+.warning-box{margin-top:10px;padding:10px 12px;border-radius:11px;background:#fff4e8;color:#9a3412;font-size:.78rem;font-weight:700}
+@media(max-width:640px){.production-balance-box{grid-template-columns:repeat(2,minmax(0,1fr))}}

@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#8f1736" />
   <title>સ્વાતિ મિની ઓઇલ મિલ</title>
-  <link rel="manifest" href="manifest.webmanifest?v=ui-alpha20" />
+  <link rel="manifest" href="manifest.webmanifest?v=ui-alpha22" />
   <link rel="apple-touch-icon" href="swati-icon-v2-192.png?v=22" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Swati" />
-  <link rel="stylesheet" href="styles.css?v=ui-alpha20" />
+  <link rel="stylesheet" href="styles.css?v=ui-alpha22" />
 </head>
 <body>
   
@@ -108,7 +108,12 @@
         </span>
         <span data-i18n="expense">ખર્ચ</span>
       </button>
-      <button class="drawer-link" data-screen="finance" type="button">
+      
+      <button class="drawer-link" data-screen="stock-management" type="button">
+        <span class="drawer-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6 12 2l9 4-9 4-9-4Zm0 4 9 4 9-4v8l-9 4-9-4v-8Z"/></svg></span>
+        <span data-i18n="stockManagement">સ્ટોક મેનેજમેન્ટ</span>
+      </button>
+<button class="drawer-link" data-screen="finance" type="button">
         <span class="drawer-icon">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18v14H3V5Zm2 2v10h14V7H5Zm3 2h8v2H8V9Zm0 4h5v2H8v-2Z"/></svg>
         </span>
@@ -224,6 +229,12 @@
         <button class="home-action-card retail" data-go="retail-sales" type="button">
           <span class="home-action-icon"><svg viewBox="0 0 24 24"><path d="M4 4h16v4H4V4Zm2 6h12v10H6V10Zm3 2v6h6v-6H9Z"/></svg></span>
           <span><strong data-i18n="retailSales">રિટેલ વેચાણ</strong><small data-i18n="retailSalesHelp">તેલ અને અનાજ / કઠોળનું રિટેલ વેચાણ</small></span>
+          <span class="home-action-arrow">›</span>
+        </button>
+
+        <button class="home-action-card" data-go="stock-management" type="button">
+          <span class="home-action-icon"><svg viewBox="0 0 24 24"><path d="M3 6 12 2l9 4-9 4-9-4Zm0 4 9 4 9-4v8l-9 4-9-4v-8Z"/></svg></span>
+          <span><strong data-i18n="stockManagement">સ્ટોક મેનેજમેન્ટ</strong><small data-i18n="stockManagementHelp">કંપનીના બધા સ્ટોકનો movement-wise હિસાબ</small></span>
           <span class="home-action-arrow">›</span>
         </button>
 </div>
@@ -888,35 +899,78 @@
     </section>
 
     
+    
     <section class="screen" id="screen-grain-production">
       <div class="module-head compact-page-head">
-        <div><p data-i18n="grainProdHelp">કંપનીના અનાજ / કઠોળ processing માટેનું production workspace.</p></div>
+        <div><p data-i18n="grainProdHelp">કંપનીના પોતાના અનાજ / કઠોળનું processing, output અને stock update.</p></div>
       </div>
 
+      <form id="grainProductionForm" class="form-layout no-print" autocomplete="off">
+        <div class="card section-card">
+          <div class="section-title"><span>1</span><h2>Processing માહિતી</h2></div>
+          <div class="grid two">
+            <label>તારીખ<input id="grainProdDate" type="date" /></label>
+            <label>Operator<select id="grainProdOperator"></select></label>
+            <label>કાચો માલ / Raw Item<input id="grainProdRawItem" list="grainRawItemSuggestions" placeholder="Moong / Chana / Wheat" required /><datalist id="grainRawItemSuggestions"></datalist></label>
+            <label>Raw Item Code<input id="grainProdRawItemId" placeholder="Optional" /></label>
+            <label>Input જથ્થો<input id="grainProdInputQty" type="number" min="0" step="0.01" required /></label>
+            <label>Unit<select id="grainProdInputUnit"><option value="kg">કિલો</option><option value="ton">ટન (TON)</option><option value="mann">મણ</option></select></label>
+          </div>
+          <div class="stock-context-box"><span>Available Raw Stock</span><strong id="grainRawAvailable">0 kg</strong></div>
+        </div>
+
+        <div class="card section-card">
+          <div class="section-title"><span>2</span><h2>Processing Output</h2></div>
+          <div class="grid two">
+            <label>Clean / Processed Item<input id="grainProdGoodItem" placeholder="Cleaned Moong" required /></label>
+            <label>Processed Item Code<input id="grainProdGoodItemId" placeholder="Optional" /></label>
+            <label>સાફ થયેલ સારો માલ (kg)<input id="grainProdGoodQty" type="number" min="0" step="0.01" required /></label>
+            <label>Waste / Reject Item<input id="grainProdWasteItem" placeholder="Reject / Dust / Broken" /></label>
+            <label>Waste / Reject (kg)<input id="grainProdWasteQty" type="number" min="0" step="0.01" value="0" /></label>
+            <label>Processing Loss (kg)<input id="grainProdLossQty" type="number" min="0" step="0.01" value="0" /></label>
+          </div>
+          <div class="production-balance-box">
+            <div><span>Input</span><strong id="grainProdInputSummary">0 kg</strong></div>
+            <div><span>Total Output</span><strong id="grainProdOutputSummary">0 kg</strong></div>
+            <div><span>Difference</span><strong id="grainProdBalanceDiff">0 kg</strong></div>
+            <div><span>Clean Yield</span><strong id="grainProdYield">0%</strong></div>
+          </div>
+          <div id="grainProdBalanceWarning" class="warning-box" hidden></div>
+        </div>
+
+        <div class="card section-card">
+          <div class="section-title"><span>3</span><h2>Packaging / Bag Usage</h2></div>
+          <div class="grid two">
+            <label>Bag Item<input id="grainProdBagItem" list="grainBagSuggestions" placeholder="30kg Bag" /><datalist id="grainBagSuggestions"></datalist></label>
+            <label>Bags Used<input id="grainProdBagQty" type="number" min="0" step="1" value="0" /></label>
+          </div>
+          <small>Bag usage company-wide stockમાંથી deduct થશે.</small>
+        </div>
+
+        <div class="card section-card">
+          <div class="section-title"><span>4</span><h2>Processing Cost</h2></div>
+          <div class="grid two">
+            <label>Labour Cost ₹<input id="grainProdLabourCost" type="number" min="0" step="0.01" value="0" /></label>
+            <label>Electricity Cost ₹<input id="grainProdElectricityCost" type="number" min="0" step="0.01" value="0" /></label>
+            <label>Packaging Cost ₹<input id="grainProdPackagingCost" type="number" min="0" step="0.01" value="0" /></label>
+            <label>Cold Storage / Storage ₹<input id="grainProdStorageCost" type="number" min="0" step="0.01" value="0" /></label>
+            <label>Other Processing Cost ₹<input id="grainProdOtherCost" type="number" min="0" step="0.01" value="0" /></label>
+            <div class="field-summary-box"><span>Total Processing Cost</span><strong id="grainProdTotalCost">₹0</strong></div>
+          </div>
+        </div>
+
+        <div class="card section-card">
+          <label>નોંધ<input id="grainProdNote" placeholder="Optional" /></label>
+          <div class="sticky-actions"><button class="primary" type="submit">Production સાચવો</button></div>
+        </div>
+      </form>
+
       <div class="card section-card">
-        <div class="row-between">
-          <span class="module-badge blue">Processing</span>
-        </div>
-        <div class="grain-action-grid">
-          <button class="grain-action-tile" data-go="purchases" type="button">
-            <strong data-i18n="purchase">ખરીદી</strong>
-            <small data-i18n="grainRawPurchaseHelp">અનાજ / કઠોળ અને empty bags ખરીદો</small>
-          </button>
-          <button class="grain-action-tile" data-go="usage" type="button">
-            <strong data-i18n="usage">વપરાશ</strong>
-            <small data-i18n="grainUsageHelp">Packaging / consumables usage નોંધો</small>
-          </button>
-          <button class="grain-action-tile" data-go="grain-stock" type="button">
-            <strong data-i18n="stock">સ્ટોક</strong>
-            <small data-i18n="grainStockHelp">Raw / Processed / Waste stock જુઓ</small>
-          </button>
-          <button class="grain-action-tile" data-go="grain-sales" type="button">
-            <strong data-i18n="sales">વેચાણ</strong>
-            <small data-i18n="grainSalesHelp">Processed goods / waste sale</small>
-          </button>
-        </div>
+        <div class="row-between"><h2>તાજેતરનું Processing</h2><strong id="grainProductionCount">0</strong></div>
+        <div id="grainProductionList" class="mini-list"></div>
       </div>
     </section>
+
 
     <section class="screen" id="screen-grain-sales">
       <div class="module-head compact-page-head">
@@ -1285,7 +1339,59 @@
       </div>
     </section>
     
-    <section class="screen" id="screen-finance">
+    
+    <section class="screen" id="screen-stock-management">
+      <div class="module-head compact-page-head">
+        <div><p data-i18n="stockManagementHelp">કંપનીના બધા સ્ટોકનો એક જ જગ્યાએ current અને movement-wise હિસાબ.</p></div>
+      </div>
+
+      <div class="stock-summary-grid">
+        <div class="card stock-kpi"><span data-i18n="stockItems">સ્ટોક આઇટમ</span><strong id="stockMgmtItemCount">0</strong></div>
+        <div class="card stock-kpi"><span data-i18n="positiveStock">Positive Stock</span><strong id="stockMgmtPositiveCount">0</strong></div>
+        <div class="card stock-kpi"><span data-i18n="zeroNegativeStock">Zero / Negative</span><strong id="stockMgmtLowCount">0</strong></div>
+      </div>
+
+      <div class="card section-card">
+        <div class="row-between">
+          <div><h2 data-i18n="stockAdjustment">Opening / Adjustment</h2><small data-i18n="stockAdjustmentHelp">Opening stock અથવા manual stock correction માટે.</small></div>
+        </div>
+        <form id="stockAdjustmentForm" class="grid two">
+          <label data-i18n="date">તારીખ<input id="stockAdjustmentDate" type="date" /></label>
+          <label data-i18n="stockAction">સ્ટોક Action
+            <select id="stockAdjustmentDirection">
+              <option value="opening" data-i18n="openingStock">Opening Stock</option>
+              <option value="in" data-i18n="adjustmentIn">Adjustment In</option>
+              <option value="out" data-i18n="adjustmentOut">Adjustment Out</option>
+            </select>
+          </label>
+          <label data-i18n="item">આઇટમ<input id="stockAdjustmentItem" placeholder="ઉદાહરણ: Groundnut / Tin / Bag" required /></label>
+          <label data-i18n="itemCode">Item Code<input id="stockAdjustmentItemId" placeholder="Optional" /></label>
+          <label data-i18n="quantity">જથ્થો<input id="stockAdjustmentQty" type="number" min="0" step="0.01" required /></label>
+          <label data-i18n="unit">Unit
+            <select id="stockAdjustmentUnit">
+              <option value="kg">કિલો</option>
+              <option value="ton">ટન (TON)</option>
+              <option value="mann">મણ</option>
+              <option value="tin">ટીન</option>
+              <option value="bag">બેગ</option>
+              <option value="piece">નંગ</option>
+            </select>
+          </label>
+          <label class="span-2" data-i18n="notes">નોંધ<input id="stockAdjustmentNote" placeholder="Optional" /></label>
+          <div class="span-2 sticky-actions"><button class="primary" type="submit" data-i18n="saveStock">સ્ટોક સાચવો</button></div>
+        </form>
+      </div>
+
+      <div class="card section-card">
+        <div class="row-between">
+          <div><h2 data-i18n="companyStock">કંપની સ્ટોક</h2><small data-i18n="stockFormula">Opening + Purchase + Production + Adjustment In − Consumption − Sale − Usage − Adjustment Out</small></div>
+          <input id="stockMgmtSearch" class="compact-search" placeholder="શોધો" />
+        </div>
+        <div id="stockMgmtList" class="stock-management-list"></div>
+      </div>
+    </section>
+
+<section class="screen" id="screen-finance">
       <div class="module-head compact-page-head">
         <div><p>Company-wide money position, liquidity, stock value અને borrowing visibility.</p></div>
       </div>
@@ -1607,14 +1713,14 @@
       <div id="deviceOperatorButtons" class="device-operator-buttons"></div>
     </div>
   </div>
-  <script src="sync-config.js?v=ui-alpha20"></script>
-  <script src="offline-sync.js?v=ui-alpha20"></script>
-  <script src="file-tools.js?v=ui-alpha20"></script>
-  <script src="business-core.js?v=ui-alpha20"></script>
-  <script src="business-core-bridge.js?v=ui-alpha20"></script>
-  <script src="ui-i18n.js?v=ui-alpha20"></script>
-  <script src="app.js?v=ui-alpha20"></script>
-  <script src="pwa.js?v=ui-alpha20"></script>
+  <script src="sync-config.js?v=ui-alpha22"></script>
+  <script src="offline-sync.js?v=ui-alpha22"></script>
+  <script src="file-tools.js?v=ui-alpha22"></script>
+  <script src="business-core.js?v=ui-alpha22"></script>
+  <script src="business-core-bridge.js?v=ui-alpha22"></script>
+  <script src="ui-i18n.js?v=ui-alpha22"></script>
+  <script src="app.js?v=ui-alpha22"></script>
+  <script src="pwa.js?v=ui-alpha22"></script>
 
 </body>
 </html>
