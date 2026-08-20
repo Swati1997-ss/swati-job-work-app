@@ -915,21 +915,21 @@
       const d=r.date||'—', p=reportParts(r), x=daily.get(d)||{count:0,job:0,purchase:0,sales:0,outstanding:0};
       x.count++; x.job+=Number(r.jobWorkAmount||0); x.purchase+=p.purchase; x.sales+=p.sales; x.outstanding+=remainingFor(r); daily.set(d,x);
     });
-    $('reportDailyBody').innerHTML=[...daily.entries()].sort((a,b)=>b[0].localeCompare(a[0])).map(([d,x])=>`<tr><td>${escapeHtml(d)}</td><td>${x.count}</td><td>${money(x.job)}</td><td>${money(x.purchase)}</td><td>${money(x.sales)}</td><td>${money(x.outstanding)}</td></tr>`).join('')||'<tr><td colspan="6">આ સમયગાળામાં કોઈ એન્ટ્રી નથી.</td></tr>';
+    $('reportDailyBody').innerHTML=[...daily.entries()].sort((a,b)=>b[0].localeCompare(a[0])).map(([d,x])=>`<tr><td data-label="તારીખ">${escapeHtml(d)}</td><td data-label="બિલ">${x.count}</td><td data-label="મજૂરી">${money(x.job)}</td><td data-label="ખરીદી">${money(x.purchase)}</td><td data-label="વેચાણ">${money(x.sales)}</td><td data-label="બાકી">${money(x.outstanding)}</td></tr>`).join('')||'<tr class="report-empty"><td colspan="6">આ સમયગાળામાં કોઈ એન્ટ્રી નથી.</td></tr>';
 
     const customers=new Map();
     rows.forEach(r=>{
       const name=r.customer?.name||'—', village=r.customer?.village||'', key=(r.customer?.mobile||'')||`${name}|${village}`;
       const x=customers.get(key)||{name,village,count:0,job:0}; x.count++; x.job+=Number(r.jobWorkAmount||0); customers.set(key,x);
     });
-    $('reportCustomerBody').innerHTML=[...customers.values()].sort((a,b)=>b.job-a.job).slice(0,15).map(x=>`<tr><td>${escapeHtml(x.name)}</td><td>${escapeHtml(x.village)}</td><td>${x.count}</td><td>${money(x.job)}</td></tr>`).join('')||'<tr><td colspan="4">ડેટા નથી.</td></tr>';
+    $('reportCustomerBody').innerHTML=[...customers.values()].sort((a,b)=>b.job-a.job).slice(0,15).map(x=>`<tr><td data-label="ગ્રાહક">${escapeHtml(x.name)}</td><td data-label="ગામ">${escapeHtml(x.village)}</td><td data-label="ટ્રાન્ઝેક્શન">${x.count}</td><td data-label="મજૂરી">${money(x.job)}</td></tr>`).join('')||'<tr class="report-empty"><td colspan="4">ડેટા નથી.</td></tr>';
 
     const villages=new Map();
     rows.forEach(r=>{
       const v=(r.customer?.village||'ગામ નથી').trim()||'ગામ નથી'; const x=villages.get(v)||{customers:new Set(),count:0,job:0,outstanding:0};
       x.customers.add((r.customer?.mobile||'')||r.customer?.name||r.id); x.count++; x.job+=Number(r.jobWorkAmount||0); x.outstanding+=remainingFor(r); villages.set(v,x);
     });
-    $('reportVillageBody').innerHTML=[...villages.entries()].sort((a,b)=>b[1].job-a[1].job).map(([v,x])=>`<tr><td>${escapeHtml(v)}</td><td>${x.customers.size}</td><td>${x.count}</td><td>${money(x.job)}</td><td>${money(x.outstanding)}</td></tr>`).join('')||'<tr><td colspan="5">ડેટા નથી.</td></tr>';
+    $('reportVillageBody').innerHTML=[...villages.entries()].sort((a,b)=>b[1].job-a[1].job).map(([v,x])=>`<tr><td data-label="ગામ">${escapeHtml(v)}</td><td data-label="ગ્રાહકો">${x.customers.size}</td><td data-label="ટ્રાન્ઝેક્શન">${x.count}</td><td data-label="મજૂરી કામ">${money(x.job)}</td><td data-label="બાકી">${money(x.outstanding)}</td></tr>`).join('')||'<tr class="report-empty"><td colspan="5">ડેટા નથી.</td></tr>';
   }
 
   function setReportRange(kind){
@@ -1095,7 +1095,16 @@
   $('oilForm').addEventListener('submit', saveRecord);
   $('previewBtn').addEventListener('click', showPreview);
   $('backToForm').addEventListener('click', hidePreview);
-  $('printBtn').addEventListener('click', () => window.print());
+  function printOnly(kind){
+    document.body.classList.remove('print-oil','print-grain');
+    document.body.classList.add(kind==='grain'?'print-grain':'print-oil');
+    const cleanup=()=>document.body.classList.remove('print-oil','print-grain');
+    window.addEventListener('afterprint',cleanup,{once:true});
+    window.print();
+    setTimeout(cleanup,1500);
+  }
+
+  $('printBtn').addEventListener('click', () => printOnly('oil'));
   $('resetBtn').addEventListener('click', resetForm);
   $('historySearch').addEventListener('input', renderHistory);
   $('customerSearch').addEventListener('input', renderCustomers);
@@ -1134,14 +1143,14 @@
   $('grainCustomerSuggestions').addEventListener('click',(e)=>{const b=e.target.closest('[data-grain-customer-key]'); if(b) selectGrainCustomer(b.dataset.grainCustomerKey);});
   $('grainLeftoverEnabled').addEventListener('change',()=>{ $('grainLeftoverFields').classList.toggle('enabled',$('grainLeftoverEnabled').checked); $('grainPurchaseKg').dataset.manual=''; calculateGrain(); });
   $('grainPurchaseKg').addEventListener('input',()=>{$('grainPurchaseKg').dataset.manual='1';});
-  $('grainPreviewBtn').addEventListener('click',showGrainPreview); $('grainBackToForm').addEventListener('click',hideGrainPreview); $('grainPrintBtn').addEventListener('click',()=>window.print()); $('grainResetBtn').addEventListener('click',resetGrainForm);
+  $('grainPreviewBtn').addEventListener('click',showGrainPreview); $('grainBackToForm').addEventListener('click',hideGrainPreview); $('grainPrintBtn').addEventListener('click',()=>printOnly('grain')); $('grainResetBtn').addEventListener('click',resetGrainForm);
   $('grainTxDate').addEventListener('change',()=>{if(!lastSavedGrainId)$('grainBillNo').value=nextGrainBillNo();});
   $('batchForm').addEventListener('input',calculateBatch);
   $('batchForm').addEventListener('change',calculateBatch);
   $('batchForm').addEventListener('submit',saveBatch);
   $('batchResetBtn').addEventListener('click',resetBatchForm);
   $('batchBody').addEventListener('click',(e)=>{const b=e.target.closest('[data-delete-batch]');if(b)deleteBatch(b.dataset.deleteBatch);});
-  $('deviceOperatorButtons')?.addEventListener('click',(e)=>{const b=e.target.closest('[data-assign-operator]'); if(b) assignDeviceOperator(b.dataset.assignOperator);});
+  document.addEventListener('click',(e)=>{const b=e.target.closest?.('[data-assign-operator]'); if(b) assignDeviceOperator(b.dataset.assignOperator);});
 
   $('txDate').addEventListener('change',()=>{ if(!lastSavedId) $('billNo').value = nextBillNo(); });
   $('resetDeviceAssignmentBtn')?.addEventListener('click',resetDeviceAssignment);

@@ -188,3 +188,52 @@ th{color:var(--muted);font-size:.8rem}
 .button-field{display:flex;flex-direction:column;gap:8px;justify-content:flex-end}
 .button-field>span{font-size:.92rem;color:#6e6265}
 @media (max-width:700px){.sync-config-panel .grid.two{grid-template-columns:1fr}.button-field{align-items:stretch}}
+
+
+/* Alpha 26 — focused fixes: operator assignment, mobile reports, isolated PDF print */
+@media (max-width:760px){
+  #screen-reports{min-width:0;width:100%;overflow:hidden}
+  #screen-reports .card{padding:14px;border-radius:16px;min-width:0}
+  #screen-reports .row-between{align-items:stretch;flex-direction:column}
+  #screen-reports .row-between h2{margin-bottom:6px}
+  #screen-reports #exportReportBtn{width:100%}
+  #screen-reports .report-filters{grid-template-columns:1fr!important}
+  #screen-reports .report-presets{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  #screen-reports .report-presets button{width:100%;min-width:0;padding:10px 8px}
+  #screen-reports .report-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  #screen-reports .report-stats .stat{min-width:0;padding:14px}
+  #screen-reports .report-stats .stat span{font-size:.78rem;line-height:1.35}
+  #screen-reports .report-stats .stat strong{font-size:clamp(1rem,5vw,1.25rem);overflow-wrap:anywhere}
+  #screen-reports .report-panels{grid-template-columns:1fr!important}
+  #screen-reports .table-wrap{max-height:none;overflow:visible}
+  #screen-reports table,#screen-reports tbody,#screen-reports tr,#screen-reports td{display:block;width:100%}
+  #screen-reports thead{display:none}
+  #screen-reports tbody{display:grid;gap:10px}
+  #screen-reports tr{border:1px solid var(--line);border-radius:13px;background:#fff;padding:7px 11px;box-shadow:0 4px 14px rgba(44,22,31,.04)}
+  #screen-reports td{border:0;border-bottom:1px solid #eee7e9;padding:8px 0;white-space:normal;display:grid;grid-template-columns:minmax(110px,.9fr) minmax(0,1.1fr);gap:10px;align-items:start;text-align:right;overflow-wrap:anywhere}
+  #screen-reports td:last-child{border-bottom:0}
+  #screen-reports td::before{content:attr(data-label);font-weight:800;color:var(--muted);text-align:left;font-size:.78rem}
+  #screen-reports tr.report-empty td{display:block;text-align:center;padding:14px}
+  #screen-reports tr.report-empty td::before{display:none}
+}
+@media (max-width:390px){
+  #screen-reports .report-stats{grid-template-columns:1fr}
+  #screen-reports .report-presets{grid-template-columns:1fr 1fr}
+}
+
+@media print{
+  /* Never print both customer card formats together. The selected print mode wins. */
+  body.print-oil .screen{display:none!important}
+  body.print-oil #screen-new-oil{display:block!important}
+  body.print-oil #oilForm{display:none!important}
+  body.print-oil #printArea{display:block!important}
+  body.print-oil #grainPrintArea{display:none!important}
+  body.print-oil #screen-grain{display:none!important}
+
+  body.print-grain .screen{display:none!important}
+  body.print-grain #screen-grain{display:block!important}
+  body.print-grain #grainForm{display:none!important}
+  body.print-grain #grainPrintArea{display:block!important}
+  body.print-grain #printArea{display:none!important}
+  body.print-grain #screen-new-oil{display:none!important}
+}
