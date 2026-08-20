@@ -2,7 +2,7 @@
   'use strict';
 
   // Runs only once for UI Alpha 4 on each browser/device.
-  const RESET_MARKER = 'swati_ui_alpha4_fresh_test_reset_done';
+  const RESET_MARKER = 'swati_ui_alpha5_fresh_test_reset_done';
 
   if (localStorage.getItem(RESET_MARKER) === '1') return;
 
@@ -14,7 +14,10 @@
     'swati_audit_v1',
     'swati_sync_queue_v2',
     'swati_last_sync_v2',
-    'swati_master_updated_v1'
+    'swati_master_updated_v1',
+    'swati_company_raw_purchases_v1',
+    'swati_company_production_batches_v1',
+    'swati_company_sales_v1'
   ];
 
   CLEAR_KEYS.forEach(k => localStorage.removeItem(k));

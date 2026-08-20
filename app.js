@@ -92,6 +92,42 @@
   }
 
   const $ = (id) => document.getElementById(id);
+  const COMPANY_PURCHASES_KEY='swati_company_raw_purchases_v1';
+  const COMPANY_BATCHES_KEY='swati_company_production_batches_v1';
+  const COMPANY_SALES_KEY='swati_company_sales_v1';
+
+  function getCompanyPurchases(){try{return JSON.parse(localStorage.getItem(COMPANY_PURCHASES_KEY)||'[]')}catch{return []}}
+  function saveCompanyPurchases(rows){localStorage.setItem(COMPANY_PURCHASES_KEY,JSON.stringify(rows));}
+  function getCompanyBatches(){try{return JSON.parse(localStorage.getItem(COMPANY_BATCHES_KEY)||'[]')}catch{return []}}
+  function saveCompanyBatches(rows){localStorage.setItem(COMPANY_BATCHES_KEY,JSON.stringify(rows));}
+  function getCompanySales(){try{return JSON.parse(localStorage.getItem(COMPANY_SALES_KEY)||'[]')}catch{return []}}
+  function saveCompanySales(rows){localStorage.setItem(COMPANY_SALES_KEY,JSON.stringify(rows));}
+  function companyUid(prefix){return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2,8)}`;}
+
+  function companyStock(){
+    const purchases=getCompanyPurchases(),batches=getCompanyBatches(),sales=getCompanySales();
+    const rawPurchased=round2(purchases.reduce((s,x)=>s+Number(x.qtyKg||0),0));
+    const rawUsed=round2(batches.reduce((s,x)=>s+Number(x.inputKg||0),0));
+    const oilProduced=round2(batches.reduce((s,x)=>s+Number(x.oilKg||0),0));
+    const tinsFilled=batches.reduce((s,x)=>s+Number(x.tinCount||0),0);
+    const khaliProduced=round2(batches.reduce((s,x)=>s+Number(x.khaliKg||0),0));
+    const oilSoldKg=round2(sales.reduce((s,x)=>s+Number(x.oilKg||0),0));
+    const tinsSold=sales.reduce((s,x)=>s+Number(x.tinCount||0),0);
+    return {
+      rawPurchased,rawUsed,rawAvailable:round2(rawPurchased-rawUsed),
+      oilProduced,oilSoldKg,oilAvailableKg:round2(oilProduced-oilSoldKg),
+      tinsFilled,tinsSold,tinsAvailable:tinsFilled-tinsSold,
+      khaliProduced,khaliAvailable:khaliProduced
+    };
+  }
+
+  function nextProductionBatchNo(){
+    const year=new Date().getFullYear();
+    const list=getCompanyBatches().filter(x=>String(x.batchNo||'').startsWith(`PR-${year}-`));
+    const max=list.reduce((m,x)=>Math.max(m,Number(String(x.batchNo).split('-').pop())||0),0);
+    return `PR-${year}-${String(max+1).padStart(3,'0')}`;
+  }
+
   function notifyDataChanged(dataset, action='update') {
     try { window.dispatchEvent(new CustomEvent('swati:data-changed',{detail:{dataset,action}})); } catch {}
   }
@@ -809,6 +845,95 @@
     }
   }
 
+
+  function hydrateCompanyOperator(){
+    if(!$('productionOperator')) return;
+    const ops=getOperators();
+    $('productionOperator').innerHTML=ops.map(x=>`<option value="${escapeAttr(x)}">${escapeHtml(x)}</option>`).join('');
+    if(currentOperator()) $('productionOperator').value=currentOperator();
+  }
+
+  function rawPurchaseCalc(){
+    const qty=Number($('rawQtyKg')?.value||0),rate=Number($('rawRateKg')?.value||0),paid=Number($('rawPaid')?.value||0);
+    const total=round2(qty*rate),out=round2(Math.max(0,total-paid));
+    if($('rawPurchaseTotal')) $('rawPurchaseTotal').textContent=money(total);
+    if($('rawPurchaseOutstanding')) $('rawPurchaseOutstanding').textContent=money(out);
+    return {total,out};
+  }
+
+  function productionCalc(){
+    const input=Number($('productionInputKg')?.value||0),oil=Number($('productionOilKg')?.value||0),khali=Number($('productionKhaliKg')?.value||0),loss=Number($('productionLossKg')?.value||0);
+    const balance=round2(input-oil-khali-loss);
+    const oilYield=input?round2(oil/input*100):0,khaliYield=input?round2(khali/input*100):0;
+    if($('productionOilYield')) $('productionOilYield').textContent=`${oilYield}%`;
+    if($('productionKhaliYield')) $('productionKhaliYield').textContent=`${khaliYield}%`;
+    if($('productionBalanceCheck')) $('productionBalanceCheck').textContent=`${balance} kg`;
+    const warn=$('productionWarning');
+    if(warn){
+      const stock=companyStock(),msgs=[];
+      if(input>stock.rawAvailable+0.001) msgs.push(`Raw stock કરતાં ${round2(input-stock.rawAvailable)} kg વધારે input છે.`);
+      if(Math.abs(balance)>1) msgs.push(`Input અને outputમાં ${Math.abs(balance)} kgનો ફરક છે.`);
+      warn.textContent=msgs.join(' ');
+      warn.hidden=!msgs.length;
+    }
+    return {input,oil,khali,loss,balance,oilYield,khaliYield};
+  }
+
+  function companySaleCalc(){
+    const unit=$('companySaleUnit')?.value||'tin';
+    const tinCount=Number($('companySaleTinCount')?.value||0),kg=Number($('companySaleKg')?.value||0);
+    const qty=unit==='tin'?tinCount:kg,oilKg=unit==='tin'?round2(tinCount*15):round2(kg);
+    const rate=Number($('companySaleRate')?.value||0),paid=Number($('companySalePaid')?.value||0);
+    const total=round2(qty*rate),out=round2(Math.max(0,total-paid));
+    if($('companySaleTotal')) $('companySaleTotal').textContent=money(total);
+    if($('companySaleOutstanding')) $('companySaleOutstanding').textContent=money(out);
+    const stock=companyStock(),warn=$('companySaleStockWarning');
+    const bad=unit==='tin'?tinCount>stock.tinsAvailable:oilKg>stock.oilAvailableKg+0.001;
+    if(warn){
+      warn.hidden=!bad;
+      warn.textContent=bad?(unit==='tin'?`સ્ટોકમાં માત્ર ${stock.tinsAvailable} ટીન ઉપલબ્ધ છે.`:`સ્ટોકમાં માત્ર ${stock.oilAvailableKg} kg તેલ ઉપલબ્ધ છે.`):'';
+    }
+    return {unit,tinCount,kg,oilKg,qty,total,out,bad};
+  }
+
+  function renderCompanyProduction(){
+    if($('rawPurchaseDate') && !$('rawPurchaseDate').value) $('rawPurchaseDate').value=todayISO();
+    if($('productionDate') && !$('productionDate').value) $('productionDate').value=todayISO();
+    if($('productionBatchNo') && !$('productionBatchNo').value) $('productionBatchNo').value=nextProductionBatchNo();
+    hydrateCompanyOperator(); rawPurchaseCalc(); productionCalc();
+
+    const purchases=getCompanyPurchases().slice().sort((a,b)=>String(b.date).localeCompare(String(a.date))).slice(0,8);
+    if($('rawPurchaseCount')) $('rawPurchaseCount').textContent=String(getCompanyPurchases().length);
+    if($('rawPurchaseList')) $('rawPurchaseList').innerHTML=purchases.map(x=>`<div class="mini-list-row"><span><strong>${escapeHtml(x.supplier||'—')}</strong><small>${escapeHtml(x.date||'')} • ${escapeHtml(x.village||'')}</small></span><span><strong>${x.qtyKg} kg</strong><small>${money(x.total)}</small></span></div>`).join('')||'<div class="empty">હજુ ખરીદી નથી.</div>';
+
+    const batches=getCompanyBatches().slice().sort((a,b)=>String(b.date).localeCompare(String(a.date))).slice(0,8);
+    if($('productionBatchCount')) $('productionBatchCount').textContent=String(getCompanyBatches().length);
+    if($('productionBatchList')) $('productionBatchList').innerHTML=batches.map(x=>`<div class="mini-list-row"><span><strong>${escapeHtml(x.batchNo)}</strong><small>${escapeHtml(x.date)} • ${escapeHtml(x.operator||'')}</small></span><span><strong>${x.oilKg} kg oil</strong><small>${x.inputKg} kg input</small></span></div>`).join('')||'<div class="empty">હજુ બેચ નથી.</div>';
+  }
+
+  function renderCompanyStock(){
+    const s=companyStock();
+    if($('companyRawStockKg')) $('companyRawStockKg').textContent=`${s.rawAvailable} kg`;
+    if($('companyRawStockMeta')) $('companyRawStockMeta').textContent=`ખરીદી ${s.rawPurchased} kg • વપરાશ ${s.rawUsed} kg`;
+    if($('companyOilStockKg')) $('companyOilStockKg').textContent=`${s.oilAvailableKg} kg`;
+    if($('companyOilStockMeta')) $('companyOilStockMeta').textContent=`પ્રોડક્શન ${s.oilProduced} kg • વેચાણ ${s.oilSoldKg} kg`;
+    if($('companyTinStock')) $('companyTinStock').textContent=`${s.tinsAvailable} ટીન`;
+    if($('companyTinStockMeta')) $('companyTinStockMeta').textContent=`ભરેલા ${s.tinsFilled} • વેચાયેલા ${s.tinsSold}`;
+    if($('companyKhaliStockKg')) $('companyKhaliStockKg').textContent=`${s.khaliAvailable} kg`;
+    if($('companyKhaliStockMeta')) $('companyKhaliStockMeta').textContent=`બન્યો ${s.khaliProduced} kg • વેચાણ 0 kg`;
+
+    const rows=getCompanyBatches().slice().sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+    if($('companyProductionHistoryBody')) $('companyProductionHistoryBody').innerHTML=rows.map(x=>`<tr><td>${escapeHtml(x.date)}</td><td>${escapeHtml(x.batchNo)}</td><td>${x.inputKg} kg</td><td>${x.oilKg} kg</td><td>${x.khaliKg} kg</td><td>${x.lossKg} kg</td><td>${x.tinCount}</td></tr>`).join('')||'<tr><td colspan="7">હજુ ડેટા નથી.</td></tr>';
+  }
+
+  function renderCompanySales(){
+    if($('companySaleDate') && !$('companySaleDate').value) $('companySaleDate').value=todayISO();
+    companySaleCalc();
+    const rows=getCompanySales().slice().sort((a,b)=>String(b.date).localeCompare(String(a.date))).slice(0,10);
+    if($('companySalesCount')) $('companySalesCount').textContent=String(getCompanySales().length);
+    if($('companySalesList')) $('companySalesList').innerHTML=rows.map(x=>`<div class="mini-list-row"><span><strong>${escapeHtml(x.customer||'—')}</strong><small>${escapeHtml(x.date)} • ${escapeHtml(x.village||'')}</small></span><span><strong>${money(x.total)}</strong><small>${x.unit==='tin'?`${x.tinCount} ટીન`:`${x.kg} kg`} • બાકી ${money(x.outstanding)}</small></span></div>`).join('')||'<div class="empty">હજુ વેચાણ નથી.</div>';
+  }
+
   function renderHistory(){
     const q = ($('historySearch')?.value || '').trim().toLowerCase();
     const rows = getTx().slice().reverse().filter(r => {
@@ -1104,6 +1229,9 @@
     home:'મુખ્ય',
     'new-oil':'તેલ મીલ',
     grain:'અનાજ / કઠોળ',
+    production:'કંપની પ્રોડક્શન',
+    'company-sales':'કંપની વેચાણ',
+    'company-stock':'કંપની સ્ટોક',
     customers:'ગ્રાહકો',
     history:'હિસ્ટ્રી',
     stock:'સ્ટોક / Batch',
@@ -1143,6 +1271,9 @@
     if (name === 'customers') showCustomerVillageHome();
     if (name === 'home') renderDashboard();
     if (name === 'stock') renderStock();
+    if (name === 'production') renderCompanyProduction();
+    if (name === 'company-sales') renderCompanySales();
+    if (name === 'company-stock') renderCompanyStock();
     if (name === 'reports') { renderReports(); showReportHome(); }
     window.scrollTo({top:0,behavior:'smooth'});
   }
@@ -1236,6 +1367,14 @@
   $('drawerOpenBtn')?.addEventListener('click',openAppDrawer);
   $('drawerCloseBtn')?.addEventListener('click',closeAppDrawer);
   $('drawerBackdrop')?.addEventListener('click',closeAppDrawer);
+  $('oilMenuToggle')?.addEventListener('click',()=>{
+    const menu=$('oilSubmenu'),btn=$('oilMenuToggle');
+    const shouldOpen=!!menu?.hidden;
+    if(menu) menu.hidden=!shouldOpen;
+    if(btn) btn.setAttribute('aria-expanded',String(shouldOpen));
+  });
+  document.querySelectorAll('.drawer-sublink').forEach(b=>b.addEventListener('click',()=>showScreen(b.dataset.screen)));
+
   $('headerHomeBtn')?.addEventListener('click',()=>showScreen('home'));
   $('drawerBrandHomeBtn')?.addEventListener('click',()=>showScreen('home'));
 
@@ -1526,6 +1665,53 @@
   window.addEventListener('online',updateDrawerNetwork);
   window.addEventListener('offline',updateDrawerNetwork);
   updateDrawerNetwork();
+
+
+  ['rawQtyKg','rawRateKg','rawPaid'].forEach(id=>$(id)?.addEventListener('input',rawPurchaseCalc));
+  ['productionInputKg','productionOilKg','productionKhaliKg','productionLossKg'].forEach(id=>$(id)?.addEventListener('input',productionCalc));
+  ['companySaleTinCount','companySaleKg','companySaleRate','companySalePaid'].forEach(id=>$(id)?.addEventListener('input',companySaleCalc));
+
+  $('companySaleUnit')?.addEventListener('change',()=>{
+    const tin=$('companySaleUnit').value==='tin';
+    $('companySaleTinField').hidden=!tin; $('companySaleKgField').hidden=tin; companySaleCalc();
+  });
+
+  $('rawPurchaseForm')?.addEventListener('submit',(e)=>{
+    e.preventDefault();
+    const qty=Number($('rawQtyKg').value||0),rate=Number($('rawRateKg').value||0),paid=Number($('rawPaid').value||0);
+    if(qty<=0){toast('જથ્થો દાખલ કરો');return;}
+    const {total,out}=rawPurchaseCalc();
+    const rows=getCompanyPurchases();
+    rows.push({id:companyUid('RAW'),date:$('rawPurchaseDate').value||todayISO(),supplier:$('rawSupplier').value.trim(),village:$('rawVillage').value.trim(),mobile:$('rawMobile').value.trim(),material:$('rawMaterial').value,qtyKg:round2(qty),rateKg:round2(rate),total,paid:round2(paid),outstanding:out,note:$('rawNote').value.trim(),createdAt:new Date().toISOString(),operator:currentOperator()});
+    saveCompanyPurchases(rows);
+    $('rawPurchaseForm').reset(); $('rawPurchaseDate').value=todayISO(); $('rawMaterial').value='groundnut'; $('rawPaid').value='0';
+    rawPurchaseCalc(); renderCompanyProduction(); toast('કાચા માલની ખરીદી સાચવાઈ');
+  });
+
+  $('productionBatchForm')?.addEventListener('submit',(e)=>{
+    e.preventDefault();
+    const c=productionCalc(),stock=companyStock();
+    if(c.input<=0){toast('Input કિલો દાખલ કરો');return;}
+    if(c.input>stock.rawAvailable+0.001){toast('Raw stock પૂરતો નથી');return;}
+    if(c.oil+c.khali+c.loss<=0){toast('Output દાખલ કરો');return;}
+    const rows=getCompanyBatches();
+    rows.push({id:companyUid('PR'),date:$('productionDate').value||todayISO(),batchNo:$('productionBatchNo').value||nextProductionBatchNo(),inputKg:round2(c.input),oilKg:round2(c.oil),khaliKg:round2(c.khali),lossKg:round2(c.loss),tinCount:Number($('productionTinCount').value||0),operator:$('productionOperator').value||currentOperator(),note:$('productionNote').value.trim(),oilYield:c.oilYield,khaliYield:c.khaliYield,createdAt:new Date().toISOString()});
+    saveCompanyBatches(rows);
+    $('productionBatchForm').reset(); $('productionDate').value=todayISO(); $('productionBatchNo').value=nextProductionBatchNo(); $('productionLossKg').value='0'; $('productionTinCount').value='0';
+    hydrateCompanyOperator(); productionCalc(); renderCompanyProduction(); toast('પ્રોડક્શન બેચ સાચવાયો');
+  });
+
+  $('companySaleForm')?.addEventListener('submit',(e)=>{
+    e.preventDefault();
+    const c=companySaleCalc();
+    if(c.qty<=0){toast('વેચાણ જથ્થો દાખલ કરો');return;}
+    if(c.bad){toast('સ્ટોક પૂરતો નથી');return;}
+    const rows=getCompanySales();
+    rows.push({id:companyUid('SALE'),date:$('companySaleDate').value||todayISO(),customer:$('companySaleCustomer').value.trim(),village:$('companySaleVillage').value.trim(),mobile:$('companySaleMobile').value.trim(),unit:c.unit,tinCount:c.tinCount,kg:c.kg,oilKg:c.oilKg,rate:round2(Number($('companySaleRate').value||0)),total:c.total,paid:round2(Number($('companySalePaid').value||0)),outstanding:c.out,method:$('companySaleMethod').value,note:$('companySaleNote').value.trim(),createdAt:new Date().toISOString(),operator:currentOperator()});
+    saveCompanySales(rows);
+    $('companySaleForm').reset(); $('companySaleDate').value=todayISO(); $('companySaleUnit').value='tin'; $('companySaleTinCount').value='0'; $('companySaleKg').value='0'; $('companySalePaid').value='0';
+    $('companySaleTinField').hidden=false; $('companySaleKgField').hidden=true; companySaleCalc(); renderCompanySales(); toast('વેચાણ સાચવાયું');
+  });
 
   if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('./sw.js').catch(()=>{});
 
