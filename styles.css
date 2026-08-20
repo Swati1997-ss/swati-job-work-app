@@ -984,3 +984,204 @@ html[lang="en"] select{
 .production-balance-box strong,.field-summary-box strong{font-size:.9rem}
 .warning-box{margin-top:10px;padding:10px 12px;border-radius:11px;background:#fff4e8;color:#9a3412;font-size:.78rem;font-weight:700}
 @media(max-width:640px){.production-balance-box{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+
+/* UI Alpha 23 — Grain/Pulse Company Sales */
+.grain-sale-type-switch{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:9px;
+  margin-bottom:12px
+}
+.grain-sale-type-btn{
+  min-height:46px;
+  border:1px solid var(--ui-line);
+  background:#fff;
+  border-radius:13px;
+  font-weight:850;
+  color:var(--text-strong)
+}
+.grain-sale-type-btn.active{
+  border-color:var(--pro-blue);
+  background:var(--pro-blue-soft);
+  color:var(--pro-blue)
+}
+
+
+/* UI Alpha 24 — Costing / Stock Valuation */
+.costing-list{display:grid;gap:10px;margin-top:12px}
+.costing-card{border:1px solid var(--ui-line);border-radius:14px;padding:12px;background:#fff}
+.costing-head{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.costing-head>span{display:grid;gap:3px}
+.costing-head small{font-size:.7rem;color:var(--text-soft)}
+.costing-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:12px}
+.costing-grid>div{background:#f7f9fb;border-radius:10px;padding:9px;display:grid;gap:3px}
+.costing-grid span{font-size:.66rem;color:var(--text-soft)}
+.costing-grid strong{font-size:.82rem}
+@media(max-width:640px){.costing-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+
+/* UI Alpha 25 — Finance Owner Dashboard v2 */
+.finance-owner-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:10px;
+  margin-bottom:12px
+}
+.owner-kpi{
+  padding:14px;
+  display:grid;
+  gap:4px
+}
+.owner-kpi span{font-size:.72rem;color:var(--text-soft)}
+.owner-kpi strong{font-size:1.18rem}
+.owner-kpi small{font-size:.66rem;color:var(--text-soft)}
+.primary-kpi{border:1px solid #cfe1f2;background:#f7fbff}
+.owner-position-card{border-left:4px solid var(--pro-blue)}
+.finance-position-grid,.finance-flow-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  margin-top:12px
+}
+.finance-position-grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.finance-position-grid>div,.finance-flow-grid>div{
+  padding:10px;
+  border-radius:11px;
+  background:#f7f9fb;
+  display:grid;
+  gap:3px
+}
+.finance-position-grid span,.finance-flow-grid span{font-size:.68rem;color:var(--text-soft)}
+.money-location-list{display:grid;gap:8px;margin-top:10px}
+.money-location-list>div{
+  display:flex;justify-content:space-between;gap:12px;
+  padding:10px 0;border-bottom:1px dashed var(--ui-line)
+}
+.money-location-list>div:last-child{border-bottom:0}
+.finance-positive{color:#157347}
+.finance-negative{color:#b42318}
+@media(max-width:720px){
+  .finance-owner-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .finance-position-grid.three{grid-template-columns:1fr}
+}
+
+
+/* UI Alpha 26 — Staff / Labour / Attendance */
+.staff-summary-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px}
+.staff-kpi{padding:14px;display:grid;gap:4px}
+.staff-kpi span{font-size:.7rem;color:var(--text-soft)}
+.staff-kpi strong{font-size:1.1rem}
+.staff-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.staff-tab{min-height:44px;border:1px solid var(--ui-line);border-radius:12px;background:#fff;font-weight:800}
+.staff-tab.active{border-color:var(--pro-blue);background:var(--pro-blue-soft);color:var(--pro-blue)}
+.staff-salary-list{display:grid;gap:10px}
+.staff-salary-row{display:grid;grid-template-columns:2fr repeat(4,1fr);gap:8px;padding:10px;border:1px solid var(--ui-line);border-radius:12px}
+.staff-salary-row>span{display:grid;gap:3px}
+.staff-salary-row>div{display:grid;gap:3px}
+.staff-salary-row small,.staff-salary-row span{font-size:.68rem;color:var(--text-soft)}
+@media(max-width:720px){
+  .staff-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .staff-salary-row{grid-template-columns:1fr 1fr}
+  .staff-salary-row>span{grid-column:1/-1}
+}
+
+
+/* UI Alpha 27 — Invoice / Billing */
+.invoice-summary-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:12px}
+.invoice-kpi{padding:14px;display:grid;gap:4px}
+.invoice-kpi span{font-size:.7rem;color:var(--text-soft)}
+.invoice-kpi strong{font-size:1.1rem}
+.invoice-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.invoice-tab{min-height:44px;border:1px solid var(--ui-line);border-radius:12px;background:#fff;font-weight:800}
+.invoice-tab.active{border-color:var(--pro-blue);background:var(--pro-blue-soft);color:var(--pro-blue)}
+.invoice-filter-head{gap:10px}
+.invoice-search{width:100%;margin:10px 0;min-height:42px}
+.invoice-source-list{display:grid;gap:8px}
+.invoice-source-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:10px;padding:11px;border:1px solid var(--ui-line);border-radius:12px}
+.invoice-source-row>span:first-child{display:grid;gap:3px}
+.invoice-source-row small{font-size:.68rem;color:var(--text-soft)}
+.invoice-source-amount{text-align:right;display:grid;gap:3px}
+.invoice-create-btn{white-space:nowrap}
+.invoice-preview-panel{margin-top:12px}
+.invoice-paper{background:#fff;border:1px solid #d8dde3;border-radius:12px;padding:20px;color:#1f2937}
+.invoice-brand{display:flex;justify-content:space-between;gap:18px;border-bottom:2px solid #7b2330;padding-bottom:12px}
+.invoice-brand h1{font-size:1.35rem;margin:0 0 3px}
+.invoice-brand p{margin:0;font-size:.75rem}
+.invoice-meta{display:grid;grid-template-columns:auto auto;gap:4px 10px;font-size:.75rem;text-align:right}
+.invoice-customer{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:14px 0}
+.invoice-customer>div{display:grid;gap:3px}
+.invoice-customer span{font-size:.7rem;color:#6b7280}
+.invoice-items-table{width:100%;border-collapse:collapse}
+.invoice-items-table th,.invoice-items-table td{border-bottom:1px solid #e5e7eb;padding:8px;text-align:left;font-size:.78rem}
+.invoice-items-table th:nth-child(n+2),.invoice-items-table td:nth-child(n+2){text-align:right}
+.invoice-totals{margin-left:auto;margin-top:14px;max-width:300px;display:grid;gap:7px}
+.invoice-totals>div{display:flex;justify-content:space-between;gap:20px}
+.invoice-due-row{border-top:1px solid #d1d5db;padding-top:8px;font-size:1rem}
+.invoice-note{margin-top:14px;font-size:.75rem}
+.invoice-footer{text-align:center;margin-top:24px;padding-top:10px;border-top:1px solid #e5e7eb;font-weight:800}
+.invoice-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}
+.invoice-print-area{display:none}
+
+@media(max-width:640px){
+  .invoice-summary-grid{grid-template-columns:1fr 1fr}
+  .invoice-source-row{grid-template-columns:1fr auto}
+  .invoice-source-row button{grid-column:1/-1;width:100%}
+  .invoice-actions{grid-template-columns:1fr}
+  .invoice-customer{grid-template-columns:1fr}
+}
+
+@media print{
+  body.invoice-printing > *{display:none!important}
+  body.invoice-printing #invoicePrintArea{display:block!important;position:static!important}
+  body.invoice-printing #invoicePrintArea .invoice-paper{display:block!important;border:0!important;box-shadow:none!important;border-radius:0!important;padding:0!important}
+  body.invoice-printing #invoicePrintArea .no-print{display:none!important}
+}
+
+
+/* UI Alpha 28 — Reports Expansion */
+.report-card-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px
+}
+.report-card{
+  text-align:left;
+  min-height:92px;
+  border:1px solid var(--ui-line);
+  background:#fff;
+  border-radius:14px;
+  padding:14px;
+  display:grid;
+  gap:6px
+}
+.report-card strong{font-size:.94rem}
+.report-card small{font-size:.72rem;color:var(--text-soft)}
+.report-filter-card{margin-bottom:12px}
+.report-filter-grid{margin-top:12px}
+.report-quick-filters{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.report-summary-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:10px;
+  margin-bottom:12px
+}
+.report-summary-kpi{padding:13px;display:grid;gap:4px}
+.report-summary-kpi span{font-size:.68rem;color:var(--text-soft)}
+.report-summary-kpi strong{font-size:1rem}
+.report-expanded-list{display:grid;gap:8px;margin-top:10px}
+.report-expanded-row{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  padding:10px 0;
+  border-bottom:1px dashed var(--ui-line)
+}
+.report-expanded-row:last-child{border-bottom:0}
+.report-expanded-row>span{display:grid;gap:3px}
+.report-expanded-row>span:last-child{text-align:right}
+.report-expanded-row small{font-size:.68rem;color:var(--text-soft)}
+@media(max-width:680px){
+  .report-card-grid{grid-template-columns:1fr}
+  .report-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}

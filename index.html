@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#8f1736" />
   <title>સ્વાતિ મિની ઓઇલ મિલ</title>
-  <link rel="manifest" href="manifest.webmanifest?v=ui-alpha22" />
+  <link rel="manifest" href="manifest.webmanifest?v=ui-alpha28" />
   <link rel="apple-touch-icon" href="swati-icon-v2-192.png?v=22" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Swati" />
-  <link rel="stylesheet" href="styles.css?v=ui-alpha22" />
+  <link rel="stylesheet" href="styles.css?v=ui-alpha28" />
 </head>
 <body>
   
@@ -113,11 +113,26 @@
         <span class="drawer-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6 12 2l9 4-9 4-9-4Zm0 4 9 4 9-4v8l-9 4-9-4v-8Z"/></svg></span>
         <span data-i18n="stockManagement">સ્ટોક મેનેજમેન્ટ</span>
       </button>
+
+      <button class="drawer-link" data-screen="costing" type="button">
+        <span class="drawer-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v16H4V4Zm3 3v2h10V7H7Zm0 5v5h4v-5H7Zm7 0v2h3v-2h-3Zm0 3v2h3v-2h-3Z"/></svg></span>
+        <span data-i18n="costing">Costing / Valuation</span>
+      </button>
 <button class="drawer-link" data-screen="finance" type="button">
         <span class="drawer-icon">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18v14H3V5Zm2 2v10h14V7H5Zm3 2h8v2H8V9Zm0 4h5v2H8v-2Z"/></svg>
         </span>
         <span data-i18n="finance">ફાઇનાન્સ</span>
+      </button>
+
+      <button class="drawer-link" data-screen="staff" type="button">
+        <span class="drawer-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8a7 7 0 0 1 14 0H5Zm14-9a3 3 0 1 0 0-6v6Zm1 2c2.2.4 4 2.2 4 4.5V20h-3v-2.5c0-1.6-.4-3-1-4.5Z"/></svg></span>
+        <span data-i18n="staffLabour">Staff / Labour</span>
+      </button>
+
+      <button class="drawer-link" data-screen="invoices" type="button">
+        <span class="drawer-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h10l4 4v16H6V2Zm9 2v4h4M9 12h8M9 16h8M9 8h2"/></svg></span>
+        <span data-i18n="invoiceBilling">Invoice / Billing</span>
       </button>
 <button class="drawer-link" data-screen="reports" type="button"><span class="drawer-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3h16a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Zm3 13h2V9H7v7Zm4 0h2V6h-2v10Zm4 0h2v-4h-2v4Z"/></svg></span><span data-i18n="reports">રિપોર્ટ્સ</span></button>
       <button class="drawer-link" data-screen="settings" type="button"><span class="drawer-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10.9 2 2.2 0 .5 2.2c.5.2 1 .4 1.5.7l2-1.1 1.6 1.6-1.1 2c.3.5.5 1 .7 1.5l2.2.5v2.2l-2.2.5c-.2.5-.4 1-.7 1.5l1.1 2-1.6 1.6-2-1.1c-.5.3-1 .5-1.5.7l-.5 2.2h-2.2l-.5-2.2c-.5-.2-1-.4-1.5-.7l-2 1.1-1.6-1.6 1.1-2c-.3-.5-.5-1-.7-1.5l-2.2-.5V9.4l2.2-.5c.2-.5.4-1 .7-1.5l-1.1-2L6.9 3.8l2 1.1c.5-.3 1-.5 1.5-.7L10.9 2ZM12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z"/></svg></span><span data-i18n="settings">સેટિંગ્સ</span></button>
@@ -235,6 +250,24 @@
         <button class="home-action-card" data-go="stock-management" type="button">
           <span class="home-action-icon"><svg viewBox="0 0 24 24"><path d="M3 6 12 2l9 4-9 4-9-4Zm0 4 9 4 9-4v8l-9 4-9-4v-8Z"/></svg></span>
           <span><strong data-i18n="stockManagement">સ્ટોક મેનેજમેન્ટ</strong><small data-i18n="stockManagementHelp">કંપનીના બધા સ્ટોકનો movement-wise હિસાબ</small></span>
+          <span class="home-action-arrow">›</span>
+        </button>
+
+        <button class="home-action-card" data-go="costing" type="button">
+          <span class="home-action-icon"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4V4Zm3 3v2h10V7H7Zm0 5v5h4v-5H7Zm7 0v2h3v-2h-3Zm0 3v2h3v-2h-3Z"/></svg></span>
+          <span><strong data-i18n="costing">Costing / Valuation</strong><small data-i18n="costingHelp">Stock value અને estimated unit cost</small></span>
+          <span class="home-action-arrow">›</span>
+        </button>
+
+        <button class="home-action-card" data-go="staff" type="button">
+          <span class="home-action-icon"><svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8a7 7 0 0 1 14 0H5Z"/></svg></span>
+          <span><strong data-i18n="staffLabour">Staff / Labour</strong><small data-i18n="staffHelp">Attendance, salary અને advance</small></span>
+          <span class="home-action-arrow">›</span>
+        </button>
+
+        <button class="home-action-card" data-go="invoices" type="button">
+          <span class="home-action-icon"><svg viewBox="0 0 24 24"><path d="M6 2h10l4 4v16H6V2Zm3 10h8M9 16h8M9 8h2"/></svg></span>
+          <span><strong data-i18n="invoiceBilling">Invoice / Billing</strong><small data-i18n="invoiceHelp">Sales અને Job Workમાંથી bill બનાવો</small></span>
           <span class="home-action-arrow">›</span>
         </button>
 </div>
@@ -972,19 +1005,84 @@
     </section>
 
 
+    
     <section class="screen" id="screen-grain-sales">
       <div class="module-head compact-page-head">
-        <div><p data-i18n="grainSalesHelp">Processed grain/pulse અને waste/by-product sales માટેનું workspace.</p></div>
+        <div><p data-i18n="grainSalesHelp">Processed Grain/Pulse અને Waste/Rejectનું company sale.</p></div>
       </div>
+
+      <div class="grain-sale-type-switch no-print">
+        <button type="button" class="grain-sale-type-btn active" data-grain-sale-type="processed" data-i18n="processedSale">Processed Goods</button>
+        <button type="button" class="grain-sale-type-btn" data-grain-sale-type="waste" data-i18n="wasteSale">Waste / Reject</button>
+      </div>
+
+      <form id="grainSaleForm" class="card section-card no-print">
+        <input id="grainSaleType" type="hidden" value="processed" />
+
+        <div class="grid two">
+          <label data-i18n="date">તારીખ<input id="grainSaleDate" type="date" /></label>
+          <label data-i18n="customer">ગ્રાહક<input id="grainSaleCustomer" placeholder="ગ્રાહકનું નામ" /></label>
+          <label data-i18n="village">ગામ<input id="grainSaleVillage" placeholder="ગામ" /></label>
+          <label data-i18n="mobile">મોબાઇલ<input id="grainSaleMobile" inputmode="tel" /></label>
+          <label data-i18n="saleItem">વેચાણ Item
+            <input id="grainSaleItem" list="grainSaleItemSuggestions" placeholder="Processed / Waste item" required />
+            <datalist id="grainSaleItemSuggestions"></datalist>
+          </label>
+          <label data-i18n="itemCode">Item Code<input id="grainSaleItemId" placeholder="Optional" /></label>
+          <label data-i18n="quantity">જથ્થો<input id="grainSaleQty" type="number" min="0" step="0.01" required /></label>
+          <label data-i18n="unit">Unit
+            <select id="grainSaleUnit">
+              <option value="kg">કિલો</option>
+              <option value="ton">ટન (TON)</option>
+              <option value="mann">મણ</option>
+              <option value="bag">બેગ</option>
+            </select>
+          </label>
+          <label data-i18n="rate">ભાવ ₹ / Unit<input id="grainSaleRate" type="number" min="0" step="0.01" required /></label>
+          <label data-i18n="paid">ચૂકવેલ ₹<input id="grainSalePaid" type="number" min="0" step="0.01" value="0" /></label>
+          <label data-i18n="paymentMethod">ચુકવણી રીત
+            <select id="grainSalePaymentMode">
+              <option value="cash">રોકડ</option>
+              <option value="bank">બેંક / UPI</option>
+            </select>
+          </label>
+          <label data-i18n="notes">નોંધ<input id="grainSaleNote" placeholder="Optional" /></label>
+        </div>
+
+        <div class="stock-context-box">
+          <span data-i18n="availableStock">Available Stock</span>
+          <strong id="grainSaleAvailableStock">0 kg</strong>
+        </div>
+
+        <div class="purchase-totals">
+          <div><span data-i18n="totalSale">કુલ વેચાણ</span><strong id="grainSaleTotal">₹0</strong></div>
+          <div><span data-i18n="outstanding">બાકી</span><strong id="grainSaleOutstanding">₹0</strong></div>
+        </div>
+
+        <div id="grainSaleStockWarning" class="warning-box" hidden></div>
+
+        <div class="sticky-actions">
+          <button class="primary" type="submit" data-i18n="saveSale">વેચાણ સાચવો</button>
+        </div>
+      </form>
+
       <div class="card section-card">
         <div class="row-between">
-          <span class="module-badge blue">Grain / Pulse</span>
+          <div><h2 data-i18n="recentGrainSales">તાજેતરનું Grain/Pulse વેચાણ</h2><small data-i18n="recentGrainSalesHelp">Processed goods અને Waste/Reject sales.</small></div>
+          <strong id="grainSalesCount">0</strong>
         </div>
-        <div class="notice">
-          <span data-i18n="grainSalesFoundation">આ screen Grain/Pulse sales માટે અલગ રાખવામાં આવી છે. Detailed sale-entry workflow next functional expansionમાં જોડાશે.</span>
+        <div id="grainSalesList" class="mini-list"></div>
+      </div>
+
+      <div class="card section-card">
+        <div class="row-between">
+          <div><h2 data-i18n="grainSalesCustomers">Grain/Pulse Sales Customers</h2><small data-i18n="grainSalesCustomersHelp">આ moduleના sales customers.</small></div>
+          <strong id="grainSalesCustomerCount">0</strong>
         </div>
+        <div id="grainSalesCustomerList" class="mini-list"></div>
       </div>
     </section>
+
 
     <section class="screen" id="screen-grain-stock">
       <div class="module-head compact-page-head">
@@ -1391,168 +1489,437 @@
       </div>
     </section>
 
-<section class="screen" id="screen-finance">
+
+    <section class="screen" id="screen-costing">
       <div class="module-head compact-page-head">
-        <div><p>Company-wide money position, liquidity, stock value અને borrowing visibility.</p></div>
+        <div><p data-i18n="costingHelp">Purchase, processing અને stock quantities પરથી inventory cost/valuation view.</p></div>
+      </div>
+
+      <div class="stock-summary-grid">
+        <div class="card stock-kpi">
+          <span data-i18n="totalStockValue">કુલ Stock Value</span>
+          <strong id="costingTotalStockValue">₹0</strong>
+        </div>
+        <div class="card stock-kpi">
+          <span data-i18n="totalPurchaseValue">કુલ Purchase Value</span>
+          <strong id="costingTotalPurchaseValue">₹0</strong>
+        </div>
+        <div class="card stock-kpi">
+          <span data-i18n="totalProcessingCost">કુલ Processing Cost</span>
+          <strong id="costingTotalProcessingCost">₹0</strong>
+        </div>
+      </div>
+
+      <div class="card section-card">
+        <div class="row-between">
+          <div>
+            <h2 data-i18n="inventoryValuation">Inventory Valuation</h2>
+            <small data-i18n="valuationNote">આ operational estimate છે; final accounting valuation rules પછી refine કરી શકાશે.</small>
+          </div>
+          <input id="costingSearch" class="compact-search" placeholder="શોધો" />
+        </div>
+
+        <div id="costingList" class="costing-list"></div>
+      </div>
+
+      <div class="card section-card">
+        <div class="row-between">
+          <div>
+            <h2 data-i18n="moneyTiedInStock">Stockમાં અટવાયેલું Money</h2>
+            <small data-i18n="moneyTiedHelp">Available stock × estimated unit cost.</small>
+          </div>
+          <strong id="costingMoneyTied">₹0</strong>
+        </div>
+      </div>
+    </section>
+
+
+    <section class="screen" id="screen-finance">
+      <div class="module-head compact-page-head">
+        <div>
+          <p data-i18n="ownerFinanceHelp">Owner માટે companyની cash, bank, stock, receivable, payable અને borrowing position એક જ જગ્યાએ.</p>
+        </div>
       </div>
 
       <div class="finance-owner-grid">
-        <div class="finance-owner-card"><span>Cash in Hand</span><strong id="financeCashBalance">₹0</strong></div>
-        <div class="finance-owner-card"><span>Bank Balance</span><strong id="financeBankBalance">₹0</strong></div>
-        <div class="finance-owner-card highlight"><span>Liquid Money</span><strong id="financeLiquid">₹0</strong></div>
-        <div class="finance-owner-card"><span>લેવાના</span><strong id="financeReceivable">₹0</strong></div>
-        <div class="finance-owner-card"><span>આપવાના</span><strong id="financePayable">₹0</strong></div>
-        <div class="finance-owner-card"><span>Stock Value</span><strong id="financeStockValue">₹0</strong><small>Current estimation</small></div>
-        <div class="finance-owner-card"><span>કુલ ખરીદી</span><strong id="financePurchases">₹0</strong></div>
-        <div class="finance-owner-card"><span>કુલ ખર્ચ</span><strong id="financeExpenses">₹0</strong></div>
+        <div class="card owner-kpi primary-kpi">
+          <span data-i18n="liquidMoney">Liquid Money</span>
+          <strong id="financeLiquid">₹0</strong>
+          <small data-i18n="cashPlusBank">Cash + Bank</small>
+        </div>
+        <div class="card owner-kpi">
+          <span data-i18n="stockValue">Stock Value</span>
+          <strong id="financeStockValue">₹0</strong>
+          <small data-i18n="moneyInInventory">Money tied in inventory</small>
+        </div>
+        <div class="card owner-kpi">
+          <span data-i18n="receivables">Receivables</span>
+          <strong id="financeReceivable">₹0</strong>
+          <small data-i18n="moneyToReceive">Money to receive</small>
+        </div>
+        <div class="card owner-kpi">
+          <span data-i18n="payables">Payables</span>
+          <strong id="financePayable">₹0</strong>
+          <small data-i18n="moneyToPay">Money to pay</small>
+        </div>
       </div>
 
-      <div class="finance-two-col">
-        <form id="financeOpeningForm" class="card section-card">
-          <div class="row-between"><h2>Opening Finance</h2><span class="module-badge blue">Owner Setup</span></div>
-          <label>Opening Cash in Hand ₹<input id="financeOpeningCash" type="number" min="0" step="0.01" /></label>
-          <div class="sticky-actions"><button class="primary" type="submit">Opening Cash સાચવો</button></div>
-        </form>
+      <div class="card section-card owner-position-card">
+        <div class="row-between">
+          <div>
+            <h2 data-i18n="ownerFinancialPosition">Owner Financial Position</h2>
+            <small data-i18n="ownerPositionHelp">Owned working assets minus current payables.</small>
+          </div>
+          <strong id="financeNetWorkingPosition">₹0</strong>
+        </div>
+        <div class="finance-position-grid">
+          <div><span data-i18n="ownedWorkingAssets">Owned Working Assets</span><strong id="financeOwnedWorkingAssets">₹0</strong></div>
+          <div><span data-i18n="lessPayables">Less: Payables</span><strong id="financePayablesForPosition">₹0</strong></div>
+        </div>
+      </div>
 
-        <form id="bankAccountForm" class="card section-card">
-          <div class="row-between"><h2>Bank Account</h2><span class="module-badge blue">Add</span></div>
+      <div class="card section-card">
+        <div class="row-between">
+          <div>
+            <h2 data-i18n="whereIsMyMoney">Where is my money?</h2>
+            <small data-i18n="whereMoneyHelp">Company money ક્યાં hold થયું છે તે owner view.</small>
+          </div>
+        </div>
+
+        <div class="money-location-list">
+          <div><span>Cash</span><strong id="financeCashBalance">₹0</strong></div>
+          <div><span>Bank</span><strong id="financeBankBalance">₹0</strong></div>
+          <div><span>Stock</span><strong id="financeWhereStock">₹0</strong></div>
+          <div><span>Receivables</span><strong id="financeWhereReceivable">₹0</strong></div>
+        </div>
+      </div>
+
+      <div class="card section-card">
+        <div class="row-between">
+          <div>
+            <h2 data-i18n="loanCreditPosition">Loan / Credit Position</h2>
+            <small data-i18n="loanCreditHelp">Borrowing capacity owned moneyથી અલગ બતાવવામાં આવે છે.</small>
+          </div>
+        </div>
+        <div class="finance-position-grid three">
+          <div><span data-i18n="sanctionedLimit">Sanctioned Limit</span><strong id="financeLoanLimit">₹0</strong></div>
+          <div><span data-i18n="loanUsed">Used / Outstanding</span><strong id="financeLoanUsed">₹0</strong></div>
+          <div><span data-i18n="loanAvailable">Available Borrowing</span><strong id="financeLoanAvailable">₹0</strong></div>
+        </div>
+      </div>
+
+      <div class="card section-card">
+        <div class="row-between">
+          <div><h2 data-i18n="cashBankBreakdown">Cash & Bank Breakdown</h2><small data-i18n="cashBankHelp">Opening cash અને configured bank balances.</small></div>
+        </div>
+        <div id="financeBankList" class="mini-list"></div>
+      </div>
+
+      <div class="card section-card">
+        <div class="row-between">
+          <div><h2 data-i18n="businessFlowSummary">Business Flow Summary</h2></div>
+        </div>
+        <div class="finance-flow-grid">
+          <div><span data-i18n="totalPurchases">Total Purchases</span><strong id="financePurchaseTotal">₹0</strong></div>
+          <div><span data-i18n="totalExpenses">Total Expenses</span><strong id="financeExpenseTotal">₹0</strong></div>
+          <div><span data-i18n="salesOutstanding">Sales Outstanding</span><strong id="financeSalesOutstanding">₹0</strong></div>
+          <div><span data-i18n="purchaseOutstanding">Purchase Outstanding</span><strong id="financePurchaseOutstanding">₹0</strong></div>
+        </div>
+      </div>
+    </section>
+
+
+    <section class="screen" id="screen-staff">
+      <div class="module-head compact-page-head">
+        <div><p data-i18n="staffHelp">Staff master, attendance, advance અને salary payment એક જ જગ્યાએ.</p></div>
+      </div>
+
+      <div class="staff-summary-grid">
+        <div class="card staff-kpi"><span data-i18n="staffCount">કુલ Staff</span><strong id="staffCount">0</strong></div>
+        <div class="card staff-kpi"><span data-i18n="presentToday">આજે Present</span><strong id="staffPresentToday">0</strong></div>
+        <div class="card staff-kpi"><span data-i18n="salaryOutstanding">Salary Outstanding</span><strong id="staffSalaryOutstanding">₹0</strong></div>
+        <div class="card staff-kpi"><span data-i18n="staffAdvance">Staff Advance</span><strong id="staffAdvanceTotal">₹0</strong></div>
+      </div>
+
+      <div class="staff-tabs no-print">
+        <button type="button" class="staff-tab active" data-staff-tab="master">Staff</button>
+        <button type="button" class="staff-tab" data-staff-tab="attendance">Attendance</button>
+        <button type="button" class="staff-tab" data-staff-tab="salary">Salary / Advance</button>
+      </div>
+
+      <div id="staffMasterPanel" class="staff-panel">
+        <form id="staffMasterForm" class="card section-card no-print">
+          <div class="section-title"><span>1</span><h2 data-i18n="addStaff">Staff ઉમેરો</h2></div>
           <div class="grid two">
-            <label>Bank<input id="bankName" placeholder="Bank name" /></label>
-            <label>Account Name<input id="bankAccountName" placeholder="Optional" /></label>
-            <label>Account Type
-              <select id="bankAccountType">
-                <option value="current">Current</option>
-                <option value="savings">Savings</option>
-                <option value="cc">Cash Credit</option>
-                <option value="od">OD</option>
-                <option value="loan">Loan</option>
+            <label data-i18n="name">નામ<input id="staffName" required /></label>
+            <label data-i18n="mobile">મોબાઇલ<input id="staffMobile" inputmode="tel" maxlength="10" /></label>
+            <label data-i18n="role">Role / કામ<input id="staffRole" placeholder="Operator / Labour / Helper" /></label>
+            <label data-i18n="salaryType">Salary Type
+              <select id="staffSalaryType">
+                <option value="daily">Daily</option>
+                <option value="monthly">Monthly</option>
               </select>
             </label>
-            <label>Opening Balance ₹<input id="bankOpeningBalance" type="number" step="0.01" /></label>
+            <label data-i18n="salaryRate">Salary Rate ₹<input id="staffSalaryRate" type="number" min="0" step="0.01" /></label>
+            <label data-i18n="joiningDate">Joining Date<input id="staffJoiningDate" type="date" /></label>
+            <label class="span-2" data-i18n="notes">નોંધ<input id="staffNote" placeholder="Optional" /></label>
           </div>
-          <div class="sticky-actions"><button class="primary" type="submit">Bank Account ઉમેરો</button></div>
+          <div class="sticky-actions"><button class="primary" type="submit" data-i18n="saveStaff">Staff સાચવો</button></div>
         </form>
-      </div>
 
-      <div class="card section-card">
-        <div class="row-between"><h2>Bank Accounts</h2><strong id="financeBankCount">0</strong></div>
-        <div id="financeBankList" class="finance-stock-list"></div>
-      </div>
-
-      <form id="loanFacilityForm" class="card section-card">
-        <div class="row-between"><h2>Loan / Credit Facility</h2><span class="module-badge blue">Optional</span></div>
-        <div class="grid three">
-          <label>Facility<input id="loanFacilityName" placeholder="CC / OD / Loan" /></label>
-          <label>Sanctioned Limit ₹<input id="loanSanctioned" type="number" min="0" step="0.01" /></label>
-          <label>Used / Outstanding ₹<input id="loanUsed" type="number" min="0" step="0.01" /></label>
+        <div class="card section-card">
+          <div class="row-between"><h2 data-i18n="staffList">Staff List</h2><strong id="staffListCount">0</strong></div>
+          <div id="staffList" class="mini-list"></div>
         </div>
-        <div class="sticky-actions"><button class="primary" type="submit">Facility ઉમેરો</button></div>
-      </form>
-
-      <div class="card section-card">
-        <div class="row-between"><h2>Borrowing Capacity</h2><strong id="financeBorrowingAvailable">₹0</strong></div>
-        <div id="financeLoanList" class="finance-stock-list"></div>
       </div>
 
-      <div class="card section-card">
-        <div class="row-between"><h2>Stock Snapshot</h2><strong id="financeStockItemCount">0 Items</strong></div>
-        <div id="financeStockList" class="finance-stock-list"></div>
+      <div id="staffAttendancePanel" class="staff-panel" hidden>
+        <form id="staffAttendanceForm" class="card section-card no-print">
+          <div class="section-title"><span>2</span><h2 data-i18n="attendanceEntry">Attendance Entry</h2></div>
+          <div class="grid two">
+            <label data-i18n="date">તારીખ<input id="attendanceDate" type="date" /></label>
+            <label data-i18n="staff">Staff<select id="attendanceStaff"></select></label>
+            <label data-i18n="status">Status
+              <select id="attendanceStatus">
+                <option value="present">Present</option>
+                <option value="half">Half Day</option>
+                <option value="absent">Absent</option>
+              </select>
+            </label>
+            <label data-i18n="notes">નોંધ<input id="attendanceNote" placeholder="Optional" /></label>
+          </div>
+          <div class="sticky-actions"><button class="primary" type="submit" data-i18n="saveAttendance">Attendance સાચવો</button></div>
+        </form>
+
+        <div class="card section-card">
+          <div class="row-between"><h2 data-i18n="recentAttendance">Recent Attendance</h2><strong id="attendanceCount">0</strong></div>
+          <div id="attendanceList" class="mini-list"></div>
+        </div>
+      </div>
+
+      <div id="staffSalaryPanel" class="staff-panel" hidden>
+        <form id="staffPaymentForm" class="card section-card no-print">
+          <div class="section-title"><span>3</span><h2 data-i18n="salaryAdvanceEntry">Salary / Advance Entry</h2></div>
+          <div class="grid two">
+            <label data-i18n="date">તારીખ<input id="staffPaymentDate" type="date" /></label>
+            <label data-i18n="staff">Staff<select id="staffPaymentStaff"></select></label>
+            <label data-i18n="entryType">Entry Type
+              <select id="staffPaymentType">
+                <option value="salary">Salary Paid</option>
+                <option value="advance">Advance Paid</option>
+              </select>
+            </label>
+            <label data-i18n="amount">રકમ ₹<input id="staffPaymentAmount" type="number" min="0" step="0.01" /></label>
+            <label data-i18n="paymentMethod">ચુકવણી રીત
+              <select id="staffPaymentMode">
+                <option value="cash">રોકડ</option>
+                <option value="bank">બેંક / UPI</option>
+              </select>
+            </label>
+            <label data-i18n="notes">નોંધ<input id="staffPaymentNote" placeholder="Optional" /></label>
+          </div>
+          <div class="sticky-actions"><button class="primary" type="submit" data-i18n="savePayment">Payment સાચવો</button></div>
+        </form>
+
+        <div class="card section-card">
+          <div class="row-between"><h2 data-i18n="salarySummary">Salary Summary</h2></div>
+          <div id="staffSalarySummaryList" class="staff-salary-list"></div>
+        </div>
+
+        <div class="card section-card">
+          <div class="row-between"><h2 data-i18n="recentStaffPayments">Recent Staff Payments</h2><strong id="staffPaymentCount">0</strong></div>
+          <div id="staffPaymentList" class="mini-list"></div>
+        </div>
       </div>
     </section>
-<section class="screen" id="screen-reports">
-      <div class="report-mobile-head no-print">
+
+
+    <section class="screen" id="screen-invoices">
+      <div class="module-head compact-page-head">
         <div>
-          
-          <h2>રિપોર્ટ્સ</h2>
-          <p>જરૂર મુજબ રિપોર્ટ પસંદ કરો અને નીચે વિગત જુઓ.</p>
+          <p data-i18n="invoiceHelp">Job Work, Company Sales અને Retail Salesમાંથી customer bill બનાવો.</p>
         </div>
-        <button id="exportReportBtn" class="report-export-btn" type="button">Excel Export</button>
       </div>
 
-      <div class="report-category-strip no-print" role="tablist" aria-label="રિપોર્ટ પ્રકાર">
-        <button class="report-chip active" type="button" data-report-business-ui="all">બધા</button>
-        <button class="report-chip" type="button" data-report-business-ui="oil">તેલ મીલ</button>
-        <button class="report-chip" type="button" data-report-business-ui="grain">અનાજ / કઠોળ</button>
+      <div class="invoice-summary-grid">
+        <div class="card invoice-kpi"><span data-i18n="savedInvoices">Saved Invoices</span><strong id="invoiceSavedCount">0</strong></div>
+        <div class="card invoice-kpi"><span data-i18n="invoiceTotalValue">Invoice Value</span><strong id="invoiceTotalValue">₹0</strong></div>
+        <div class="card invoice-kpi"><span data-i18n="invoiceOutstanding">Invoice Outstanding</span><strong id="invoiceOutstandingTotal">₹0</strong></div>
       </div>
 
-      <div class="report-launch-list no-print">
-        <button class="report-launch-card" type="button" data-report-open="summary">
-          <span class="report-launch-icon maroon">₹</span>
-          <span class="report-launch-copy"><strong>કુલ સારાંશ</strong><small>મજૂરી, ખરીદી, વેચાણ અને બાકીનો એક નજરમાં હિસાબ</small></span>
-          <span class="report-chevron">›</span>
-        </button>
-        <button class="report-launch-card" type="button" data-report-open="daily">
-          <span class="report-launch-icon blue">▤</span>
-          <span class="report-launch-copy"><strong>દિવસ મુજબ સારાંશ</strong><small>તારીખ પ્રમાણે ટ્રાન્ઝેક્શન અને કુલ રકમ</small></span>
-          <span class="report-chevron">›</span>
-        </button>
-        <button class="report-launch-card" type="button" data-report-open="customers">
-          <span class="report-launch-icon teal">◎</span>
-          <span class="report-launch-copy"><strong>ગ્રાહક સારાંશ</strong><small>ગ્રાહકો, ગામ અને મજૂરીની વિગતો</small></span>
-          <span class="report-chevron">›</span>
-        </button>
-        <button class="report-launch-card" type="button" data-report-open="villages">
-          <span class="report-launch-icon gold">⌖</span>
-          <span class="report-launch-copy"><strong>ગામ મુજબ સારાંશ</strong><small>ગામ પ્રમાણે ગ્રાહકો, ટ્રાન્ઝેક્શન અને બાકી</small></span>
-          <span class="report-chevron">›</span>
-        </button>
+      <div class="invoice-tabs no-print">
+        <button class="invoice-tab active" type="button" data-invoice-tab="source" data-i18n="createInvoice">Create Invoice</button>
+        <button class="invoice-tab" type="button" data-invoice-tab="saved" data-i18n="savedInvoices">Saved Invoices</button>
       </div>
 
-      
-      <div id="reportDetailArea" class="report-detail-area" hidden>
-        <div class="report-subpage-head no-print">
-          <button id="reportBackBtn" class="report-back-btn" type="button">← પાછા</button>
+      <div id="invoiceSourcePanel" class="invoice-panel">
+        <div class="card section-card">
+          <div class="row-between invoice-filter-head">
+            <div>
+              <h2 data-i18n="billableTransactions">Billable Transactions</h2>
+              <small data-i18n="billableHelp">Saved business entry પસંદ કરીને bill બનાવો.</small>
+            </div>
+            <select id="invoiceSourceFilter" class="compact-search">
+              <option value="all">All</option>
+              <option value="oil-jobwork">Oil Mill Job Work</option>
+              <option value="grain-jobwork">Grain/Pulse Job Work</option>
+              <option value="oil-company-sale">Oil Mill Company Sale</option>
+              <option value="grain-company-sale">Grain/Pulse Company Sale</option>
+              <option value="retail">Retail Sale</option>
+            </select>
+          </div>
+          <input id="invoiceSourceSearch" class="invoice-search" placeholder="Customer / Bill / Item શોધો" />
+          <div id="invoiceSourceList" class="invoice-source-list"></div>
+        </div>
+      </div>
+
+      <div id="invoiceSavedPanel" class="invoice-panel" hidden>
+        <div class="card section-card">
+          <div class="row-between">
+            <div><h2 data-i18n="savedInvoices">Saved Invoices</h2><small data-i18n="savedInvoiceHelp">Print અથવા WhatsApp text માટે ફરી ખોલી શકાય.</small></div>
+            <strong id="invoiceSavedListCount">0</strong>
+          </div>
+          <div id="invoiceSavedList" class="invoice-source-list"></div>
+        </div>
+      </div>
+
+      <div id="invoicePreviewPanel" class="card section-card invoice-preview-panel" hidden>
+        <div class="row-between no-print">
           <div>
-            <h2 id="reportSubpageTitle">રિપોર્ટ</h2>
+            <small data-i18n="invoicePreview">Invoice Preview</small>
+            <h2 id="invoicePreviewNo">—</h2>
           </div>
+          <button id="invoiceClosePreview" class="ghost" type="button">✕</button>
         </div>
 
-        <div class="card no-print section-card report-filter-card">
-          <div class="report-filter-title">
-            <div><h2>સમયગાળો પસંદ કરો</h2></div>
+        <div id="invoicePreviewCard" class="invoice-paper">
+          <div class="invoice-brand">
+            <div>
+              <h1>સ્વાતિ મિની ઓઈલ મિલ</h1>
+              <p>Pure Oil. Pure Trust.</p>
+            </div>
+            <div class="invoice-meta">
+              <span>બિલ નં.</span><strong id="invNo">—</strong>
+              <span>તારીખ</span><strong id="invDate">—</strong>
+            </div>
           </div>
-          <div class="grid three report-filters">
-            <label>વિભાગ<select id="reportBusiness"><option value="all">બધું</option><option value="oil">તેલ મિલ</option><option value="grain">અનાજ / કઠોળ</option></select></label>
-            <label>શરૂઆત તારીખ<input id="reportFrom" type="date" /></label>
-            <label>અંત તારીખ<input id="reportTo" type="date" /></label>
+
+          <div class="invoice-customer">
+            <div><span>ગ્રાહક</span><strong id="invCustomer">—</strong></div>
+            <div><span>ગામ</span><strong id="invVillage">—</strong></div>
+            <div><span>મોબાઇલ</span><strong id="invMobile">—</strong></div>
+            <div><span>પ્રકાર</span><strong id="invSourceType">—</strong></div>
           </div>
-          <div class="button-row report-presets">
-            <button type="button" class="ghost" data-report-range="today">આજે</button>
-            <button type="button" class="ghost" data-report-range="7days">છેલ્લા 7 દિવસ</button>
-            <button type="button" class="ghost" data-report-range="month">આ મહિનો</button>
-            <button type="button" class="ghost" data-report-range="season">આ સીઝન / વર્ષ</button>
+
+          <div class="invoice-items-wrap">
+            <table class="invoice-items-table">
+              <thead><tr><th>વિગત</th><th>જથ્થો</th><th>ભાવ</th><th>રકમ</th></tr></thead>
+              <tbody id="invItemsBody"></tbody>
+            </table>
           </div>
+
+          <div class="invoice-totals">
+            <div><span>કુલ</span><strong id="invTotal">₹0</strong></div>
+            <div><span>ચૂકવેલ</span><strong id="invPaid">₹0</strong></div>
+            <div class="invoice-due-row"><span>બાકી</span><strong id="invOutstanding">₹0</strong></div>
+          </div>
+
+          <div id="invNoteRow" class="invoice-note" hidden><span>નોંધ:</span> <strong id="invNote"></strong></div>
+          <div class="invoice-footer">આભાર</div>
         </div>
 
-        <div id="reportSummaryBlock" class="report-subpage-block">
-          <div class="stats no-print compact-stats report-stats">
-            <div class="stat card"><span>કુલ ટ્રાન્ઝેક્શન</span><strong id="reportTxCount">0</strong></div>
-            <div class="stat card"><span>કુલ મજૂરી</span><strong id="reportJobTotal">₹0</strong></div>
-            <div class="stat card"><span>કુલ ખરીદી</span><strong id="reportPurchaseTotal">₹0</strong></div>
-            <div class="stat card"><span>કુલ વેચાણ</span><strong id="reportSalesTotal">₹0</strong></div>
-            <div class="stat card"><span>ખેડૂત પાસેથી લેવાના</span><strong id="reportReceivable">₹0</strong></div>
-            <div class="stat card"><span>ખેડૂતને આપવાના</span><strong id="reportPayable">₹0</strong></div>
-            <div class="stat card"><span>ચૂકવેલ / મળેલ</span><strong id="reportPaid">₹0</strong></div>
-            <div class="stat card"><span>બાકી</span><strong id="reportOutstanding">₹0</strong></div>
-          </div>
-        </div>
-
-        <div id="reportDailyBlock" class="card section-card report-data-card report-subpage-block" hidden>
-          <div class="row-between"><h2>દિવસ મુજબ સારાંશ</h2><strong id="reportPeriodLabel"></strong></div>
-          <div class="table-wrap"><table><thead><tr><th>તારીખ</th><th>બિલ</th><th>મજૂરી</th><th>ખરીદી</th><th>વેચાણ</th><th>બાકી</th></tr></thead><tbody id="reportDailyBody"></tbody></table></div>
-        </div>
-
-        <div id="reportCustomerBlock" class="card section-card report-data-card report-subpage-block" hidden>
-          <h2>ગ્રાહક સારાંશ</h2>
-          <div class="table-wrap"><table><thead><tr><th>ગ્રાહક</th><th>ગામ</th><th>ટ્રાન્ઝેક્શન</th><th>મજૂરી</th></tr></thead><tbody id="reportCustomerBody"></tbody></table></div>
-        </div>
-
-        <div id="reportVillageBlock" class="card section-card report-data-card report-subpage-block" hidden>
-          <h2>ગામ મુજબ સારાંશ</h2>
-          <div class="table-wrap"><table><thead><tr><th>ગામ</th><th>ગ્રાહકો</th><th>ટ્રાન્ઝેક્શન</th><th>મજૂરી</th><th>બાકી</th></tr></thead><tbody id="reportVillageBody"></tbody></table></div>
+        <div class="invoice-actions no-print">
+          <button id="invoicePrintBtn" class="primary" type="button" data-i18n="printInvoice">Print / Save PDF</button>
+          <button id="invoiceWhatsAppBtn" class="secondary" type="button" data-i18n="whatsappText">WhatsApp Text</button>
+          <button id="invoiceCopyBtn" class="ghost" type="button" data-i18n="copyBillText">Copy Bill Text</button>
         </div>
       </div>
     </section>
+
+    <div id="invoicePrintArea" class="invoice-print-area" aria-hidden="true"></div>
+
+
+    <section class="screen" id="screen-reports">
+      <div class="module-head compact-page-head">
+        <div><p data-i18n="reportsHelp">Owner માટે business-wide reports, filters અને drill-down summaries.</p></div>
+      </div>
+
+      <div id="reportHomeView">
+        <div class="report-card-grid">
+          <button class="report-card" type="button" data-report-type="sales">
+            <strong data-i18n="salesReport">Sales Report</strong>
+            <small data-i18n="salesReportHelp">Company + Grain/Pulse + Retail sales</small>
+          </button>
+          <button class="report-card" type="button" data-report-type="purchases">
+            <strong data-i18n="purchaseReport">Purchase Report</strong>
+            <small data-i18n="purchaseReportHelp">Supplier-wise and item-wise purchases</small>
+          </button>
+          <button class="report-card" type="button" data-report-type="expenses">
+            <strong data-i18n="expenseReport">Expense Report</strong>
+            <small data-i18n="expenseReportHelp">Category-wise business expenses</small>
+          </button>
+          <button class="report-card" type="button" data-report-type="jobwork">
+            <strong data-i18n="jobWorkReport">Job Work Report</strong>
+            <small data-i18n="jobWorkReportHelp">Oil + Grain/Pulse job work summary</small>
+          </button>
+          <button class="report-card" type="button" data-report-type="production">
+            <strong data-i18n="productionReport">Production Report</strong>
+            <small data-i18n="productionReportHelp">Oil batches + Grain/Pulse processing</small>
+          </button>
+          <button class="report-card" type="button" data-report-type="stock">
+            <strong data-i18n="stockReport">Stock Report</strong>
+            <small data-i18n="stockReportHelp">Available stock and valuation</small>
+          </button>
+          <button class="report-card" type="button" data-report-type="parties">
+            <strong data-i18n="partyReport">Receivable / Payable</strong>
+            <small data-i18n="partyReportHelp">Customer and supplier balances</small>
+          </button>
+          <button class="report-card" type="button" data-report-type="staff">
+            <strong data-i18n="staffReport">Staff Report</strong>
+            <small data-i18n="staffReportHelp">Attendance, salary and advance</small>
+          </button>
+          <button class="report-card" type="button" data-report-type="invoices">
+            <strong data-i18n="invoiceReport">Invoice Report</strong>
+            <small data-i18n="invoiceReportHelp">Invoice totals and outstanding</small>
+          </button>
+        </div>
+      </div>
+
+      <div id="reportDetailView" hidden>
+        <div class="card section-card report-filter-card no-print">
+          <div class="row-between">
+            <button id="reportBackBtn" class="ghost" type="button">← Reports</button>
+            <strong id="reportDetailTitle">Report</strong>
+          </div>
+          <div class="grid three report-filter-grid">
+            <label data-i18n="fromDate">From<input id="reportFromDate" type="date" /></label>
+            <label data-i18n="toDate">To<input id="reportToDate" type="date" /></label>
+            <label data-i18n="search">Search<input id="reportSearch" placeholder="Name / Item / Category" /></label>
+          </div>
+          <div class="report-quick-filters">
+            <button type="button" class="ghost" data-report-range="today">Today</button>
+            <button type="button" class="ghost" data-report-range="7">7 Days</button>
+            <button type="button" class="ghost" data-report-range="30">30 Days</button>
+            <button type="button" class="ghost" data-report-range="all">All</button>
+          </div>
+        </div>
+
+        <div class="report-summary-grid">
+          <div class="card report-summary-kpi"><span id="reportMetric1Label">Total</span><strong id="reportMetric1">0</strong></div>
+          <div class="card report-summary-kpi"><span id="reportMetric2Label">Amount</span><strong id="reportMetric2">₹0</strong></div>
+          <div class="card report-summary-kpi"><span id="reportMetric3Label">Outstanding</span><strong id="reportMetric3">₹0</strong></div>
+          <div class="card report-summary-kpi"><span id="reportMetric4Label">Extra</span><strong id="reportMetric4">0</strong></div>
+        </div>
+
+        <div class="card section-card">
+          <div class="row-between">
+            <div><h2 id="reportTableTitle">Report Details</h2><small id="reportRowCount">0 rows</small></div>
+          </div>
+          <div id="reportExpandedList" class="report-expanded-list"></div>
+        </div>
+      </div>
+    </section>
+
 
     <section class="screen" id="screen-settings">
       
@@ -1713,14 +2080,14 @@
       <div id="deviceOperatorButtons" class="device-operator-buttons"></div>
     </div>
   </div>
-  <script src="sync-config.js?v=ui-alpha22"></script>
-  <script src="offline-sync.js?v=ui-alpha22"></script>
-  <script src="file-tools.js?v=ui-alpha22"></script>
-  <script src="business-core.js?v=ui-alpha22"></script>
-  <script src="business-core-bridge.js?v=ui-alpha22"></script>
-  <script src="ui-i18n.js?v=ui-alpha22"></script>
-  <script src="app.js?v=ui-alpha22"></script>
-  <script src="pwa.js?v=ui-alpha22"></script>
+  <script src="sync-config.js?v=ui-alpha28"></script>
+  <script src="offline-sync.js?v=ui-alpha28"></script>
+  <script src="file-tools.js?v=ui-alpha28"></script>
+  <script src="business-core.js?v=ui-alpha28"></script>
+  <script src="business-core-bridge.js?v=ui-alpha28"></script>
+  <script src="ui-i18n.js?v=ui-alpha28"></script>
+  <script src="app.js?v=ui-alpha28"></script>
+  <script src="pwa.js?v=ui-alpha28"></script>
 
 </body>
 </html>

@@ -579,6 +579,100 @@
     ));
   }
 
+
+  function costingSummary() {
+    const stock = stockSnapshot();
+    const purchases = read(KEYS.purchases);
+    const expenses = read(KEYS.expenses);
+    const movements = read(KEYS.stockMovements);
+
+    const rows = stock.map(s=>{
+      const itemPurchases = purchases.filter(p=>p.itemId===s.itemId && Number(p.baseQty||p.qty||0)>0);
+      const purchaseQty = itemPurchases.reduce((a,p)=>a+Number(p.baseQty||p.qty||0),0);
+      const purchaseValue = itemPurchases.reduce((a,p)=>a+Number(p.amount||0),0);
+      const avgPurchaseCost = purchaseQty>0 ? purchaseValue/purchaseQty : 0;
+
+      const prodRefs = movements
+        .filter(m=>m.itemId===s.itemId && m.movementType==='production_in')
+        .map(m=>m.context?.notes)
+        .filter(Boolean);
+
+      const processingExpense = expenses
+        .filter(e=>prodRefs.includes(e.context?.notes) || (e.context?.costCenter==='grain_production' && String(s.itemId||'').startsWith('grain.processed.')))
+        .reduce((a,e)=>a+Number(e.amount||0),0);
+
+      const productionQty = movements
+        .filter(m=>m.itemId===s.itemId && m.movementType==='production_in')
+        .reduce((a,m)=>a+Number(m.baseQty||m.qty||0),0);
+
+      const processingCostPerUnit = productionQty>0 ? processingExpense/productionQty : 0;
+
+      // Prefer purchase-based average for purchased/raw/packaging items.
+      // Add processing expense to produced items where production output exists.
+      let estimatedUnitCost = avgPurchaseCost;
+      if(productionQty>0){
+        estimatedUnitCost = processingCostPerUnit;
+      }
+
+      const stockValue = Math.max(0,Number(s.balance||0)) * Math.max(0,estimatedUnitCost||0);
+
+      return {
+        itemId:s.itemId,
+        itemName:s.itemName,
+        unitName:s.unitName,
+        balance:Number(s.balance||0),
+        purchaseQty:round2(purchaseQty),
+        purchaseValue:round2(purchaseValue),
+        avgPurchaseCost:round2(avgPurchaseCost),
+        productionQty:round2(productionQty),
+        processingExpense:round2(processingExpense),
+        processingCostPerUnit:round2(processingCostPerUnit),
+        estimatedUnitCost:round2(estimatedUnitCost),
+        stockValue:round2(stockValue)
+      };
+    });
+
+    const totalStockValue = round2(rows.reduce((a,r)=>a+r.stockValue,0));
+    const totalPurchaseValue = round2(rows.reduce((a,r)=>a+r.purchaseValue,0));
+    const totalProcessingExpense = round2(rows.reduce((a,r)=>a+r.processingExpense,0));
+
+    return {
+      rows,
+      totalStockValue,
+      totalPurchaseValue,
+      totalProcessingExpense
+    };
+  }
+
+
+  function ownerFinanceSnapshot() {
+    const f = financeSummary();
+    const costing = typeof costingSummary==='function' ? costingSummary() : {totalStockValue:0};
+    const liquidMoney = round2(Number(f.cashBalance||0)+Number(f.bankBalance||0));
+    const receivables = round2(Number(f.salesOutstanding||0));
+    const payables = round2(Number(f.purchaseOutstanding||0));
+    const stockValue = round2(Number(costing.totalStockValue||0));
+    const ownedWorkingAssets = round2(liquidMoney + receivables + stockValue);
+    const netWorkingPosition = round2(ownedWorkingAssets - payables);
+    const loanUsed = round2(Number(f.loanUsed||0));
+    const loanLimit = round2(Number(f.loanLimit||0));
+    const loanAvailable = round2(Math.max(0,loanLimit-loanUsed));
+
+    return {
+      cash: round2(Number(f.cashBalance||0)),
+      bank: round2(Number(f.bankBalance||0)),
+      liquidMoney,
+      receivables,
+      payables,
+      stockValue,
+      ownedWorkingAssets,
+      netWorkingPosition,
+      loanLimit,
+      loanUsed,
+      loanAvailable
+    };
+  }
+
   function financeSummary() {
     const p = read(KEYS.purchases);
     const s = read(KEYS.sales);

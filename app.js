@@ -1443,52 +1443,105 @@
       </div>`).join('')||'<div class="empty">હજુ stock movement નથી.</div>';
   }
 
+
+  function renderCosting(){
+    if(!window.SwatiCore?.costingSummary || !$('costingList')) return;
+    const c=window.SwatiCore.costingSummary();
+    const q=($('costingSearch')?.value||'').trim().toLowerCase();
+    const rows=c.rows.filter(r=>[r.itemName,r.itemId,r.unitName].join(' ').toLowerCase().includes(q));
+
+    if($('costingTotalStockValue')) $('costingTotalStockValue').textContent=money(c.totalStockValue||0);
+    if($('costingTotalPurchaseValue')) $('costingTotalPurchaseValue').textContent=money(c.totalPurchaseValue||0);
+    if($('costingTotalProcessingCost')) $('costingTotalProcessingCost').textContent=money(c.totalProcessingExpense||0);
+    if($('costingMoneyTied')) $('costingMoneyTied').textContent=money(c.totalStockValue||0);
+
+    $('costingList').innerHTML=rows.map(r=>`
+      <div class="costing-card">
+        <div class="costing-head">
+          <span>
+            <strong>${escapeHtml(r.itemName||r.itemId||'Item')}</strong>
+            <small>${escapeHtml(r.itemId||'')} • ${escapeHtml(r.unitName||'')}</small>
+          </span>
+          <strong>${money(r.stockValue||0)}</strong>
+        </div>
+
+        <div class="costing-grid">
+          <div><span>Available</span><strong>${r.balance}</strong></div>
+          <div><span>Avg Purchase Cost</span><strong>${money(r.avgPurchaseCost||0)}</strong></div>
+          <div><span>Processing Cost / Unit</span><strong>${money(r.processingCostPerUnit||0)}</strong></div>
+          <div><span>Estimated Unit Cost</span><strong>${money(r.estimatedUnitCost||0)}</strong></div>
+        </div>
+      </div>`).join('')||'<div class="empty">Costing માટે હજી પૂરતો data નથી.</div>';
+  }
+
   function renderFinance(){
     if(!window.SwatiCore) return;
+
     const f=window.SwatiCore.financeSummary();
+    const owner=window.SwatiCore.ownerFinanceSnapshot
+      ? window.SwatiCore.ownerFinanceSnapshot()
+      : {
+          cash:Number(f.cashBalance||0),
+          bank:Number(f.bankBalance||0),
+          liquidMoney:round2(Number(f.cashBalance||0)+Number(f.bankBalance||0)),
+          receivables:Number(f.salesOutstanding||0),
+          payables:Number(f.purchaseOutstanding||0),
+          stockValue:window.SwatiCore?.costingSummary?window.SwatiCore.costingSummary().totalStockValue:0,
+          ownedWorkingAssets:0,
+          netWorkingPosition:0,
+          loanLimit:Number(f.loanLimit||0),
+          loanUsed:Number(f.loanUsed||0),
+          loanAvailable:Number(f.loanAvailable||0)
+        };
+
     const jobTx=getTx();
     const jobReceivable=round2(jobTx.filter(r=>r.settlement?.net>0).reduce((s,r)=>s+remainingFor(r),0));
     const jobPayable=round2(jobTx.filter(r=>r.settlement?.net<0).reduce((s,r)=>s+remainingFor(r),0));
-    const receivable=round2(f.salesOutstanding+jobReceivable);
-    const payable=round2(f.purchaseOutstanding+jobPayable);
-    const stockValue=estimateStockValue();
 
-    $('financeCashBalance').textContent=money(f.cashBalance);
-    $('financeBankBalance').textContent=money(f.bankBalance);
-    $('financeLiquid').textContent=money(f.liquidMoney||round2(f.cashBalance+f.bankBalance));
-    $('financeReceivable').textContent=money(receivable);
-    $('financePayable').textContent=money(payable);
-    $('financePurchases').textContent=money(f.purchaseAmount);
-    $('financeExpenses').textContent=money(f.expensesAmount);
-    $('financeStockValue').textContent=money(stockValue);
+    const totalReceivable=round2(Number(owner.receivables||0)+jobReceivable);
+    const totalPayable=round2(Number(owner.payables||0)+jobPayable);
+    const ownedWorkingAssets=round2(Number(owner.liquidMoney||0)+Number(owner.stockValue||0)+totalReceivable);
+    const netWorkingPosition=round2(ownedWorkingAssets-totalPayable);
 
-    const settings=window.SwatiCore.getFinanceSettings();
-    if($('financeOpeningCash')) $('financeOpeningCash').value=Number(settings.openingCash||0)||'';
+    if($('financeCashBalance')) $('financeCashBalance').textContent=money(owner.cash||0);
+    if($('financeBankBalance')) $('financeBankBalance').textContent=money(owner.bank||0);
+    if($('financeLiquid')) $('financeLiquid').textContent=money(owner.liquidMoney||0);
+    if($('financeStockValue')) $('financeStockValue').textContent=money(owner.stockValue||0);
+    if($('financeReceivable')) $('financeReceivable').textContent=money(totalReceivable);
+    if($('financePayable')) $('financePayable').textContent=money(totalPayable);
 
-    const banks=window.SwatiCore.getBankAccounts();
-    $('financeBankCount').textContent=String(banks.length);
-    $('financeBankList').innerHTML=banks.map(b=>`
-      <div class="finance-stock-row">
-        <span><strong>${escapeHtml(b.bankName||'Bank')}</strong><small>${escapeHtml(b.accountType||'')} • ${escapeHtml(b.accountName||'')}</small></span>
-        <span><strong>${money(b.openingBalance||0)}</strong><small>Opening</small></span>
-      </div>`).join('')||'<div class="empty">હજુ bank account નથી.</div>';
+    if($('financeOwnedWorkingAssets')) $('financeOwnedWorkingAssets').textContent=money(ownedWorkingAssets);
+    if($('financePayablesForPosition')) $('financePayablesForPosition').textContent=money(totalPayable);
+    if($('financeNetWorkingPosition')) {
+      $('financeNetWorkingPosition').textContent=money(netWorkingPosition);
+      $('financeNetWorkingPosition').classList.toggle('finance-negative',netWorkingPosition<0);
+      $('financeNetWorkingPosition').classList.toggle('finance-positive',netWorkingPosition>=0);
+    }
 
-    const facilities=Array.isArray(settings.loanFacilities)?settings.loanFacilities:[];
-    const available=round2(facilities.reduce((s,x)=>s+Math.max(0,Number(x.sanctioned||0)-Number(x.used||0)),0));
-    $('financeBorrowingAvailable').textContent=money(available);
-    $('financeLoanList').innerHTML=facilities.map(x=>`
-      <div class="finance-stock-row">
-        <span><strong>${escapeHtml(x.name||'Facility')}</strong><small>Limit ${money(x.sanctioned||0)}</small></span>
-        <span><strong>${money(Math.max(0,Number(x.sanctioned||0)-Number(x.used||0)))}</strong><small>Available • Used ${money(x.used||0)}</small></span>
-      </div>`).join('')||'<div class="empty">કોઈ loan/credit facility નથી.</div>';
+    if($('financeWhereStock')) $('financeWhereStock').textContent=money(owner.stockValue||0);
+    if($('financeWhereReceivable')) $('financeWhereReceivable').textContent=money(totalReceivable);
 
-    const stock=window.SwatiCore.stockSnapshot();
-    $('financeStockItemCount').textContent=`${stock.length} Items`;
-    $('financeStockList').innerHTML=stock.map(x=>`
-      <div class="finance-stock-row">
-        <span><strong>${escapeHtml(x.itemName||x.itemId||'Item')}</strong><small>${escapeHtml(x.unitName||'')}</small></span>
-        <span><strong>${x.balance}</strong><small>In ${x.inQty} • Out ${x.outQty}</small></span>
-      </div>`).join('')||'<div class="empty">હજુ stock movement નથી.</div>';
+    if($('financeLoanLimit')) $('financeLoanLimit').textContent=money(owner.loanLimit||0);
+    if($('financeLoanUsed')) $('financeLoanUsed').textContent=money(owner.loanUsed||0);
+    if($('financeLoanAvailable')) $('financeLoanAvailable').textContent=money(owner.loanAvailable||0);
+
+    if($('financePurchaseTotal')) $('financePurchaseTotal').textContent=money(f.purchaseTotal||0);
+    if($('financeExpenseTotal')) $('financeExpenseTotal').textContent=money(f.expenseTotal||0);
+    if($('financeSalesOutstanding')) $('financeSalesOutstanding').textContent=money(totalReceivable);
+    if($('financePurchaseOutstanding')) $('financePurchaseOutstanding').textContent=money(totalPayable);
+
+    if($('financeBankList')){
+      const banks=window.SwatiCore.getBankAccounts?window.SwatiCore.getBankAccounts():[];
+      const rows=[
+        {name:'Cash',balance:owner.cash||0},
+        ...banks.map(b=>({name:b.name||b.bankName||'Bank',balance:Number(b.balance||b.openingBalance||0)}))
+      ];
+      $('financeBankList').innerHTML=rows.map(r=>`
+        <div class="mini-list-row">
+          <span><strong>${escapeHtml(r.name||'')}</strong><small>${r.name==='Cash'?'Physical cash':'Bank balance'}</small></span>
+          <strong>${money(r.balance||0)}</strong>
+        </div>`).join('')||'<div class="empty">હજુ cash/bank data નથી.</div>';
+    }
   }
 
 
@@ -1651,6 +1704,117 @@
         <span><strong>${escapeHtml(r.goodItem||'Processed')}</strong><small>${escapeHtml(r.date||'')} • ${escapeHtml(r.rawItem||'Raw')} ${r.inputKg||0} kg</small></span>
         <span><strong>${r.goodKg||0} kg</strong><small>Waste ${r.wasteKg||0} kg • Cost ${money(r.totalCost||0)}</small></span>
       </div>`).join('')||'<div class="empty">હજુ Grain/Pulse processing entry નથી.</div>';
+  }
+
+
+  const GRAIN_SALES_KEY='swati_grain_company_sales_v1';
+
+  function getGrainSales(){
+    try{return JSON.parse(localStorage.getItem(GRAIN_SALES_KEY)||'[]')}catch{return []}
+  }
+
+  function saveGrainSales(rows){
+    localStorage.setItem(GRAIN_SALES_KEY,JSON.stringify(rows));
+  }
+
+  function grainSaleBaseQty(){
+    const qty=Number($('grainSaleQty')?.value||0);
+    const unit=$('grainSaleUnit')?.value||'kg';
+    return normalizeGrainWeight(qty,unit);
+  }
+
+  function grainSaleItemId(name,type){
+    const slug=String(name||'').trim().toLowerCase()
+      .replace(/[^\p{L}\p{N}]+/gu,'_')
+      .replace(/^_+|_+$/g,'');
+    return `grain.${type}.${slug||Date.now()}`;
+  }
+
+  function grainSaleAvailable(itemId,itemName){
+    if(!window.SwatiCore) return 0;
+    const rows=window.SwatiCore.stockSnapshot();
+    const row=rows.find(r=>r.itemId===itemId) ||
+      rows.find(r=>String(r.itemName||'').trim().toLowerCase()===String(itemName||'').trim().toLowerCase());
+    return round2(Number(row?.balance||0));
+  }
+
+  function grainSaleCalc(){
+    const qtyEntered=Number($('grainSaleQty')?.value||0);
+    const unit=$('grainSaleUnit')?.value||'kg';
+    const baseQty=grainSaleBaseQty();
+    const rate=Number($('grainSaleRate')?.value||0);
+    const paid=Number($('grainSalePaid')?.value||0);
+    const total=round2(qtyEntered*rate);
+    const outstanding=round2(Math.max(0,total-paid));
+
+    const type=$('grainSaleType')?.value||'processed';
+    const itemName=$('grainSaleItem')?.value.trim()||'';
+    const itemId=$('grainSaleItemId')?.value.trim()||grainSaleItemId(itemName,type);
+    const available=itemName?grainSaleAvailable(itemId,itemName):0;
+    const bad=baseQty>available+0.001;
+
+    if($('grainSaleTotal')) $('grainSaleTotal').textContent=money(total);
+    if($('grainSaleOutstanding')) $('grainSaleOutstanding').textContent=money(outstanding);
+    if($('grainSaleAvailableStock')) $('grainSaleAvailableStock').textContent=`${available} ${unit==='bag'?'bag':'kg'}`;
+
+    const warn=$('grainSaleStockWarning');
+    if(warn){
+      warn.hidden=!bad;
+      warn.textContent=bad?`Available stock માત્ર ${available} kg છે.`:'';
+    }
+
+    return {qtyEntered,unit,baseQty,rate,paid,total,outstanding,type,itemName,itemId,available,bad};
+  }
+
+  function renderGrainSales(){
+    if($('grainSaleDate') && !$('grainSaleDate').value) $('grainSaleDate').value=todayISO();
+
+    if(window.SwatiCore && $('grainSaleItemSuggestions')){
+      const type=$('grainSaleType')?.value||'processed';
+      const rows=window.SwatiCore.stockSnapshot()
+        .filter(r=>String(r.itemId||'').startsWith(type==='waste'?'grain.waste.':'grain.processed.'));
+      $('grainSaleItemSuggestions').innerHTML=rows
+        .filter(r=>Number(r.balance)>0)
+        .map(r=>`<option value="${escapeAttr(r.itemName||r.itemId)}"></option>`).join('');
+    }
+
+    grainSaleCalc();
+
+    const rows=getGrainSales().slice().sort((a,b)=>
+      String(b.date||'').localeCompare(String(a.date||'')) ||
+      String(b.createdAt||'').localeCompare(String(a.createdAt||''))
+    );
+
+    if($('grainSalesCount')) $('grainSalesCount').textContent=String(rows.length);
+    if($('grainSalesList')) $('grainSalesList').innerHTML=rows.slice(0,12).map(r=>`
+      <div class="mini-list-row">
+        <span>
+          <strong>${escapeHtml(r.itemName||'—')}</strong>
+          <small>${escapeHtml(r.date||'')} • ${r.type==='waste'?'Waste / Reject':'Processed'} • ${escapeHtml(r.customer||'')}</small>
+        </span>
+        <span>
+          <strong>${money(r.total||0)}</strong>
+          <small>${r.qtyEntered||0} ${escapeHtml(r.unit||'')} • બાકી ${money(r.outstanding||0)}</small>
+        </span>
+      </div>`).join('')||'<div class="empty">હજુ Grain/Pulse sale નથી.</div>';
+
+    const cmap=new Map();
+    rows.forEach(r=>{
+      const key=(r.mobile||`${r.customer}|${r.village}`).trim().toLowerCase();
+      if(!key) return;
+      const x=cmap.get(key)||{name:r.customer||'',mobile:r.mobile||'',village:r.village||'',count:0,total:0,outstanding:0};
+      x.count+=1;
+      x.total+=Number(r.total||0);
+      x.outstanding+=Number(r.outstanding||0);
+      cmap.set(key,x);
+    });
+    const customers=[...cmap.values()];
+    if($('grainSalesCustomerCount')) $('grainSalesCustomerCount').textContent=String(customers.length);
+    if($('grainSalesCustomerList')) $('grainSalesCustomerList').innerHTML=customers.map(c=>`
+      <div class="mini-list-row">
+        <span><strong>${escapeHtml(c.name||'—')}</strong><small>${escapeHtml(c.village||'')} • ${escapeHtml(c.mobile||'')}</small></span>
+        <span><strong>${money(c.total)}</strong><small>${c.count} sales • બાકી ${money(c.outstanding)}</small></span>
+      </div>`).join('')||'<div class="empty">હજુ Grain/Pulse sales customer નથી.</div>';
   }
 
   function renderHistory(){
@@ -1846,46 +2010,649 @@
     return {purchase:round2(purchase),sales:round2(sales)};
   }
 
+
+  const STAFF_KEY='swati_staff_master_v1';
+  const STAFF_ATTENDANCE_KEY='swati_staff_attendance_v1';
+  const STAFF_PAYMENT_KEY='swati_staff_payments_v1';
+
+  function readLocalList(key){
+    try{return JSON.parse(localStorage.getItem(key)||'[]')}catch{return []}
+  }
+  function writeLocalList(key,rows){localStorage.setItem(key,JSON.stringify(rows));}
+
+  function getStaff(){return readLocalList(STAFF_KEY).filter(x=>x.active!==false);}
+  function getStaffAttendance(){return readLocalList(STAFF_ATTENDANCE_KEY);}
+  function getStaffPayments(){return readLocalList(STAFF_PAYMENT_KEY);}
+
+  function staffById(id){return getStaff().find(s=>s.id===id);}
+
+  function staffAttendanceUnits(staffId){
+    return getStaffAttendance().filter(a=>a.staffId===staffId).reduce((n,a)=>{
+      if(a.status==='present') return n+1;
+      if(a.status==='half') return n+0.5;
+      return n;
+    },0);
+  }
+
+  function staffEarnedSalary(staff){
+    if(!staff) return 0;
+    const rate=Number(staff.salaryRate||0);
+    if(staff.salaryType==='monthly'){
+      // Operational estimate: attendance units / 30 days.
+      return round2(rate*(staffAttendanceUnits(staff.id)/30));
+    }
+    return round2(rate*staffAttendanceUnits(staff.id));
+  }
+
+  function staffPaymentTotals(staffId){
+    const rows=getStaffPayments().filter(p=>p.staffId===staffId);
+    const salaryPaid=round2(rows.filter(p=>p.type==='salary').reduce((s,p)=>s+Number(p.amount||0),0));
+    const advancePaid=round2(rows.filter(p=>p.type==='advance').reduce((s,p)=>s+Number(p.amount||0),0));
+    return {salaryPaid,advancePaid};
+  }
+
+  function staffSalaryPosition(staff){
+    const earned=staffEarnedSalary(staff);
+    const p=staffPaymentTotals(staff.id);
+    const outstanding=round2(Math.max(0,earned-p.salaryPaid-p.advancePaid));
+    return {...p,earned,outstanding};
+  }
+
+  function renderStaff(){
+    const today=todayISO();
+    if($('staffJoiningDate') && !$('staffJoiningDate').value) $('staffJoiningDate').value=today;
+    if($('attendanceDate') && !$('attendanceDate').value) $('attendanceDate').value=today;
+    if($('staffPaymentDate') && !$('staffPaymentDate').value) $('staffPaymentDate').value=today;
+
+    const staff=getStaff();
+    const attendance=getStaffAttendance();
+    const payments=getStaffPayments();
+
+    if($('attendanceStaff')){
+      $('attendanceStaff').innerHTML=staff.map(s=>`<option value="${escapeAttr(s.id)}">${escapeHtml(s.name)}</option>`).join('');
+    }
+    if($('staffPaymentStaff')){
+      $('staffPaymentStaff').innerHTML=staff.map(s=>`<option value="${escapeAttr(s.id)}">${escapeHtml(s.name)}</option>`).join('');
+    }
+
+    const presentToday=attendance.filter(a=>a.date===today && (a.status==='present'||a.status==='half')).length;
+    const totalOutstanding=round2(staff.reduce((s,x)=>s+staffSalaryPosition(x).outstanding,0));
+    const totalAdvance=round2(staff.reduce((s,x)=>s+staffPaymentTotals(x.id).advancePaid,0));
+
+    if($('staffCount')) $('staffCount').textContent=String(staff.length);
+    if($('staffPresentToday')) $('staffPresentToday').textContent=String(presentToday);
+    if($('staffSalaryOutstanding')) $('staffSalaryOutstanding').textContent=money(totalOutstanding);
+    if($('staffAdvanceTotal')) $('staffAdvanceTotal').textContent=money(totalAdvance);
+    if($('staffListCount')) $('staffListCount').textContent=String(staff.length);
+
+    if($('staffList')){
+      $('staffList').innerHTML=staff.map(s=>{
+        const pos=staffSalaryPosition(s);
+        return `<div class="mini-list-row">
+          <span>
+            <strong>${escapeHtml(s.name||'')}</strong>
+            <small>${escapeHtml(s.role||'')} • ${s.salaryType==='monthly'?'Monthly':'Daily'} ${money(s.salaryRate||0)}</small>
+          </span>
+          <span>
+            <strong>${money(pos.outstanding)}</strong>
+            <small>Outstanding</small>
+          </span>
+        </div>`;
+      }).join('')||'<div class="empty">હજુ staff ઉમેરેલ નથી.</div>';
+    }
+
+    const attRows=attendance.slice().sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
+    if($('attendanceCount')) $('attendanceCount').textContent=String(attRows.length);
+    if($('attendanceList')){
+      $('attendanceList').innerHTML=attRows.slice(0,20).map(a=>{
+        const s=staffById(a.staffId);
+        return `<div class="mini-list-row">
+          <span><strong>${escapeHtml(s?.name||'Staff')}</strong><small>${escapeHtml(a.date||'')} • ${a.status==='half'?'Half Day':a.status==='absent'?'Absent':'Present'}</small></span>
+          <small>${escapeHtml(a.note||'')}</small>
+        </div>`;
+      }).join('')||'<div class="empty">હજુ attendance entry નથી.</div>';
+    }
+
+    if($('staffSalarySummaryList')){
+      $('staffSalarySummaryList').innerHTML=staff.map(s=>{
+        const p=staffSalaryPosition(s);
+        return `<div class="staff-salary-row">
+          <span><strong>${escapeHtml(s.name)}</strong><small>${staffAttendanceUnits(s.id)} attendance units</small></span>
+          <div><span>Earned</span><strong>${money(p.earned)}</strong></div>
+          <div><span>Salary Paid</span><strong>${money(p.salaryPaid)}</strong></div>
+          <div><span>Advance</span><strong>${money(p.advancePaid)}</strong></div>
+          <div><span>Outstanding</span><strong>${money(p.outstanding)}</strong></div>
+        </div>`;
+      }).join('')||'<div class="empty">Salary summary માટે staff data નથી.</div>';
+    }
+
+    const payRows=payments.slice().sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
+    if($('staffPaymentCount')) $('staffPaymentCount').textContent=String(payRows.length);
+    if($('staffPaymentList')){
+      $('staffPaymentList').innerHTML=payRows.slice(0,20).map(p=>{
+        const s=staffById(p.staffId);
+        return `<div class="mini-list-row">
+          <span><strong>${escapeHtml(s?.name||'Staff')}</strong><small>${escapeHtml(p.date||'')} • ${p.type==='advance'?'Advance':'Salary Paid'}</small></span>
+          <strong>${money(p.amount||0)}</strong>
+        </div>`;
+      }).join('')||'<div class="empty">હજુ staff payment નથી.</div>';
+    }
+  }
+
+  function setStaffTab(tab){
+    document.querySelectorAll('[data-staff-tab]').forEach(b=>b.classList.toggle('active',b.dataset.staffTab===tab));
+    if($('staffMasterPanel')) $('staffMasterPanel').hidden=tab!=='master';
+    if($('staffAttendancePanel')) $('staffAttendancePanel').hidden=tab!=='attendance';
+    if($('staffSalaryPanel')) $('staffSalaryPanel').hidden=tab!=='salary';
+  }
+
+
+  const INVOICE_KEY='swati_invoices_v1';
+  let currentInvoice=null;
+
+  function getInvoices(){
+    try{return JSON.parse(localStorage.getItem(INVOICE_KEY)||'[]')}catch{return []}
+  }
+  function saveInvoices(rows){localStorage.setItem(INVOICE_KEY,JSON.stringify(rows));}
+
+  function nextInvoiceNo(){
+    const year=new Date().getFullYear();
+    const prefix=`INV-${year}-`;
+    const max=getInvoices().filter(x=>String(x.invoiceNo||'').startsWith(prefix))
+      .reduce((m,x)=>Math.max(m,Number(String(x.invoiceNo).split('-').pop())||0),0);
+    return `${prefix}${String(max+1).padStart(4,'0')}`;
+  }
+
+  function invoiceSourceLabel(type){
+    return {
+      'oil-jobwork':'તેલ મીલ મજૂરી કામ',
+      'grain-jobwork':'અનાજ / કઠોળ મજૂરી કામ',
+      'oil-company-sale':'તેલ મીલ કંપની વેચાણ',
+      'grain-company-sale':'અનાજ / કઠોળ કંપની વેચાણ',
+      'retail':'રિટેલ વેચાણ'
+    }[type]||type;
+  }
+
+  function invoiceItem(desc,qty='',rate=0,amount=0){
+    return {description:desc,qty:String(qty||''),rate:round2(rate||0),amount:round2(amount||0)};
+  }
+
+  function invoiceSources(){
+    const rows=[];
+
+    // Job Work — Oil + Grain
+    getTx().forEach(r=>{
+      const business=r.business==='grain'?'grain':'oil';
+      const type=business==='grain'?'grain-jobwork':'oil-jobwork';
+      const items=[];
+      if(Number(r.jobWorkAmount||0)>0){
+        const qty=business==='grain'
+          ? `${Number(r.grain?.totalKg||r.grain?.inputKg||0)} kg`
+          : oilOutputLabel(r.oilOutput?.tins||0,r.oilOutput?.extraKg||0);
+        const rate=business==='grain'
+          ? Number(r.rates?.grainBaseRate||0)
+          : Number(r.rates?.jobRatePerTin||0);
+        items.push(invoiceItem('મજૂરી કામ',qty,rate,Number(r.jobWorkAmount||0)));
+      }
+      if(business==='oil'){
+        if(Number(r.newTin?.amount||0)>0) items.push(invoiceItem('નવા ટીન',`${r.newTin.qty||0} નંગ`,r.newTin.rate,r.newTin.amount));
+        if(Number(r.oilSale?.amount||0)>0) items.push(invoiceItem('તેલ વેચાણ',`${r.oilSale.qty||0} ${r.oilSale.unit||''}`,r.oilSale.rate,r.oilSale.amount));
+        // Khol is payable to customer in job-work settlement, not a customer sale line.
+      }
+
+      const net=Number(r.settlement?.net||0);
+      const billTotal=Math.max(0,net);
+      const paid=net>0?paymentTotal(r):0;
+      rows.push({
+        sourceType:type,sourceId:r.id,date:r.date,billNo:r.billNo||'',
+        customer:r.customer?.name||'',village:r.customer?.village||'',mobile:r.customer?.mobile||'',
+        items,total:round2(billTotal),paid:round2(paid),outstanding:net>0?remainingFor(r):0,
+        note:r.note||'',createdAt:r.createdAt||''
+      });
+    });
+
+    // Oil Mill company sales
+    getCompanySales().forEach(r=>{
+      const product=(r.product||'oil')==='khol'?'ખોળ':'તેલ';
+      const qty=r.unit==='tin'?`${r.tinCount||0} ટીન`:`${r.kg||r.oilKg||0} kg`;
+      rows.push({
+        sourceType:'oil-company-sale',sourceId:r.id,date:r.date,billNo:'',
+        customer:r.customer||'',village:r.village||'',mobile:r.mobile||'',
+        items:[invoiceItem(product,qty,r.rate,r.total)],
+        total:round2(r.total||0),paid:round2(r.paid||0),outstanding:round2(r.outstanding||0),
+        note:r.note||'',createdAt:r.createdAt||''
+      });
+    });
+
+    // Grain company sales
+    getGrainSales().forEach(r=>{
+      rows.push({
+        sourceType:'grain-company-sale',sourceId:r.id,date:r.date,billNo:'',
+        customer:r.customer||'',village:r.village||'',mobile:r.mobile||'',
+        items:[invoiceItem(r.itemName||'Grain/Pulse',`${r.qtyEntered||0} ${r.unit||''}`,r.rate,r.total)],
+        total:round2(r.total||0),paid:round2(r.paid||0),outstanding:round2(r.outstanding||0),
+        note:r.note||'',createdAt:r.createdAt||''
+      });
+    });
+
+    // Retail sales
+    getRetailSales().forEach(r=>{
+      rows.push({
+        sourceType:'retail',sourceId:r.id,date:r.date,billNo:'',
+        customer:r.customer||'',village:r.village||'',mobile:r.mobile||'',
+        items:[invoiceItem(r.item||'Retail Item',`${r.qty||0} ${r.unit||''}`,r.rate,r.total)],
+        total:round2(r.total||0),paid:round2(r.paid||0),outstanding:round2(r.outstanding||0),
+        note:r.note||'',createdAt:r.createdAt||''
+      });
+    });
+
+    return rows.sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')) || String(b.createdAt||'').localeCompare(String(a.createdAt||'')));
+  }
+
+  function invoiceFromSource(source){
+    const existing=getInvoices().find(x=>x.sourceType===source.sourceType && x.sourceId===source.sourceId);
+    if(existing) return existing;
+    return {
+      id:`INVREC-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,
+      invoiceNo:nextInvoiceNo(),
+      sourceType:source.sourceType,
+      sourceId:source.sourceId,
+      sourceBillNo:source.billNo||'',
+      date:source.date||todayISO(),
+      customer:source.customer||'',
+      village:source.village||'',
+      mobile:source.mobile||'',
+      items:source.items||[],
+      total:round2(source.total||0),
+      paid:round2(source.paid||0),
+      outstanding:round2(source.outstanding||0),
+      note:source.note||'',
+      createdAt:new Date().toISOString(),
+      operator:currentOperator()
+    };
+  }
+
+  function saveInvoiceSnapshot(invoice){
+    const rows=getInvoices();
+    const i=rows.findIndex(x=>x.id===invoice.id || (x.sourceType===invoice.sourceType && x.sourceId===invoice.sourceId));
+    const saved={...invoice,updatedAt:new Date().toISOString()};
+    if(i>=0) rows[i]=saved; else rows.push(saved);
+    saveInvoices(rows);
+    return saved;
+  }
+
+  function fillInvoicePreview(inv){
+    currentInvoice=inv;
+    if($('invoicePreviewNo')) $('invoicePreviewNo').textContent=inv.invoiceNo||'—';
+    if($('invNo')) $('invNo').textContent=inv.invoiceNo||'—';
+    if($('invDate')) $('invDate').textContent=inv.date||'—';
+    if($('invCustomer')) $('invCustomer').textContent=inv.customer||'—';
+    if($('invVillage')) $('invVillage').textContent=inv.village||'—';
+    if($('invMobile')) $('invMobile').textContent=inv.mobile||'—';
+    if($('invSourceType')) $('invSourceType').textContent=invoiceSourceLabel(inv.sourceType);
+    if($('invItemsBody')) $('invItemsBody').innerHTML=(inv.items||[]).map(i=>`
+      <tr>
+        <td>${escapeHtml(i.description||'—')}</td>
+        <td>${escapeHtml(i.qty||'—')}</td>
+        <td>${i.rate?money(i.rate):'—'}</td>
+        <td>${money(i.amount||0)}</td>
+      </tr>`).join('')||'<tr><td colspan="4">—</td></tr>';
+    if($('invTotal')) $('invTotal').textContent=money(inv.total||0);
+    if($('invPaid')) $('invPaid').textContent=money(inv.paid||0);
+    if($('invOutstanding')) $('invOutstanding').textContent=money(inv.outstanding||0);
+    if($('invNoteRow')){
+      $('invNoteRow').hidden=!inv.note;
+      if($('invNote')) $('invNote').textContent=inv.note||'';
+    }
+    if($('invoicePreviewPanel')) $('invoicePreviewPanel').hidden=false;
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  function invoiceText(inv){
+    const lines=[
+      'સ્વાતિ મિની ઓઈલ મિલ',
+      'Pure Oil. Pure Trust.',
+      `બિલ નં.: ${inv.invoiceNo||'—'}`,
+      `તારીખ: ${inv.date||'—'}`,
+      `ગ્રાહક: ${inv.customer||'—'}`,
+      `ગામ: ${inv.village||'—'}`,
+      ''
+    ];
+    (inv.items||[]).forEach(i=>lines.push(`${i.description}: ${i.qty||''} × ${i.rate?money(i.rate):''} = ${money(i.amount||0)}`));
+    lines.push('',`કુલ: ${money(inv.total||0)}`,`ચૂકવેલ: ${money(inv.paid||0)}`,`બાકી: ${money(inv.outstanding||0)}`);
+    if(inv.note) lines.push(`નોંધ: ${inv.note}`);
+    lines.push('આભાર');
+    return lines.join('\n');
+  }
+
+  function printInvoice(inv){
+    if(!inv) return;
+    const card=$('invoicePreviewCard');
+    const area=$('invoicePrintArea');
+    if(!card || !area) return;
+    area.innerHTML=card.outerHTML;
+    document.body.classList.add('invoice-printing');
+    const cleanup=()=>document.body.classList.remove('invoice-printing');
+    window.addEventListener('afterprint',cleanup,{once:true});
+    window.print();
+    setTimeout(cleanup,1200);
+  }
+
+  function renderInvoices(){
+    const filter=$('invoiceSourceFilter')?.value||'all';
+    const q=($('invoiceSourceSearch')?.value||'').trim().toLowerCase();
+    const sources=invoiceSources().filter(s=>(filter==='all'||s.sourceType===filter))
+      .filter(s=>[s.customer,s.village,s.mobile,s.billNo,s.items?.map(i=>i.description).join(' ')].join(' ').toLowerCase().includes(q));
+
+    const saved=getInvoices().slice().sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
+
+    if($('invoiceSavedCount')) $('invoiceSavedCount').textContent=String(saved.length);
+    if($('invoiceSavedListCount')) $('invoiceSavedListCount').textContent=String(saved.length);
+    if($('invoiceTotalValue')) $('invoiceTotalValue').textContent=money(saved.reduce((s,x)=>s+Number(x.total||0),0));
+    if($('invoiceOutstandingTotal')) $('invoiceOutstandingTotal').textContent=money(saved.reduce((s,x)=>s+Number(x.outstanding||0),0));
+
+    if($('invoiceSourceList')){
+      $('invoiceSourceList').innerHTML=sources.map(s=>{
+        const existing=saved.find(x=>x.sourceType===s.sourceType && x.sourceId===s.sourceId);
+        return `<div class="invoice-source-row">
+          <span>
+            <strong>${escapeHtml(s.customer||'Customer')}</strong>
+            <small>${escapeHtml(s.date||'')} • ${escapeHtml(invoiceSourceLabel(s.sourceType))}${s.billNo?` • ${escapeHtml(s.billNo)}`:''}</small>
+          </span>
+          <span class="invoice-source-amount">
+            <strong>${money(s.total||0)}</strong>
+            <small>બાકી ${money(s.outstanding||0)}</small>
+          </span>
+          <button class="secondary invoice-create-btn" type="button" data-create-invoice="${escapeAttr(s.sourceType)}|${escapeAttr(s.sourceId)}">
+            ${existing?'બિલ ખોલો':'બિલ બનાવો'}
+          </button>
+        </div>`;
+      }).join('')||'<div class="empty">આ filterમાં billable transaction નથી.</div>';
+    }
+
+    if($('invoiceSavedList')){
+      $('invoiceSavedList').innerHTML=saved.map(inv=>`
+        <div class="invoice-source-row">
+          <span>
+            <strong>${escapeHtml(inv.invoiceNo||'—')} • ${escapeHtml(inv.customer||'Customer')}</strong>
+            <small>${escapeHtml(inv.date||'')} • ${escapeHtml(invoiceSourceLabel(inv.sourceType))}</small>
+          </span>
+          <span class="invoice-source-amount">
+            <strong>${money(inv.total||0)}</strong>
+            <small>બાકી ${money(inv.outstanding||0)}</small>
+          </span>
+          <button class="secondary" type="button" data-open-invoice="${escapeAttr(inv.id)}">ખોલો</button>
+        </div>`).join('')||'<div class="empty">હજુ invoice બનાવેલ નથી.</div>';
+    }
+  }
+
+  function setInvoiceTab(tab){
+    document.querySelectorAll('[data-invoice-tab]').forEach(b=>b.classList.toggle('active',b.dataset.invoiceTab===tab));
+    if($('invoiceSourcePanel')) $('invoiceSourcePanel').hidden=tab!=='source';
+    if($('invoiceSavedPanel')) $('invoiceSavedPanel').hidden=tab!=='saved';
+    if($('invoicePreviewPanel')) $('invoicePreviewPanel').hidden=true;
+  }
+
+
+  let activeExpandedReport='';
+
+  function reportDateInRange(date){
+    const from=$('reportFromDate')?.value||'';
+    const to=$('reportToDate')?.value||'';
+    if(from && String(date||'')<from) return false;
+    if(to && String(date||'')>to) return false;
+    return true;
+  }
+
+  function reportSearchMatch(parts){
+    const q=($('reportSearch')?.value||'').trim().toLowerCase();
+    if(!q) return true;
+    return parts.join(' ').toLowerCase().includes(q);
+  }
+
+  function setReportMetric(n,label,value,isMoney=false){
+    if($(`reportMetric${n}Label`)) $(`reportMetric${n}Label`).textContent=label;
+    if($(`reportMetric${n}`)) $(`reportMetric${n}`).textContent=isMoney?money(value||0):String(value??0);
+  }
+
+  function reportRow(title,meta,right,sub=''){
+    return `<div class="report-expanded-row">
+      <span><strong>${escapeHtml(title||'—')}</strong><small>${escapeHtml(meta||'')}</small></span>
+      <span><strong>${right}</strong><small>${escapeHtml(sub||'')}</small></span>
+    </div>`;
+  }
+
+  function salesReportData(){
+    const rows=[];
+
+    getCompanySales().forEach(r=>rows.push({
+      date:r.date,type:'Oil Mill',title:r.customer||'Customer',
+      meta:`${(r.product||'oil')==='khol'?'Khol':'Oil'} • ${r.unit||''}`,
+      amount:Number(r.total||0),outstanding:Number(r.outstanding||0)
+    }));
+
+    getGrainSales().forEach(r=>rows.push({
+      date:r.date,type:'Grain/Pulse',title:r.customer||'Customer',
+      meta:`${r.itemName||'Item'} • ${r.type==='waste'?'Waste/Reject':'Processed'}`,
+      amount:Number(r.total||0),outstanding:Number(r.outstanding||0)
+    }));
+
+    getRetailSales().forEach(r=>rows.push({
+      date:r.date,type:'Retail',title:r.customer||'Customer',
+      meta:`${r.item||'Item'} • ${r.category==='grain'?'Grain/Pulse':'Oil'}`,
+      amount:Number(r.total||0),outstanding:Number(r.outstanding||0)
+    }));
+
+    return rows;
+  }
+
+  function purchaseReportData(){
+    if(!window.SwatiCore) return [];
+    return window.SwatiCore.getPurchases().map(r=>({
+      date:r.date,title:r.party||'Supplier',meta:`${r.itemName||'Item'} • ${r.qty||0} ${r.unitName||''}`,
+      amount:Number(r.amount||0),outstanding:Number(r.outstanding||0)
+    }));
+  }
+
+  function expenseReportData(){
+    if(!window.SwatiCore) return [];
+    return window.SwatiCore.getExpenses().map(r=>({
+      date:r.date,title:r.name||r.category||'Expense',meta:r.category||'',
+      amount:Number(r.amount||0),outstanding:0
+    }));
+  }
+
+  function jobWorkReportData(){
+    return getTx().map(r=>({
+      date:r.date,title:r.customer?.name||'Customer',
+      meta:`${r.business==='grain'?'Grain/Pulse':'Oil Mill'} • ${r.billNo||''}`,
+      amount:Number(r.jobWorkAmount||0),
+      outstanding:r.settlement?.net>0?remainingFor(r):0,
+      payable:r.settlement?.net<0?remainingFor(r):0
+    }));
+  }
+
+  function productionReportData(){
+    const rows=[];
+    getCompanyBatches().forEach(r=>rows.push({
+      date:r.date,title:r.batchNo||'Oil Batch',
+      meta:`Oil ${r.oilKg||0} kg • Khol ${r.khaliKg||r.kholKg||0} kg`,
+      amount:Number(r.totalCost||0),outstanding:0
+    }));
+    getGrainProductionRuns().forEach(r=>rows.push({
+      date:r.date,title:r.goodItem||'Processed',
+      meta:`${r.rawItem||'Raw'} ${r.inputKg||0} kg → ${r.goodKg||0} kg`,
+      amount:Number(r.totalCost||0),outstanding:0
+    }));
+    return rows;
+  }
+
+  function stockReportData(){
+    if(!window.SwatiCore) return [];
+    const costing=window.SwatiCore.costingSummary?window.SwatiCore.costingSummary():{rows:[]};
+    return costing.rows.map(r=>({
+      date:'',
+      title:r.itemName||r.itemId||'Item',
+      meta:`Available ${r.balance} ${r.unitName||''} • Unit Cost ${money(r.estimatedUnitCost||0)}`,
+      amount:Number(r.stockValue||0),
+      outstanding:0,
+      qty:Number(r.balance||0)
+    }));
+  }
+
+  function partyReportData(){
+    if(!window.SwatiCore) return [];
+    const rows=[];
+    const parties=window.SwatiCore.listParties?window.SwatiCore.listParties():[];
+    parties.forEach(name=>{
+      const p=window.SwatiCore.partyLedger(name);
+      rows.push({
+        date:'',
+        title:name,
+        meta:p.advance>0?`Advance ${money(p.advance)}`:'Supplier Ledger',
+        amount:Number(p.purchaseTotal||0),
+        outstanding:Number(p.payable||0)
+      });
+    });
+
+    const cust=new Map();
+    getTx().forEach(r=>{
+      const name=r.customer?.name||'';
+      if(!name) return;
+      const x=cust.get(name)||{receivable:0,payable:0};
+      const rem=remainingFor(r);
+      if(r.settlement?.net>0) x.receivable+=rem;
+      if(r.settlement?.net<0) x.payable+=rem;
+      cust.set(name,x);
+    });
+    [...cust.entries()].forEach(([name,x])=>rows.push({
+      date:'',title:name,meta:'Job Work Customer',
+      amount:Number(x.receivable||0),outstanding:Number(x.receivable||0),payable:Number(x.payable||0)
+    }));
+    return rows;
+  }
+
+  function staffReportData(){
+    return getStaff().map(s=>{
+      const p=staffSalaryPosition(s);
+      return {
+        date:s.joiningDate||'',
+        title:s.name,
+        meta:`${s.role||''} • ${staffAttendanceUnits(s.id)} attendance units`,
+        amount:Number(p.earned||0),
+        outstanding:Number(p.outstanding||0),
+        advance:Number(p.advancePaid||0)
+      };
+    });
+  }
+
+  function invoiceReportData(){
+    return getInvoices().map(i=>({
+      date:i.date,title:`${i.invoiceNo||'Invoice'} • ${i.customer||'Customer'}`,
+      meta:invoiceSourceLabel(i.sourceType),
+      amount:Number(i.total||0),outstanding:Number(i.outstanding||0)
+    }));
+  }
+
+  function getExpandedReportData(type){
+    if(type==='sales') return salesReportData();
+    if(type==='purchases') return purchaseReportData();
+    if(type==='expenses') return expenseReportData();
+    if(type==='jobwork') return jobWorkReportData();
+    if(type==='production') return productionReportData();
+    if(type==='stock') return stockReportData();
+    if(type==='parties') return partyReportData();
+    if(type==='staff') return staffReportData();
+    if(type==='invoices') return invoiceReportData();
+    return [];
+  }
+
+  function expandedReportTitle(type){
+    return {
+      sales:'Sales Report',
+      purchases:'Purchase Report',
+      expenses:'Expense Report',
+      jobwork:'Job Work Report',
+      production:'Production Report',
+      stock:'Stock Report',
+      parties:'Receivable / Payable',
+      staff:'Staff Report',
+      invoices:'Invoice Report'
+    }[type]||'Report';
+  }
+
+  function renderExpandedReport(){
+    if(!activeExpandedReport || !$('reportExpandedList')) return;
+
+    const raw=getExpandedReportData(activeExpandedReport);
+    const rows=raw.filter(r=>reportDateInRange(r.date))
+      .filter(r=>reportSearchMatch([r.title||'',r.meta||'',r.date||'']));
+
+    const totalAmount=round2(rows.reduce((s,r)=>s+Number(r.amount||0),0));
+    const totalOutstanding=round2(rows.reduce((s,r)=>s+Number(r.outstanding||0),0));
+    const totalExtra=round2(rows.reduce((s,r)=>s+Number(r.payable||r.advance||r.qty||0),0));
+
+    if($('reportDetailTitle')) $('reportDetailTitle').textContent=expandedReportTitle(activeExpandedReport);
+    if($('reportTableTitle')) $('reportTableTitle').textContent=expandedReportTitle(activeExpandedReport);
+    if($('reportRowCount')) $('reportRowCount').textContent=`${rows.length} rows`;
+
+    setReportMetric(1,'Entries',rows.length,false);
+    setReportMetric(2,activeExpandedReport==='stock'?'Stock Value':'Amount',totalAmount,true);
+    setReportMetric(3,'Outstanding',totalOutstanding,true);
+
+    let fourthLabel='Extra';
+    if(activeExpandedReport==='stock') fourthLabel='Available Qty';
+    else if(activeExpandedReport==='staff') fourthLabel='Advance';
+    else if(activeExpandedReport==='parties') fourthLabel='Payable / Advance';
+    else if(activeExpandedReport==='jobwork') fourthLabel='Payable';
+    setReportMetric(4,fourthLabel,totalExtra,activeExpandedReport!=='stock');
+
+    $('reportExpandedList').innerHTML=rows.map(r=>reportRow(
+      r.title,
+      `${r.date?`${r.date} • `:''}${r.meta||''}`,
+      activeExpandedReport==='stock'?money(r.amount||0):money(r.amount||0),
+      r.outstanding?`Outstanding ${money(r.outstanding)}`:(r.payable?`Payable ${money(r.payable)}`:'')
+    )).join('')||'<div class="empty">આ filterમાં data નથી.</div>';
+  }
+
+  function openExpandedReport(type){
+    activeExpandedReport=type;
+    if($('reportHomeView')) $('reportHomeView').hidden=true;
+    if($('reportDetailView')) $('reportDetailView').hidden=false;
+    if($('reportFromDate')) $('reportFromDate').value='';
+    if($('reportToDate')) $('reportToDate').value='';
+    if($('reportSearch')) $('reportSearch').value='';
+    renderExpandedReport();
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  function showReportHome(){
+    activeExpandedReport='';
+    if($('reportHomeView')) $('reportHomeView').hidden=false;
+    if($('reportDetailView')) $('reportDetailView').hidden=true;
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  function setReportRange(range){
+    const today=todayISO();
+    if(range==='all'){
+      $('reportFromDate').value='';
+      $('reportToDate').value='';
+    }else if(range==='today'){
+      $('reportFromDate').value=today;
+      $('reportToDate').value=today;
+    }else{
+      const d=new Date(`${today}T00:00:00`);
+      d.setDate(d.getDate()-(Number(range)-1));
+      $('reportFromDate').value=d.toISOString().slice(0,10);
+      $('reportToDate').value=today;
+    }
+    renderExpandedReport();
+  }
+
   function renderReports(){
-    if(!$('reportTxCount')) return;
-    const rows=reportRows();
-    let job=0,purchase=0,sales=0,receivable=0,payable=0,paid=0,outstanding=0;
-    rows.forEach(r=>{
-      const p=reportParts(r); job+=Number(r.jobWorkAmount||0); purchase+=p.purchase; sales+=p.sales;
-      receivable+=Number(r.settlement?.receivable||0); payable+=Number(r.settlement?.payable||0);
-      paid+=paymentTotal(r); outstanding+=remainingFor(r);
-    });
-    $('reportTxCount').textContent=rows.length;
-    $('reportJobTotal').textContent=money(job);
-    $('reportPurchaseTotal').textContent=money(purchase);
-    $('reportSalesTotal').textContent=money(sales);
-    $('reportReceivable').textContent=money(receivable);
-    $('reportPayable').textContent=money(payable);
-    $('reportPaid').textContent=money(paid);
-    $('reportOutstanding').textContent=money(outstanding);
-    const from=$('reportFrom').value||'શરૂઆત'; const to=$('reportTo').value||'આજ';
-    $('reportPeriodLabel').textContent=`${from} થી ${to}`;
-
-    const daily=new Map();
-    rows.forEach(r=>{
-      const d=r.date||'—', p=reportParts(r), x=daily.get(d)||{count:0,job:0,purchase:0,sales:0,outstanding:0};
-      x.count++; x.job+=Number(r.jobWorkAmount||0); x.purchase+=p.purchase; x.sales+=p.sales; x.outstanding+=remainingFor(r); daily.set(d,x);
-    });
-    $('reportDailyBody').innerHTML=[...daily.entries()].sort((a,b)=>b[0].localeCompare(a[0])).map(([d,x])=>`<tr><td data-label="તારીખ">${escapeHtml(d)}</td><td data-label="બિલ">${x.count}</td><td data-label="મજૂરી">${money(x.job)}</td><td data-label="ખરીદી">${money(x.purchase)}</td><td data-label="વેચાણ">${money(x.sales)}</td><td data-label="બાકી">${money(x.outstanding)}</td></tr>`).join('')||'<tr class="report-empty"><td colspan="6">આ સમયગાળામાં કોઈ એન્ટ્રી નથી.</td></tr>';
-
-    const customers=new Map();
-    rows.forEach(r=>{
-      const name=r.customer?.name||'—', village=r.customer?.village||'', key=(r.customer?.mobile||'')||`${name}|${village}`;
-      const x=customers.get(key)||{name,village,count:0,job:0}; x.count++; x.job+=Number(r.jobWorkAmount||0); customers.set(key,x);
-    });
-    $('reportCustomerBody').innerHTML=[...customers.values()].sort((a,b)=>b.job-a.job).slice(0,15).map(x=>`<tr><td data-label="ગ્રાહક">${escapeHtml(x.name)}</td><td data-label="ગામ">${escapeHtml(x.village)}</td><td data-label="ટ્રાન્ઝેક્શન">${x.count}</td><td data-label="મજૂરી">${money(x.job)}</td></tr>`).join('')||'<tr class="report-empty"><td colspan="4">ડેટા નથી.</td></tr>';
-
-    const villages=new Map();
-    rows.forEach(r=>{
-      const v=(r.customer?.village||'ગામ નથી').trim()||'ગામ નથી'; const x=villages.get(v)||{customers:new Set(),count:0,job:0,outstanding:0};
-      x.customers.add((r.customer?.mobile||'')||r.customer?.name||r.id); x.count++; x.job+=Number(r.jobWorkAmount||0); x.outstanding+=remainingFor(r); villages.set(v,x);
-    });
-    $('reportVillageBody').innerHTML=[...villages.entries()].sort((a,b)=>b[1].job-a[1].job).map(([v,x])=>`<tr><td data-label="ગામ">${escapeHtml(v)}</td><td data-label="ગ્રાહકો">${x.customers.size}</td><td data-label="ટ્રાન્ઝેક્શન">${x.count}</td><td data-label="મજૂરી કામ">${money(x.job)}</td><td data-label="બાકી">${money(x.outstanding)}</td></tr>`).join('')||'<tr class="report-empty"><td colspan="5">ડેટા નથી.</td></tr>';
+    if(!$('reportHomeView')) return;
+    if(activeExpandedReport) renderExpandedReport();
   }
 
   function setReportRange(kind){
@@ -1962,7 +2729,10 @@
     usage:'વપરાશ',
     expenses:'ખર્ચ',
     'stock-management':'સ્ટોક મેનેજમેન્ટ',
+    costing:'Costing / Valuation',
     finance:'ફાઇનાન્સ',
+    invoices:'Invoice / Billing',
+    staff:'Staff / Labour',
     reports:'રિપોર્ટ્સ',
     settings:'સેટિંગ્સ'
   };
@@ -2005,11 +2775,15 @@
     if (name === 'company-sales') renderCompanySales();
     if (name === 'company-stock') renderCompanyStock();
     if (name === 'grain-production') renderGrainProduction();
+    if (name === 'grain-sales') renderGrainSales();
     if (name === 'grain-stock') renderGrainStock();
     if (name === 'usage') renderUsage();
     if (name === 'expenses') renderExpenses();
     if (name === 'stock-management') renderStockManagement();
+    if (name === 'costing') renderCosting();
     if (name === 'finance') renderFinance();
+    if (name === 'invoices') renderInvoices();
+    if (name === 'staff') renderStaff();
     if (name === 'reports') { renderReports(); showReportHome(); }
     window.scrollTo({top:0,behavior:'smooth'});
   }
@@ -2726,12 +3500,15 @@
       purchase:'ખરીદી',
       expense:'ખર્ચ',
       'stock-management':'સ્ટોક મેનેજમેન્ટ',
+    costing:'Costing / Valuation',
     finance:'ફાઇનાન્સ',
       usage:'વપરાશ',
       customers:'ગ્રાહકો',
       'retail-sales':'રિટેલ વેચાણ',
     history:'હિસ્ટ્રી',
-      reports:'રિપોર્ટ્સ',
+      invoices:'Invoice / Billing',
+    staff:'Staff / Labour',
+    reports:'રિપોર્ટ્સ',
       settings:'સેટિંગ્સ',
       sales:'વેચાણ',
       stock:'સ્ટોક',
@@ -3083,6 +3860,242 @@
     ['grainProdLabourCost','grainProdElectricityCost','grainProdPackagingCost','grainProdStorageCost','grainProdOtherCost'].forEach(id=>$(id).value='0');
     renderGrainProduction();renderGrainStock();toast('Grain / Pulse Production સાચવાયું');
   });
+
+
+  document.querySelectorAll('[data-grain-sale-type]').forEach(btn=>btn.addEventListener('click',()=>{
+    document.querySelectorAll('[data-grain-sale-type]').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    $('grainSaleType').value=btn.dataset.grainSaleType;
+    $('grainSaleItem').value='';
+    $('grainSaleItemId').value='';
+    renderGrainSales();
+  }));
+
+  ['grainSaleQty','grainSaleUnit','grainSaleRate','grainSalePaid','grainSaleItem','grainSaleItemId']
+    .forEach(id=>$(id)?.addEventListener('input',grainSaleCalc));
+
+  $('grainSaleForm')?.addEventListener('submit',(e)=>{
+    e.preventDefault();
+    if(!window.SwatiCore){toast('Core system load થયું નથી');return;}
+
+    const c=grainSaleCalc();
+    const customer=$('grainSaleCustomer').value.trim();
+    const village=$('grainSaleVillage').value.trim();
+    const mobile=$('grainSaleMobile').value.trim();
+
+    if(!c.itemName){toast('વેચાણ item દાખલ કરો');return;}
+    if(c.qtyEntered<=0){toast('જથ્થો દાખલ કરો');return;}
+    if(c.rate<0){toast('ભાવ ચેક કરો');return;}
+    if(c.bad){toast('સ્ટોક પૂરતો નથી');return;}
+
+    const row={
+      id:`GSALE-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,
+      date:$('grainSaleDate').value||todayISO(),
+      type:c.type,
+      itemName:c.itemName,
+      itemId:c.itemId,
+      qtyEntered:round2(c.qtyEntered),
+      unit:c.unit,
+      baseQty:c.baseQty,
+      rate:round2(c.rate),
+      total:c.total,
+      paid:round2(c.paid),
+      outstanding:c.outstanding,
+      customer,
+      village,
+      mobile,
+      paymentMode:$('grainSalePaymentMode').value,
+      note:$('grainSaleNote').value.trim(),
+      operator:currentOperator(),
+      createdAt:new Date().toISOString()
+    };
+
+    const rows=getGrainSales();
+    rows.push(row);
+    saveGrainSales(rows);
+
+    const ctx={
+      division:'grain_pulse',
+      unit:'production',
+      activity:row.type==='waste'?'grain_waste_sale':'grain_processed_sale',
+      sourceModule:'grain_sales_alpha23',
+      operator:row.operator,
+      notes:row.id
+    };
+
+    // Common Sales ledger: handles stock Sale Out + receivable/payment
+    window.SwatiCore.addSale({
+      date:row.date,
+      party:row.customer,
+      itemId:row.itemId,
+      itemName:row.itemName,
+      qty:row.qtyEntered,
+      baseQty:row.baseQty,
+      unitName:row.unit,
+      baseUnitName:'kg',
+      rate:row.rate,
+      amount:row.total,
+      received:row.paid,
+      paymentMode:row.paymentMode,
+      context:ctx
+    });
+
+    $('grainSaleForm').reset();
+    $('grainSaleDate').value=row.date;
+    $('grainSaleType').value='processed';
+    $('grainSaleUnit').value='kg';
+    $('grainSalePaid').value='0';
+    document.querySelectorAll('[data-grain-sale-type]').forEach(b=>b.classList.toggle('active',b.dataset.grainSaleType==='processed'));
+    renderGrainSales();
+    renderGrainStock();
+    renderStockManagement();
+    toast('Grain / Pulse વેચાણ સાચવાયું');
+  });
+
+  $('costingSearch')?.addEventListener('input',renderCosting);
+
+
+  document.querySelectorAll('[data-staff-tab]').forEach(btn=>btn.addEventListener('click',()=>setStaffTab(btn.dataset.staffTab)));
+
+  $('staffMasterForm')?.addEventListener('submit',(e)=>{
+    e.preventDefault();
+    const name=$('staffName').value.trim();
+    if(!name){toast('Staff name દાખલ કરો');return;}
+    const rows=readLocalList(STAFF_KEY);
+    rows.push({
+      id:`STAFF-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,
+      name,
+      mobile:$('staffMobile').value.trim(),
+      role:$('staffRole').value.trim(),
+      salaryType:$('staffSalaryType').value,
+      salaryRate:round2(Number($('staffSalaryRate').value||0)),
+      joiningDate:$('staffJoiningDate').value||todayISO(),
+      note:$('staffNote').value.trim(),
+      active:true,
+      createdAt:new Date().toISOString()
+    });
+    writeLocalList(STAFF_KEY,rows);
+    $('staffMasterForm').reset();
+    $('staffJoiningDate').value=todayISO();
+    $('staffSalaryType').value='daily';
+    renderStaff();
+    toast('Staff સાચવાયો');
+  });
+
+  $('staffAttendanceForm')?.addEventListener('submit',(e)=>{
+    e.preventDefault();
+    const staffId=$('attendanceStaff').value;
+    if(!staffId){toast('Staff પસંદ કરો');return;}
+    const date=$('attendanceDate').value||todayISO();
+    const rows=readLocalList(STAFF_ATTENDANCE_KEY);
+    const existing=rows.findIndex(a=>a.staffId===staffId && a.date===date);
+    const row={
+      id:existing>=0?rows[existing].id:`ATT-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,
+      staffId,date,status:$('attendanceStatus').value,
+      note:$('attendanceNote').value.trim(),updatedAt:new Date().toISOString()
+    };
+    if(existing>=0) rows[existing]=row; else rows.push(row);
+    writeLocalList(STAFF_ATTENDANCE_KEY,rows);
+    $('attendanceNote').value='';
+    renderStaff();
+    toast('Attendance સાચવાયું');
+  });
+
+  $('staffPaymentForm')?.addEventListener('submit',(e)=>{
+    e.preventDefault();
+    const staffId=$('staffPaymentStaff').value;
+    const amount=round2(Number($('staffPaymentAmount').value||0));
+    if(!staffId){toast('Staff પસંદ કરો');return;}
+    if(amount<=0){toast('રકમ દાખલ કરો');return;}
+    const staff=staffById(staffId);
+    const type=$('staffPaymentType').value;
+    const date=$('staffPaymentDate').value||todayISO();
+    const paymentMode=$('staffPaymentMode').value;
+    const note=$('staffPaymentNote').value.trim();
+
+    const rows=readLocalList(STAFF_PAYMENT_KEY);
+    rows.push({
+      id:`SPAY-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,
+      staffId,date,type,amount,paymentMode,note,createdAt:new Date().toISOString()
+    });
+    writeLocalList(STAFF_PAYMENT_KEY,rows);
+
+    if(window.SwatiCore?.addExpense){
+      window.SwatiCore.addExpense({
+        date,
+        category:type==='advance'?'staff_advance':'salary',
+        name:type==='advance'?`Staff Advance - ${staff?.name||''}`:`Salary - ${staff?.name||''}`,
+        amount,
+        paymentMode,
+        context:{
+          division:'company',
+          unit:'company',
+          activity:type==='advance'?'staff_advance':'salary_payment',
+          sourceModule:'staff_alpha26',
+          operator:currentOperator(),
+          notes:note
+        }
+      });
+    }
+
+    $('staffPaymentAmount').value='';
+    $('staffPaymentNote').value='';
+    renderStaff();
+    toast(type==='advance'?'Staff Advance ઉમેરાયું':'Salary Payment ઉમેરાયું');
+  });
+
+
+  document.querySelectorAll('[data-invoice-tab]').forEach(btn=>btn.addEventListener('click',()=>setInvoiceTab(btn.dataset.invoiceTab)));
+  $('invoiceSourceFilter')?.addEventListener('change',renderInvoices);
+  $('invoiceSourceSearch')?.addEventListener('input',renderInvoices);
+
+  $('invoiceSourceList')?.addEventListener('click',(e)=>{
+    const btn=e.target.closest('[data-create-invoice]');
+    if(!btn) return;
+    const [type,id]=String(btn.dataset.createInvoice||'').split('|');
+    const src=invoiceSources().find(s=>s.sourceType===type && s.sourceId===id);
+    if(!src){toast('Transaction મળ્યો નથી');return;}
+    const inv=saveInvoiceSnapshot(invoiceFromSource(src));
+    renderInvoices();
+    fillInvoicePreview(inv);
+  });
+
+  $('invoiceSavedList')?.addEventListener('click',(e)=>{
+    const btn=e.target.closest('[data-open-invoice]');
+    if(!btn) return;
+    const inv=getInvoices().find(x=>x.id===btn.dataset.openInvoice);
+    if(inv) fillInvoicePreview(inv);
+  });
+
+  $('invoiceClosePreview')?.addEventListener('click',()=>{
+    currentInvoice=null;
+    if($('invoicePreviewPanel')) $('invoicePreviewPanel').hidden=true;
+  });
+
+  $('invoicePrintBtn')?.addEventListener('click',()=>printInvoice(currentInvoice));
+
+  $('invoiceCopyBtn')?.addEventListener('click',async()=>{
+    if(!currentInvoice) return;
+    const text=invoiceText(currentInvoice);
+    try{
+      await navigator.clipboard.writeText(text);
+      toast('Bill text copy થયું');
+    }catch{
+      toast('Copy ઉપલબ્ધ નથી');
+    }
+  });
+
+  $('invoiceWhatsAppBtn')?.addEventListener('click',()=>{
+    if(!currentInvoice) return;
+    const text=invoiceText(currentInvoice);
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`,'_blank','noopener');
+  });
+
+
+  document.querySelectorAll('[data-report-type]').forEach(btn=>btn.addEventListener('click',()=>openExpandedReport(btn.dataset.reportType)));
+  $('reportBackBtn')?.addEventListener('click',showReportHome);
+  ['reportFromDate','reportToDate','reportSearch'].forEach(id=>$(id)?.addEventListener('input',renderExpandedReport));
+  document.querySelectorAll('[data-report-range]').forEach(btn=>btn.addEventListener('click',()=>setReportRange(btn.dataset.reportRange)));
 
   if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('./sw.js').catch(()=>{});
 
