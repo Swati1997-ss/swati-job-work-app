@@ -1,4 +1,4 @@
-# Swati Job Work App — UI Alpha 2
+# Swati Mini Oil Mill App — UI Alpha 2
 
 ## Changes
 - Removed “Digital મજૂરી કામ” and branding-helper wording from the app header.

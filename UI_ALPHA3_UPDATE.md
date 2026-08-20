@@ -1,4 +1,4 @@
-# Swati Job Work App — UI Alpha 3
+# Swati Mini Oil Mill App — UI Alpha 3
 
 ## Customer Flow
 - Customers now open as **Village → Customers → Customer Detail**.

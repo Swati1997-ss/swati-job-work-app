@@ -1,4 +1,4 @@
-# Swati Job Work App — Alpha 30
+# Swati Mini Oil Mill App — Alpha 30
 
 ## UI Cleanup Update
 

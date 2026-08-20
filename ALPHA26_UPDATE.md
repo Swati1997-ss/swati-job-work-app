@@ -1,4 +1,4 @@
-# Swati Job Work App — Alpha 26
+# Swati Mini Oil Mill App — Alpha 26
 
 Focused release based on Alpha 25 stable baseline.
 

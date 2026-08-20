@@ -1,4 +1,4 @@
-# Swati Job Work App — UI Alpha 5
+# Swati Mini Oil Mill App — UI Alpha 5
 
 ## Company Production foundation
 Oil Mill now has four separate options:

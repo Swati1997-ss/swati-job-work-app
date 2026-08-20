@@ -1,4 +1,4 @@
-# Swati Job Work App — Alpha 19 Shared Sync Setup
+# Swati Mini Oil Mill App — Alpha 19 Shared Sync Setup
 
 This connects all three mobiles to one company-owned Google Drive master copy while preserving offline/local work.
 
@@ -10,7 +10,7 @@ This connects all three mobiles to one company-owned Google Drive master copy wh
 ## Step 1 — Create Apps Script
 1. Sign in to the dedicated company Google account.
 2. Open script.google.com and create a New project.
-3. Name it: `Swati Job Work Sync`.
+3. Name it: `Swati Mini Oil Mill Sync`.
 4. Replace the default code with the full content of `google-apps-script.gs` from this folder.
 5. In the first lines, replace `CHANGE_THIS_TO_A_LONG_RANDOM_SECRET` with a long random key (30+ characters).
 6. Set Project Settings → Time zone → `(GMT+05:30) India Standard Time`.
@@ -45,8 +45,8 @@ On the device that currently has the most complete/test data:
 2. Confirm Internet = Online and Shared Target = Google master configured.
 3. Tap `Sync & Merge`.
 4. After success, Google Drive will contain:
-   - `Swati Job Work App/swati-master.json`
-   - `Swati Job Work App/Daily Backups/swati-backup-YYYY-MM-DD.json`
+   - `Swati Mini Oil Mill App/swati-master.json`
+   - `Swati Mini Oil Mill App/Daily Backups/swati-backup-YYYY-MM-DD.json`
 
 ## Step 5 — Second and third devices
 1. Open the configured app.

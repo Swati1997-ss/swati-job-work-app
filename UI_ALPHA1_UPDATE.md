@@ -1,4 +1,4 @@
-# Swati Job Work App — UI Alpha 1
+# Swati Mini Oil Mill App — UI Alpha 1
 
 ## Scope
 This release changes the visual shell and navigation only. Business calculations, stored data, sync logic, Oil/Grain workflows and record structures are preserved.
