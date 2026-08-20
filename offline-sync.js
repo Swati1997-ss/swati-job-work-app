@@ -3,7 +3,7 @@
   const QUEUE_KEY='swati_sync_queue_v2';
   const LAST_SYNC_KEY='swati_last_sync_v2';
   const LAST_MASTER_KEY='swati_master_updated_v1';
-  const KEYS=['swati_oil_transactions_v1','swati_settings_v1','swati_batches_v1','swati_operators_v1','swati_audit_v1'];
+  const KEYS=['swati_oil_transactions_v1','swati_settings_v1','swati_batches_v1','swati_operators_v1','swati_audit_v1','swati_deleted_v1','swati_delete_security_v1'];
   const cfg=()=>window.getSwatiSyncConfig?window.getSwatiSyncConfig():(window.SWATI_SYNC_CONFIG||{});
   const parse=(k,fallback)=>{try{const v=localStorage.getItem(k);return v===null?fallback:JSON.parse(v)}catch{return fallback}};
   const queue=()=>parse(QUEUE_KEY,[]);
@@ -24,7 +24,7 @@
 
   function snapshot(){
     const data={}; for(const k of KEYS) data[k]=parse(k,null);
-    return {version:20,createdAt:new Date().toISOString(),workspaceCode:cfg().workspaceCode,deviceId:deviceId(),operator:operator(),data};
+    return {version:24,createdAt:new Date().toISOString(),workspaceCode:cfg().workspaceCode,deviceId:deviceId(),operator:operator(),data};
   }
 
   function applyMaster(master){
@@ -33,6 +33,7 @@
     try{
       for(const k of KEYS){ if(Object.prototype.hasOwnProperty.call(master.data,k) && master.data[k]!==null) localStorage.setItem(k,JSON.stringify(master.data[k])); }
       if(master.updatedAt) localStorage.setItem(LAST_MASTER_KEY, master.updatedAt);
+      localStorage.setItem('swati_last_local_save_v1',new Date().toISOString());
     } finally { applying=false; }
   }
 
@@ -72,8 +73,10 @@
   }
 
   function downloadSnapshot(){
+    const name=`swati-local-snapshot-${new Date().toISOString().slice(0,10)}.json`;
     const blob=new Blob([JSON.stringify({pending:queue(),snapshot:snapshot()},null,2)],{type:'application/json;charset=utf-8'});
-    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`swati-local-snapshot-${new Date().toISOString().slice(0,10)}.json`; a.click(); URL.revokeObjectURL(a.href);
+    if(window.SwatiFiles) window.SwatiFiles.presentBlob(blob,name,{title:'Local Snapshot તૈયાર છે',hint:'આ snapshot આ device/browserના local dataની copy છે. Download અથવા Share કરો.'});
+    else {const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);}
   }
 
   function scheduleAuto(){

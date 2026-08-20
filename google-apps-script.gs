@@ -1,5 +1,5 @@
 /**
- * Swati Job Work App — Shared Google Drive Master Sync (Alpha 19)
+ * Swati Job Work App — Shared Google Drive Master Sync (Alpha 24)
  * Deploy from the dedicated company Google account as a Web App.
  * Data remains in one master JSON file + timestamped daily backup files in Drive.
  * For low-volume use only. Use a long random WORKSPACE_KEY and never publish it publicly.
@@ -36,22 +36,33 @@ function doPost(e) {
   } finally { lock.releaseLock(); }
 }
 
-function doGet() { return json_({ok:true,service:'Swati Shared Sync',version:19}); }
+function doGet() { return json_({ok:true,service:'Swati Shared Sync',version:24}); }
 
 function mergeSnapshots_(a, incoming) {
-  const base = a && a.data ? a : {version:19,createdAt:new Date().toISOString(),updatedAt:'',data:{}};
+  const base = a && a.data ? a : {version:24,createdAt:new Date().toISOString(),updatedAt:'',data:{}};
   const inc = incoming && incoming.data ? incoming : {data:{}};
   const out = JSON.parse(JSON.stringify(base));
-  out.version = 19;
+  out.version = 24;
   out.data = out.data || {};
 
+  out.data['swati_deleted_v1'] = mergeByIdLatest_(arr_(out.data['swati_deleted_v1']), arr_(inc.data['swati_deleted_v1']));
   out.data['swati_oil_transactions_v1'] = mergeTransactions_(arr_(out.data['swati_oil_transactions_v1']), arr_(inc.data['swati_oil_transactions_v1']));
   out.data['swati_batches_v1'] = mergeByIdLatest_(arr_(out.data['swati_batches_v1']), arr_(inc.data['swati_batches_v1']));
   out.data['swati_audit_v1'] = mergeAudit_(arr_(out.data['swati_audit_v1']), arr_(inc.data['swati_audit_v1']));
 
-  // Settings/operators: keep incoming only when master is empty; otherwise master remains authoritative.
+  // Tombstones are authoritative: once deleted, stale devices cannot recreate the same record during merge.
+  const deletedTx = {};
+  const deletedBatch = {};
+  arr_(out.data['swati_deleted_v1']).forEach(function(d){ if(d && d.id){ if(d.entityType==='batch') deletedBatch[d.id]=true; else deletedTx[d.id]=true; } });
+  out.data['swati_oil_transactions_v1'] = arr_(out.data['swati_oil_transactions_v1']).filter(function(r){return r && !deletedTx[r.id];});
+  out.data['swati_batches_v1'] = arr_(out.data['swati_batches_v1']).filter(function(r){return r && !deletedBatch[r.id];});
+
+  // Settings/operators remain master-authoritative after the first setup.
   if (!out.data['swati_settings_v1'] && inc.data['swati_settings_v1']) out.data['swati_settings_v1'] = inc.data['swati_settings_v1'];
   if (!out.data['swati_operators_v1'] && inc.data['swati_operators_v1']) out.data['swati_operators_v1'] = inc.data['swati_operators_v1'];
+
+  // Delete-security verifier can be updated from a trusted device and then shared to the others.
+  out.data['swati_delete_security_v1'] = newerObject_(out.data['swati_delete_security_v1'], inc.data['swati_delete_security_v1']);
   return out;
 }
 
@@ -91,6 +102,11 @@ function mergeAudit_(left,right){
   return rows.slice(-5000);
 }
 
+function newerObject_(a,b){
+  if(!a) return b || a; if(!b) return a;
+  return newer_(a,b) ? a : b;
+}
+
 function newer_(a,b){
   const ta=String(a && (a.updatedAt||a.createdAt)||'');
   const tb=String(b && (b.updatedAt||b.createdAt)||'');
@@ -102,8 +118,8 @@ function round2_(n){ return Math.round((Number(n||0)+Number.EPSILON)*100)/100; }
 function getRoot_(){ return getOrCreateFolder_(DriveApp.getRootFolder(),SWATI_FOLDER_NAME); }
 function loadMaster_(){
   const root=getRoot_(); const it=root.getFilesByName(SWATI_MASTER_FILE);
-  if(!it.hasNext()) return {version:19,createdAt:new Date().toISOString(),updatedAt:'',data:{}};
-  try{return JSON.parse(it.next().getBlob().getDataAsString())}catch(e){return {version:19,createdAt:new Date().toISOString(),updatedAt:'',data:{}}}
+  if(!it.hasNext()) return {version:24,createdAt:new Date().toISOString(),updatedAt:'',data:{}};
+  try{return JSON.parse(it.next().getBlob().getDataAsString())}catch(e){return {version:24,createdAt:new Date().toISOString(),updatedAt:'',data:{}}}
 }
 function saveMaster_(obj){
   const root=getRoot_(); const text=JSON.stringify(obj,null,2); const it=root.getFilesByName(SWATI_MASTER_FILE);

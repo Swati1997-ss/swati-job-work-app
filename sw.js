@@ -1,7 +1,7 @@
-const CACHE='swati-job-work-alpha23-v1';
+const CACHE='swati-job-work-alpha24-v1';
 const APP_SHELL=[
-  './','./index.html','./styles.css','./app.js','./sync-config.js','./offline-sync.js','./pwa.js',
-  './manifest.webmanifest','./swati-icon-v2-192.png','./swati-icon-v2-512.png','./swati-icon-maskable-v2-192.png','./swati-icon-maskable-v2-512.png'
+  './','./index.html','./styles.css','./app.js','./file-tools.js','./sync-config.js','./offline-sync.js','./pwa.js',
+  './manifest.webmanifest','./swati-icon-v3-192.png','./swati-icon-v3-512.png','./swati-icon-maskable-v3-192.png','./swati-icon-maskable-v3-512.png'
 ];
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(APP_SHELL)).then(()=>self.skipWaiting()));

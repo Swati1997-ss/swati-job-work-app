@@ -111,7 +111,7 @@ th{color:var(--muted);font-size:.8rem}
   .screen{display:none!important}
   .screen.active{display:block!important}
   #oilForm{display:none!important}
-  #printArea{display:block!important}
+  body.print-oil #printArea{display:block!important}
   .physical-card{grid-template-columns:1fr 1fr;gap:8mm}
   .card-face{box-shadow:none;min-height:84mm;break-inside:avoid}
 }
@@ -156,9 +156,9 @@ th{color:var(--muted);font-size:.8rem}
 .single-print-card{grid-template-columns:minmax(0,760px);justify-content:center}
 .grain-print-table{margin-top:18px}
 @media print{
-  #screen-grain{display:block!important}
-  #screen-grain #grainForm{display:none!important}
-  #grainPrintArea{display:block!important}
+  body.print-grain #screen-grain{display:block!important}
+  body.print-grain #screen-grain #grainForm{display:none!important}
+  body.print-grain #grainPrintArea{display:block!important}
   #screen-new-oil:not(.active){display:none!important}
   .single-print-card{grid-template-columns:1fr}
 }
@@ -188,3 +188,42 @@ th{color:var(--muted);font-size:.8rem}
 .button-field{display:flex;flex-direction:column;gap:8px;justify-content:flex-end}
 .button-field>span{font-size:.92rem;color:#6e6265}
 @media (max-width:700px){.sync-config-panel .grid.two{grid-template-columns:1fr}.button-field{align-items:stretch}}
+
+/* Alpha 24 — combined mobile/PWA polish */
+:root{--safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px)}
+body{padding-bottom:var(--safe-bottom)}
+.app-header{padding-top:calc(12px + var(--safe-top))}
+.toast{left:50%;top:calc(14px + var(--safe-top));bottom:auto;transform:translateX(-50%) translateY(-18px);min-width:min(420px,calc(100vw - 28px));max-width:min(520px,calc(100vw - 28px));padding:13px 16px;border-radius:14px;box-shadow:0 14px 38px rgba(0,0,0,.22);font-weight:700;text-align:center;opacity:0;pointer-events:none;transition:.22s;z-index:12000;background:#231f20;color:#fff}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.success{background:#1f6b4f}.toast.warning{background:#8a5a10}.toast.error{background:#a12828}.toast.info{background:#342d31}
+.file-ready-box{margin:14px 0;padding:13px;border:1px solid var(--line);border-radius:12px;background:#fff;display:grid;gap:5px}.file-ready-box span{font-size:.78rem;color:var(--muted)}.file-ready-box strong{overflow-wrap:anywhere}.file-actions{margin-top:12px}.compact-modal-card{width:min(480px,100%)}
+.print-toolbar{flex-wrap:wrap}
+@media(max-width:700px){
+  #screen-reports .section-card>.row-between{align-items:stretch;flex-direction:column}
+  #screen-reports .report-presets{display:grid;grid-template-columns:1fr 1fr;width:100%}
+  #screen-reports .report-presets button{width:100%;white-space:normal}
+  .report-stats{grid-template-columns:1fr 1fr;gap:8px}
+  .report-stats .stat{padding:12px}.report-stats .stat span{font-size:.72rem}.report-stats .stat strong{font-size:1.05rem}
+  #screen-reports .report-mobile-wrap{max-height:none;overflow:visible}
+  .report-mobile-table,.report-mobile-table tbody,.report-mobile-table tr,.report-mobile-table td{display:block;width:100%}
+  .report-mobile-table thead{display:none}
+  .report-mobile-table tr{border:1px solid var(--line);border-radius:13px;background:#fff;margin:0 0 10px;padding:8px 11px;box-shadow:0 4px 14px rgba(40,20,28,.05)}
+  .report-mobile-table td{white-space:normal!important;border-bottom:1px solid #f0e8eb;padding:8px 0;display:flex;justify-content:space-between;gap:14px;text-align:right}
+  .report-mobile-table td:last-child{border-bottom:0}.report-mobile-table td::before{font-weight:700;color:var(--muted);text-align:left;flex:0 0 42%}
+  .report-daily-table td:nth-child(1)::before{content:'તારીખ'}.report-daily-table td:nth-child(2)::before{content:'બિલ'}.report-daily-table td:nth-child(3)::before{content:'મજૂરી'}.report-daily-table td:nth-child(4)::before{content:'ખરીદી'}.report-daily-table td:nth-child(5)::before{content:'વેચાણ'}.report-daily-table td:nth-child(6)::before{content:'બાકી'}
+  .report-customer-table td:nth-child(1)::before{content:'ગ્રાહક'}.report-customer-table td:nth-child(2)::before{content:'ગામ'}.report-customer-table td:nth-child(3)::before{content:'ટ્રાન્ઝેક્શન'}.report-customer-table td:nth-child(4)::before{content:'મજૂરી'}
+  .report-village-table td:nth-child(1)::before{content:'ગામ'}.report-village-table td:nth-child(2)::before{content:'ગ્રાહકો'}.report-village-table td:nth-child(3)::before{content:'ટ્રાન્ઝેક્શન'}.report-village-table td:nth-child(4)::before{content:'મજૂરી કામ'}.report-village-table td:nth-child(5)::before{content:'બાકી'}
+  .print-toolbar{justify-content:stretch}.print-toolbar button{flex:1 1 calc(50% - 8px)}
+  .tabs{padding-bottom:calc(6px + var(--safe-bottom))}
+}
+@media(max-width:420px){.report-stats{grid-template-columns:1fr}.report-presets{grid-template-columns:1fr!important}}
+
+/* Print only the selected business card. Prevent oil + grain from appearing together. */
+@media print{
+  body.print-oil .screen{display:none!important}body.print-oil #screen-new-oil{display:block!important}body.print-oil #printArea{display:block!important}body.print-oil #grainPrintArea{display:none!important}
+  body.print-grain .screen{display:none!important}body.print-grain #screen-grain{display:block!important}body.print-grain #grainPrintArea{display:block!important}body.print-grain #printArea{display:none!important}
+}
+@media print{
+  body.print-oil #screen-grain{display:none!important}
+  body.print-grain #screen-new-oil{display:none!important}
+}

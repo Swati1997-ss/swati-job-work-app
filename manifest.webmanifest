@@ -1,13 +1,12 @@
 {
   "id": "./",
-  "name": "Swati Job Work",
-  "short_name": "Swati",
+  "name": "સ્વાતિ Job Work",
+  "short_name": "સ્વાતિ",
   "description": "સ્વાતિ મિની ઓઇલ મિલ — મજૂરી કામ, અનાજ/કઠોળ, ગ્રાહક, સ્ટોક, Batch અને Reports.",
-  "start_url": "./?source=pwa",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "display_override": [
-    "window-controls-overlay",
     "standalone",
     "minimal-ui"
   ],
@@ -17,25 +16,25 @@
   "orientation": "any",
   "icons": [
     {
-      "src": "swati-icon-v2-192.png",
+      "src": "swati-icon-v3-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "swati-icon-v2-512.png",
+      "src": "swati-icon-v3-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "swati-icon-maskable-v2-192.png",
+      "src": "swati-icon-maskable-v3-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "swati-icon-maskable-v2-512.png",
+      "src": "swati-icon-maskable-v3-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
