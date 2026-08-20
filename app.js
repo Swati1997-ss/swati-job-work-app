@@ -719,16 +719,46 @@
 
   function renderDashboard(){
     const all=getTx();
-    const today = todayISO();
-    const rows = all.filter(r => r.date === today);
-    $('todayCount').textContent = rows.length;
-    $('todayJob').textContent = money(rows.reduce((s,r)=>s+(r.jobWorkAmount||0),0));
-    $('todayKhol').textContent = money(rows.reduce((s,r)=>s+(r.khol?.amount||0),0));
-    $('todayOutstanding').textContent = money(rows.reduce((s,r)=>s+remainingFor(r),0));
-    $('allCustomers').textContent=getCustomers().length;
-    $('allTxCount').textContent=all.length;
-    $('allReceivableOutstanding').textContent=money(all.filter(r=>r.settlement?.net>0).reduce((s,r)=>s+remainingFor(r),0));
-    $('allPayableOutstanding').textContent=money(all.filter(r=>r.settlement?.net<0).reduce((s,r)=>s+remainingFor(r),0));
+    const today=todayISO();
+    const rows=all.filter(r=>r.date===today);
+
+    // Existing job-work summary.
+    const todayJobAmount=round2(rows.reduce((s,r)=>s+Number(r.jobWorkAmount||0),0));
+    const todayOutstandingAmount=round2(rows.reduce((s,r)=>s+remainingFor(r),0));
+
+    if($('todayCount')) $('todayCount').textContent=rows.length;
+    if($('todayJob')) $('todayJob').textContent=money(todayJobAmount);
+    if($('todayKhol')) $('todayKhol').textContent=money(rows.reduce((s,r)=>s+Number(r.khol?.amount||0),0));
+    if($('todayOutstanding')) $('todayOutstanding').textContent=money(todayOutstandingAmount);
+    if($('allCustomers')) $('allCustomers').textContent=getCustomers().length;
+    if($('allTxCount')) $('allTxCount').textContent=all.length;
+    if($('allReceivableOutstanding')) $('allReceivableOutstanding').textContent=money(all.filter(r=>r.settlement?.net>0).reduce((s,r)=>s+remainingFor(r),0));
+    if($('allPayableOutstanding')) $('allPayableOutstanding').textContent=money(all.filter(r=>r.settlement?.net<0).reduce((s,r)=>s+remainingFor(r),0));
+
+    // New main-screen direct summaries.
+    if($('todayJobWorkAmount')) $('todayJobWorkAmount').textContent=money(todayJobAmount);
+    if($('todayJobWorkBills')) $('todayJobWorkBills').textContent=String(rows.length);
+
+    const todayBatches=getCompanyBatches().filter(x=>x.date===today);
+    const todayOil=round2(todayBatches.reduce((s,x)=>s+Number(x.oilKg||0),0));
+    if($('todayProductionOilKg')) $('todayProductionOilKg').textContent=String(todayOil);
+    if($('todayProductionBatches')) $('todayProductionBatches').textContent=String(todayBatches.length);
+
+    const todaySales=getCompanySales().filter(x=>x.date===today);
+    const todaySalesAmount=round2(todaySales.reduce((s,x)=>s+Number(x.total||0),0));
+    if($('todayCompanySalesAmount')) $('todayCompanySalesAmount').textContent=money(todaySalesAmount);
+    if($('todayCompanySalesCount')) $('todayCompanySalesCount').textContent=String(todaySales.length);
+
+    const stock=companyStock();
+    if($('homeOilStockKg')) $('homeOilStockKg').textContent=String(stock.oilAvailableKg);
+    if($('homeTinStock')) $('homeTinStock').textContent=String(stock.tinsAvailable);
+    if($('homeRawStockKg')) $('homeRawStockKg').textContent=String(stock.rawAvailable);
+    if($('homeKhaliStockKg')) $('homeKhaliStockKg').textContent=String(stock.khaliAvailable);
+
+    if($('homeTodayDate')){
+      const d=new Date(`${today}T00:00:00`);
+      $('homeTodayDate').textContent=d.toLocaleDateString('gu-IN',{day:'2-digit',month:'short',year:'numeric'});
+    }
   }
 
   let selectedCustomerVillage='';
