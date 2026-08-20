@@ -2454,14 +2454,35 @@
   function printInvoice(inv){
     if(!inv) return;
     const card=$('invoicePreviewCard');
-    const area=$('invoicePrintArea');
-    if(!card || !area) return;
-    area.innerHTML=card.outerHTML;
+    if(!card){toast('Invoice preview મળ્યું નથી');return;}
+
+    // Android/Chrome can print a blank page when the printable node is inside
+    // a parent hidden by @media print. Create a temporary top-level print root.
+    document.getElementById('invoicePrintRuntime')?.remove();
+    const runtime=document.createElement('div');
+    runtime.id='invoicePrintRuntime';
+    runtime.className='invoice-print-runtime';
+    runtime.setAttribute('aria-hidden','true');
+    runtime.innerHTML=card.outerHTML;
+    document.body.appendChild(runtime);
     document.body.classList.add('invoice-printing');
-    const cleanup=()=>document.body.classList.remove('invoice-printing');
+
+    let cleaned=false;
+    const cleanup=()=>{
+      if(cleaned) return;
+      cleaned=true;
+      document.body.classList.remove('invoice-printing');
+      runtime.remove();
+    };
+
     window.addEventListener('afterprint',cleanup,{once:true});
-    window.print();
-    setTimeout(cleanup,1200);
+
+    // Give mobile Chrome one rendering frame before opening print preview.
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      window.print();
+      // Fallback cleanup for browsers that do not fire afterprint reliably.
+      setTimeout(cleanup,4000);
+    }));
   }
 
   function renderInvoices(){

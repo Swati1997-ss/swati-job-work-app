@@ -1132,10 +1132,31 @@ html[lang="en"] select{
 }
 
 @media print{
-  body.invoice-printing > *{display:none!important}
-  body.invoice-printing #invoicePrintArea{display:block!important;position:static!important}
-  body.invoice-printing #invoicePrintArea .invoice-paper{display:block!important;border:0!important;box-shadow:none!important;border-radius:0!important;padding:0!important}
-  body.invoice-printing #invoicePrintArea .no-print{display:none!important}
+  body.invoice-printing > *:not(#invoicePrintRuntime){display:none!important}
+  body.invoice-printing #invoicePrintRuntime{
+    display:block!important;
+    position:static!important;
+    width:100%!important;
+    margin:0!important;
+    padding:0!important;
+    background:#fff!important;
+  }
+  body.invoice-printing #invoicePrintRuntime .invoice-paper{
+    display:block!important;
+    width:100%!important;
+    max-width:none!important;
+    margin:0!important;
+    border:0!important;
+    box-shadow:none!important;
+    border-radius:0!important;
+    padding:0!important;
+    background:#fff!important;
+    color:#111!important;
+  }
+  body.invoice-printing #invoicePrintRuntime .no-print{display:none!important}
+  body.invoice-printing #invoicePrintRuntime *{
+    visibility:visible!important;
+  }
 }
 
 
@@ -1345,3 +1366,24 @@ html[lang="en"] select{
 
 /* UI Alpha 31 — cleanup of duplicate legacy sidebar arrows + splash branding */
 .drawer-group-arrow{display:none !important;}
+
+
+/* UI Alpha 32 — reliable invoice print root */
+.invoice-print-runtime{display:none}
+@media print{
+  @page{size:A4 portrait;margin:12mm}
+  html,body{background:#fff!important}
+  body.invoice-printing{margin:0!important;padding:0!important}
+  body.invoice-printing #invoicePrintRuntime .invoice-brand,
+  body.invoice-printing #invoicePrintRuntime .invoice-customer,
+  body.invoice-printing #invoicePrintRuntime .invoice-items-wrap,
+  body.invoice-printing #invoicePrintRuntime .invoice-totals,
+  body.invoice-printing #invoicePrintRuntime .invoice-note,
+  body.invoice-printing #invoicePrintRuntime .invoice-footer{
+    break-inside:avoid;
+  }
+  body.invoice-printing #invoicePrintRuntime .invoice-items-table{
+    width:100%!important;
+    border-collapse:collapse!important;
+  }
+}
