@@ -47,10 +47,20 @@
   async function nativeFileShare(blob,name,title='સ્વાતિ',text=''){
     if(!navigator.share || typeof File==='undefined') return false;
     const file=fileFrom(blob,name);
-    const payloads=[{files:[file]},{title,files:[file]},text?{title,text,files:[file]}:null].filter(Boolean);
+    const payloads=[
+      text?{title,text,files:[file]}:null,
+      {title,files:[file]},
+      {files:[file]}
+    ].filter(Boolean);
     for(const payload of payloads){
-      try{await navigator.share(payload);return true;}
-      catch(e){if(e&&e.name==='AbortError')return true;console.warn('Native file share attempt failed',e);}
+      try{
+        if(navigator.canShare && payload.files && !navigator.canShare({files:payload.files})) continue;
+        await navigator.share(payload);
+        return true;
+      }catch(e){
+        if(e&&e.name==='AbortError') return true;
+        console.warn('Native file share attempt failed',e);
+      }
     }
     return false;
   }
@@ -79,35 +89,169 @@
   }
   function presentCsvAsXlsx(csv,name){const rows=parseCsv(csv),xname=name.replace(/\.csv$/i,'.xlsx');presentBlob(makeXlsx(rows,'Swati'),xname,{title:'Excel ફાઇલ તૈયાર છે'});}
   function whatsappText(text){const url=`https://wa.me/?text=${encodeURIComponent(text)}`;window.open(url,'_blank','noopener');}
-  function collectCss(){let css='';for(const sheet of [...document.styleSheets]){try{for(const rule of [...sheet.cssRules])css+=rule.cssText+'\n';}catch{}}return css;}
-  function sanitizeClone(root){root.querySelectorAll('[id]').forEach(n=>n.removeAttribute('id'));root.querySelectorAll('.no-print').forEach(n=>n.remove());return root;}
-  async function elementJpeg(element,business){
-    const clone=sanitizeClone(element.cloneNode(true));
-    clone.style.display='grid';clone.style.width=business==='oil'?'1120px':'720px';clone.style.maxWidth='none';clone.style.margin='0';clone.style.gap=business==='oil'?'28px':'0';clone.style.gridTemplateColumns=business==='oil'?'1fr 1fr':'1fr';
-    clone.querySelectorAll('.card-face').forEach(n=>{n.style.minHeight=business==='oil'?'500px':'760px';n.style.boxSizing='border-box';n.style.boxShadow='none';});
-    const width=business==='oil'?1120:720;
-    const stage=document.createElement('div');stage.style.cssText=`position:fixed;left:-10000px;top:0;width:${width}px;background:#fff;padding:24px;box-sizing:border-box;z-index:-1;`;stage.appendChild(clone);document.body.appendChild(stage);
-    await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
-    const height=Math.ceil(stage.scrollHeight+24);const html=stage.innerHTML;stage.remove();
-    const css=collectCss()+`\n*{box-sizing:border-box} body{margin:0;background:#fff}.physical-card{display:grid!important;grid-template-columns:${business==='oil'?'1fr 1fr':'1fr'}!important;gap:${business==='oil'?'28px':'0'}!important;width:${width}px!important;max-width:none!important}.card-face{box-shadow:none!important}`;
-    const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${width+48}" height="${height}"><foreignObject width="100%" height="100%"><div xmlns="http://www.w3.org/1999/xhtml" style="background:#fff;padding:24px;width:${width+48}px;min-height:${height}px"><style>${css.replace(/<\/style/gi,'<\\/style')}</style>${html}</div></foreignObject></svg>`;
-    const img=new Image();const url=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml;charset=utf-8'}));
-    await new Promise((resolve,reject)=>{img.onload=resolve;img.onerror=reject;img.src=url;});
-    const scale=2,canvas=document.createElement('canvas');canvas.width=(width+48)*scale;canvas.height=height*scale;const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.scale(scale,scale);ctx.drawImage(img,0,0);URL.revokeObjectURL(url);
-    const jpeg=await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error('Card capture failed')),'image/jpeg',0.94));return {jpeg,width:canvas.width,height:canvas.height};
+  function copyVisualStyles(source,target){
+    const props=[
+      'display','position','box-sizing','width','height','min-width','min-height','max-width','max-height',
+      'margin','margin-top','margin-right','margin-bottom','margin-left',
+      'padding','padding-top','padding-right','padding-bottom','padding-left',
+      'font-family','font-size','font-weight','font-style','line-height','letter-spacing','text-align','text-transform',
+      'color','background-color','background-image','background-size','background-position','background-repeat',
+      'border','border-top','border-right','border-bottom','border-left','border-radius','border-collapse',
+      'grid-template-columns','grid-template-rows','grid-column','grid-row','gap','column-gap','row-gap',
+      'align-items','align-content','justify-items','justify-content','place-items',
+      'flex-direction','flex-wrap','flex-grow','flex-shrink','flex-basis',
+      'white-space','overflow','overflow-wrap','word-break','vertical-align','opacity'
+    ];
+    const walk=(s,t)=>{
+      const cs=getComputedStyle(s);
+      let css='';
+      for(const p of props){
+        const v=cs.getPropertyValue(p);
+        if(v) css+=`${p}:${v};`;
+      }
+      // PDF capture should never include shadows/animations.
+      css+='box-shadow:none!important;animation:none!important;transition:none!important;';
+      t.setAttribute('style',css);
+      if(t.id) t.removeAttribute('id');
+      if(t.classList?.contains('no-print')) t.remove();
+      const sc=[...s.children],tc=[...t.children];
+      for(let i=0;i<Math.min(sc.length,tc.length);i++) walk(sc[i],tc[i]);
+    };
+    walk(source,target);
+    return target;
   }
+
+  function sanitizeClone(root){
+    root.querySelectorAll('[id]').forEach(n=>n.removeAttribute('id'));
+    root.querySelectorAll('.no-print').forEach(n=>n.remove());
+    return root;
+  }
+
+  async function waitForFonts(){
+    try{
+      if(document.fonts?.ready) await Promise.race([
+        document.fonts.ready,
+        new Promise(r=>setTimeout(r,1200))
+      ]);
+    }catch{}
+  }
+
+  async function elementJpeg(element,business){
+    if(!element) throw new Error('Bill card was not found');
+    await waitForFonts();
+
+    // Keep the exact visible card appearance by cloning the resolved/computed styles,
+    // not the whole application stylesheet. This avoids unsupported CSS breaking SVG capture.
+    const clone=element.cloneNode(true);
+    copyVisualStyles(element,clone);
+    sanitizeClone(clone);
+
+    const sourceRect=element.getBoundingClientRect();
+    const targetWidth=business==='oil' ? 1120 : 760;
+    const ratio=sourceRect.width>0 ? targetWidth/sourceRect.width : 1;
+
+    // Force the bill itself into the desired PDF layout.
+    clone.style.width=`${targetWidth}px`;
+    clone.style.maxWidth='none';
+    clone.style.margin='0';
+    clone.style.background='#ffffff';
+    if(clone.classList.contains('physical-card')){
+      clone.style.display='grid';
+      clone.style.gridTemplateColumns=business==='oil'?'1fr 1fr':'1fr';
+      clone.style.gap=business==='oil'?'24px':'0';
+    }
+
+    const stage=document.createElement('div');
+    stage.setAttribute('aria-hidden','true');
+    stage.style.cssText=`position:fixed;left:-20000px;top:0;width:${targetWidth+48}px;background:#fff;padding:24px;box-sizing:border-box;z-index:-2147483647;`;
+    stage.appendChild(clone);
+    document.body.appendChild(stage);
+
+    await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+    const width=Math.max(targetWidth+48,Math.ceil(stage.scrollWidth));
+    const height=Math.max(320,Math.ceil(stage.scrollHeight+24));
+
+    // Inline XHTML only; no global stylesheets, CSS variables or backdrop filters.
+    const html=stage.innerHTML;
+    stage.remove();
+
+    const safeHtml=html.replace(/&nbsp;/g,'&#160;');
+    const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">
+      <foreignObject x="0" y="0" width="${width}" height="${height}">
+        <div xmlns="http://www.w3.org/1999/xhtml" style="width:${width}px;min-height:${height}px;background:#fff;padding:0;margin:0;box-sizing:border-box;">
+          ${safeHtml}
+        </div>
+      </foreignObject>
+    </svg>`;
+
+    const svgBlob=new Blob([svg],{type:'image/svg+xml;charset=utf-8'});
+    const url=URL.createObjectURL(svgBlob);
+    const img=new Image();
+    try{
+      await new Promise((resolve,reject)=>{
+        const timer=setTimeout(()=>reject(new Error('Bill image render timed out')),5000);
+        img.onload=()=>{clearTimeout(timer);resolve();};
+        img.onerror=()=>{clearTimeout(timer);reject(new Error('Bill image render failed'));};
+        img.src=url;
+      });
+
+      const scale=Math.min(2,Math.max(1,window.devicePixelRatio||1.5));
+      const canvas=document.createElement('canvas');
+      canvas.width=Math.ceil(width*scale);
+      canvas.height=Math.ceil(height*scale);
+      const ctx=canvas.getContext('2d',{alpha:false});
+      if(!ctx) throw new Error('Canvas is unavailable');
+      ctx.fillStyle='#fff';
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+      ctx.setTransform(scale,0,0,scale,0,0);
+      ctx.drawImage(img,0,0,width,height);
+
+      const jpeg=await new Promise((resolve,reject)=>{
+        canvas.toBlob(b=>b&&b.size>1000?resolve(b):reject(new Error('PDF card image could not be created')),'image/jpeg',0.94);
+      });
+      return {jpeg,width:canvas.width,height:canvas.height};
+    }finally{
+      URL.revokeObjectURL(url);
+    }
+  }
+
   function pdfFromJpeg(jpegBytes,w,h){
     const parts=[],offsets=[0];let pos=0;const push=x=>{const b=typeof x==='string'?enc.encode(x):x;parts.push(b);pos+=b.length;};
     push('%PDF-1.3\n');const obj=(n,body)=>{offsets[n]=pos;push(`${n} 0 obj\n${body}\nendobj\n`);};
-    obj(1,'<< /Type /Catalog /Pages 2 0 R >>');obj(2,'<< /Type /Pages /Kids [3 0 R] /Count 1 >>');obj(3,'<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>');
-    offsets[4]=pos;push(`4 0 obj\n<< /Type /XObject /Subtype /Image /Width ${w} /Height ${h} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpegBytes.length} >>\nstream\n`);push(jpegBytes);push('\nendstream\nendobj\n');
-    const margin=24,aw=595-margin*2,ah=842-margin*2,s=Math.min(aw/w,ah/h),dw=w*s,dh=h*s,x=(595-dw)/2,y=(842-dh)/2;
-    const stream=`q\n${dw.toFixed(2)} 0 0 ${dh.toFixed(2)} ${x.toFixed(2)} ${y.toFixed(2)} cm\n/Im0 Do\nQ\n`;offsets[5]=pos;push(`5 0 obj\n<< /Length ${enc.encode(stream).length} >>\nstream\n${stream}endstream\nendobj\n`);
-    const xref=pos;push('xref\n0 6\n0000000000 65535 f \n');for(let i=1;i<=5;i++)push(String(offsets[i]).padStart(10,'0')+' 00000 n \n');push(`trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF`);return new Blob(parts,{type:'application/pdf'});
+    obj(1,'<< /Type /Catalog /Pages 2 0 R >>');
+    obj(2,'<< /Type /Pages /Kids [3 0 R] /Count 1 >>');
+    obj(3,'<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>');
+    offsets[4]=pos;
+    push(`4 0 obj\n<< /Type /XObject /Subtype /Image /Width ${w} /Height ${h} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpegBytes.length} >>\nstream\n`);
+    push(jpegBytes);push('\nendstream\nendobj\n');
+    const margin=22,aw=595-margin*2,ah=842-margin*2,s=Math.min(aw/w,ah/h),dw=w*s,dh=h*s,x=(595-dw)/2,y=(842-dh)/2;
+    const stream=`q\n${dw.toFixed(2)} 0 0 ${dh.toFixed(2)} ${x.toFixed(2)} ${y.toFixed(2)} cm\n/Im0 Do\nQ\n`;
+    offsets[5]=pos;push(`5 0 obj\n<< /Length ${enc.encode(stream).length} >>\nstream\n${stream}endstream\nendobj\n`);
+    const xref=pos;push('xref\n0 6\n0000000000 65535 f \n');
+    for(let i=1;i<=5;i++)push(String(offsets[i]).padStart(10,'0')+' 00000 n \n');
+    push(`trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF`);
+    return new Blob(parts,{type:'application/pdf'});
   }
-  async function cardPdf(element,business){const {jpeg,width,height}=await elementJpeg(element,business);return pdfFromJpeg(new Uint8Array(await jpeg.arrayBuffer()),width,height);}
-  async function shareCardPdf(element,business,name,text=''){notify('PDF તૈયાર થઈ રહી છે…');const blob=await cardPdf(element,business);return share(blob,name,'સ્વાતિ બિલ',text);}
-  async function presentCardPdf(element,business,name,text=''){notify('PDF તૈયાર થઈ રહી છે…');const blob=await cardPdf(element,business);presentBlob(blob,name,{title:'PDF તૈયાર છે',text});return blob;}
+
+  async function cardPdf(element,business){
+    const {jpeg,width,height}=await elementJpeg(element,business);
+    const blob=pdfFromJpeg(new Uint8Array(await jpeg.arrayBuffer()),width,height);
+    if(!blob || blob.size<1500) throw new Error('Generated PDF is empty');
+    return blob;
+  }
+
+  async function shareCardPdf(element,business,name,text=''){
+    notify('PDF તૈયાર થઈ રહી છે…');
+    const blob=await cardPdf(element,business);
+    return share(blob,name,'સ્વાતિ બિલ',text);
+  }
+
+  async function presentCardPdf(element,business,name,text=''){
+    notify('PDF તૈયાર થઈ રહી છે…');
+    const blob=await cardPdf(element,business);
+    presentBlob(blob,name,{title:'PDF તૈયાર છે',text});
+    return blob;
+  }
   document.addEventListener('DOMContentLoaded',()=>{
     $('fileActionClose')?.addEventListener('click',()=>{$('fileActionModal').hidden=true;});
     $('fileActionOpen')?.addEventListener('click',()=>{if(currentFile)openFile(currentFile.blob,currentFile.name,currentFile.title);});

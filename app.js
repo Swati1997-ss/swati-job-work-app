@@ -1108,27 +1108,67 @@
 
 
   const preparedBillPdf={oil:null,grain:null};
+  const preparingBillPdf={oil:null,grain:null};
+
+  function shareButtonFor(business){
+    return business==='grain' ? $('grainShareBtn') : $('oilShareBtn');
+  }
+
+  function setShareReadyState(business,state){
+    const btn=shareButtonFor(business);
+    if(!btn) return;
+    if(state==='preparing'){
+      btn.disabled=true;
+      btn.textContent='PDF તૈયાર થઈ રહી છે…';
+    }else if(state==='ready'){
+      btn.disabled=false;
+      btn.textContent='ફાઇલ શેર';
+    }else{
+      btn.disabled=false;
+      btn.textContent='ફાઇલ શેર';
+    }
+  }
 
   function clearPreparedBillPdf(business){
-    if(business) preparedBillPdf[business]=null;
-    else { preparedBillPdf.oil=null; preparedBillPdf.grain=null; }
+    if(business){
+      preparedBillPdf[business]=null;
+      preparingBillPdf[business]=null;
+      setShareReadyState(business,'idle');
+    }else{
+      preparedBillPdf.oil=null; preparedBillPdf.grain=null;
+      preparingBillPdf.oil=null; preparingBillPdf.grain=null;
+      setShareReadyState('oil','idle'); setShareReadyState('grain','idle');
+    }
   }
 
   async function prepareBillPdf(business){
-    try{
-      const r=business==='grain'?currentGrainRecord():currentRecord();
-      if(!r.customer?.name || !window.SwatiFiles) return null;
-      if(business==='grain'){ fillGrainPreview(r); $('grainPrintArea').classList.add('visible'); }
-      else { fillPreview(r); $('printArea').classList.add('visible'); }
-      const root=business==='grain'?$('grainPrintArea'):$('printArea');
-      const card=root.querySelector('.physical-card');
-      const name=`સ્વાતિ-${business==='grain'?'અનાજ-કઠોળ':'તેલ-મિલ'}-${r.billNo||todayISO()}.pdf`;
-      const text=billShareText(r,business);
-      const blob=await window.SwatiFiles.cardPdf(card,business);
-      const ready={blob,name,text,title:'સ્વાતિ બિલ'};
-      preparedBillPdf[business]=ready;
-      return ready;
-    }catch(e){ console.warn('Bill PDF pre-generation failed',e); return null; }
+    if(preparedBillPdf[business]) return preparedBillPdf[business];
+    if(preparingBillPdf[business]) return preparingBillPdf[business];
+    setShareReadyState(business,'preparing');
+    preparingBillPdf[business]=(async()=>{
+      try{
+        const r=business==='grain'?currentGrainRecord():currentRecord();
+        if(!r.customer?.name || !window.SwatiFiles) return null;
+        if(business==='grain'){ fillGrainPreview(r); $('grainPrintArea').classList.add('visible'); }
+        else { fillPreview(r); $('printArea').classList.add('visible'); }
+        const root=business==='grain'?$('grainPrintArea'):$('printArea');
+        const card=root.querySelector('.physical-card');
+        const name=`સ્વાતિ-${business==='grain'?'અનાજ-કઠોળ':'તેલ-મિલ'}-${r.billNo||todayISO()}.pdf`;
+        const text=billShareText(r,business);
+        const blob=await window.SwatiFiles.cardPdf(card,business);
+        const ready={blob,name,text,title:'સ્વાતિ બિલ'};
+        preparedBillPdf[business]=ready;
+        setShareReadyState(business,'ready');
+        return ready;
+      }catch(e){
+        console.error('Bill PDF pre-generation failed',e);
+        setShareReadyState(business,'error');
+        return null;
+      }finally{
+        preparingBillPdf[business]=null;
+      }
+    })();
+    return preparingBillPdf[business];
   }
 
   function billShareText(r,business){
@@ -1144,15 +1184,21 @@
       if(!ready){
         toast('PDF તૈયાર થઈ રહી છે…');
         ready=await prepareBillPdf(business);
+        if(!ready){toast('PDF બનાવવામાં સમસ્યા આવી');return;}
+        if(shareNow){
+          // The PDF had to be generated after this tap, so browser user-activation may be gone.
+          // Do not trigger a false download. Ask for one clean second tap now that the file is ready.
+          toast('PDF તૈયાર છે — હવે “ફાઇલ શેર” ફરી દબાવો');
+          return;
+        }
       }
-      if(!ready){toast('PDF બનાવવામાં સમસ્યા આવી');return;}
       if(shareNow){
         const ok=await window.SwatiFiles.share(ready.blob,ready.name,ready.title,ready.text);
         if(!ok){
           window.SwatiFiles.presentBlob(ready.blob,ready.name,{
             title:'PDF શેર માટે તૈયાર છે',
             text:ready.text,
-            hint:'હવે “શેર કરો” દબાવો. Android / iPhoneનું native Share menu ખોલવાનો ફરી પ્રયાસ થશે. Direct share ન ચાલે તો Download અલગથી પસંદ કરી શકો.'
+            hint:'તમારો browser file-share સપોર્ટ કરે તો “શેર કરો”થી native Share menu ખુલશે. Download માત્ર અલગ buttonથી જ થશે.'
           });
         }
       }else{
