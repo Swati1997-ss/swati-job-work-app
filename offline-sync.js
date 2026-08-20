@@ -3,7 +3,15 @@
   const QUEUE_KEY='swati_sync_queue_v2';
   const LAST_SYNC_KEY='swati_last_sync_v2';
   const LAST_MASTER_KEY='swati_master_updated_v1';
-  const KEYS=['swati_oil_transactions_v1','swati_settings_v1','swati_batches_v1','swati_operators_v1','swati_audit_v1'];
+  const KEYS=[
+    'swati_oil_transactions_v1','swati_settings_v1','swati_batches_v1','swati_operators_v1','swati_audit_v1',
+    'swati_company_raw_purchases_v1','swati_company_production_batches_v1','swati_company_sales_v1',
+    'swati_core_purchases_v1','swati_core_sales_v1','swati_core_expenses_v1','swati_core_stock_movements_v1',
+    'swati_core_internal_transfers_v1','swati_core_cash_ledger_v1','swati_core_bank_ledger_v1','swati_core_meta_v1',
+    'swati_core_finance_settings_v1','swati_core_bank_accounts_v1','swati_core_party_payments_v1','swati_core_usage_movements_v1',
+    'swati_grain_company_production_v1','swati_grain_company_sales_v1','swati_retail_sales_v1','swati_invoices_v1',
+    'swati_staff_master_v1','swati_staff_attendance_v1','swati_staff_payments_v1','swati_deleted_records_v1'
+  ];
   const cfg=()=>window.getSwatiSyncConfig?window.getSwatiSyncConfig():(window.SWATI_SYNC_CONFIG||{});
   const parse=(k,fallback)=>{try{const v=localStorage.getItem(k);return v===null?fallback:JSON.parse(v)}catch{return fallback}};
   const queue=()=>parse(QUEUE_KEY,[]);
@@ -24,7 +32,7 @@
 
   function snapshot(){
     const data={}; for(const k of KEYS) data[k]=parse(k,null);
-    return {version:20,createdAt:new Date().toISOString(),workspaceCode:cfg().workspaceCode,deviceId:deviceId(),operator:operator(),data};
+    return {version:37,createdAt:new Date().toISOString(),workspaceCode:cfg().workspaceCode,deviceId:deviceId(),operator:operator(),data};
   }
 
   function applyMaster(master){

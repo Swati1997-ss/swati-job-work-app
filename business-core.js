@@ -42,6 +42,7 @@
 
   const write = (key, value) => {
     localStorage.setItem(key, JSON.stringify(value));
+    try { window.dispatchEvent(new CustomEvent('swati:data-changed',{detail:{dataset:key,action:'update'}})); } catch {}
     return value;
   };
 
@@ -324,6 +325,7 @@
       rate,
       amount,
       paid,
+      paymentMode: input.paymentMode || 'cash',
       priorAdvance,
       advanceApplied,
       effectiveSettlement,
@@ -371,6 +373,7 @@
     const rate = round2(input.rate);
     const amount = round2(input.amount ?? qty * rate);
     const received = round2(input.received);
+    const baseQty = toBaseQty(qty, input.unitName || 'kg');
     const row = {
       id: input.id || uid('SALE'),
       date: input.date || today(),
@@ -378,16 +381,31 @@
       itemId: input.itemId || '',
       itemName: input.itemName || '',
       qty,
+      baseQty,
       unitName: input.unitName || 'kg',
       rate,
       amount,
       received,
+      paymentMode: input.paymentMode || 'cash',
       outstanding: round2(Math.max(0, amount-received)),
       context: normalizeContext(input.context),
       createdAt: input.createdAt || new Date().toISOString()
     };
     rows.push(row);
     write(KEYS.sales, rows);
+
+    if (row.received > 0) {
+      addMoneyMovement({
+        date: row.date,
+        amount: row.received,
+        direction: 'in',
+        mode: row.paymentMode,
+        refType: 'sale_receipt',
+        refId: row.id,
+        title: `Sale receipt - ${row.party || row.itemName}`,
+        context: row.context
+      });
+    }
 
     if (row.itemId && row.qty) {
       addStockMovement({
@@ -402,6 +420,10 @@
         refId: row.id,
         context: row.context
       });
+      if(row.itemId==='oil.packaging.filled_tin_15kg'){
+        let tinKg=15;try{tinKg=Number(read('swati_settings_v1',{}).tinKg||15)}catch{}
+        addStockMovement({date:row.date,itemId:'oil.finished.oil',itemName:'તેલ',qty:round2(row.qty*tinKg),unitName:'kg',movementType:MOVEMENT_TYPES.saleOut,direction:'out',refType:'sale_oil_content',refId:row.id,context:row.context});
+      }
     }
     return row;
   }
@@ -502,10 +524,7 @@
   }
 
   function stockSnapshot() {
-    const purchases = read(KEYS.purchases);
-    const sales = read(KEYS.sales);
     const movements = read(KEYS.stockMovements);
-    const usages = read(KEYS.usageMovements);
 
     const map = new Map();
 
@@ -532,32 +551,17 @@
       return map.get(id);
     }
 
-    purchases.forEach(r=>{
-      const x=ensure(r.itemId,r.itemName,r.baseUnitName||r.unitName);
-      x.purchaseIn=round2(x.purchaseIn+Number(r.baseQty??r.qty??0));
-    });
-
-    sales.forEach(r=>{
-      const x=ensure(r.itemId,r.itemName,r.baseUnitName||r.unitName);
-      x.saleOut=round2(x.saleOut+Number(r.baseQty??r.qty??0));
-    });
-
-    usages.forEach(r=>{
-      const x=ensure(r.itemId,r.itemName,r.baseUnitName||r.unitName);
-      x.usageOut=round2(x.usageOut+Number(r.baseQty??r.qty??0));
-    });
-
     movements.forEach(r=>{
       const x=ensure(r.itemId,r.itemName,r.baseUnitName||r.unitName);
       const q=Number(r.baseQty??r.qty??0);
       const t=r.movementType||r.type||'';
       if(t==='opening_in') x.openingQty=round2(x.openingQty+q);
-      else if(t==='production_in') x.productionIn=round2(x.productionIn+q);
-      else if(t==='production_out' || t==='production_consumption') x.productionConsumption=round2(x.productionConsumption+q);
+      else if(t==='production_in' || t==='production_output') x.productionIn=round2(x.productionIn+q);
+      else if(t==='production_out' || t==='production_consumption' || t==='production_consume') x.productionConsumption=round2(x.productionConsumption+q);
       else if(t==='adjustment_in') x.adjustmentIn=round2(x.adjustmentIn+q);
       else if(t==='adjustment_out') x.adjustmentOut=round2(x.adjustmentOut+q);
       else if(t==='sale_out') x.saleOut=round2(x.saleOut+q);
-      else if(t==='usage_out') x.usageOut=round2(x.usageOut+q);
+      else if(t==='usage_out' || t==='usage_consume') x.usageOut=round2(x.usageOut+q);
       else if(t==='purchase_in') x.purchaseIn=round2(x.purchaseIn+q);
     });
 
@@ -608,26 +612,42 @@
       const purchaseValue = itemPurchases.reduce((a,p)=>a+Number(p.amount||0),0);
       const avgPurchaseCost = purchaseQty>0 ? purchaseValue/purchaseQty : 0;
 
-      const prodRefs = movements
-        .filter(m=>m.itemId===s.itemId && m.movementType==='production_in')
+      const outputMovements = movements
+        .filter(m=>m.itemId===s.itemId && (m.movementType==='production_in' || m.movementType==='production_output'));
+      const prodRefs = outputMovements
         .map(m=>m.context?.notes)
         .filter(Boolean);
 
       const processingExpense = expenses
-        .filter(e=>prodRefs.includes(e.context?.notes) || (e.context?.costCenter==='grain_production' && String(s.itemId||'').startsWith('grain.processed.')))
+        .filter(e=>prodRefs.includes(e.context?.notes))
         .reduce((a,e)=>a+Number(e.amount||0),0);
 
-      const productionQty = movements
-        .filter(m=>m.itemId===s.itemId && m.movementType==='production_in')
+      const productionQty = outputMovements
         .reduce((a,m)=>a+Number(m.baseQty||m.qty||0),0);
 
       const processingCostPerUnit = productionQty>0 ? processingExpense/productionQty : 0;
 
-      // Prefer purchase-based average for purchased/raw/packaging items.
-      // Add processing expense to produced items where production output exists.
       let estimatedUnitCost = avgPurchaseCost;
       if(productionQty>0){
-        estimatedUnitCost = processingCostPerUnit;
+        if(s.itemId==='oil.packaging.filled_tin_15kg') estimatedUnitCost=0;
+        else {
+        let producedValue=0;
+        outputMovements.forEach(out=>{
+          const ref=out.context?.notes||out.refId||'';
+          const allOutputs=movements.filter(m=>(m.context?.notes||m.refId||'')===ref && m.itemId!=='oil.packaging.filled_tin_15kg' && (m.movementType==='production_in' || m.movementType==='production_output'));
+          const allOutputQty=allOutputs.reduce((a,m)=>a+Number(m.baseQty||m.qty||0),0);
+          const consumes=movements.filter(m=>(m.context?.notes||m.refId||'')===ref && (m.movementType==='production_consumption' || m.movementType==='production_consume' || m.movementType==='production_out'));
+          const rawValue=consumes.reduce((sum,m)=>{
+            const ps=purchases.filter(p=>p.itemId===m.itemId && Number(p.baseQty||p.qty||0)>0);
+            const q=ps.reduce((a,p)=>a+Number(p.baseQty||p.qty||0),0);
+            const v=ps.reduce((a,p)=>a+Number(p.amount||0),0);
+            return sum + Number(m.baseQty||m.qty||0)*(q>0?v/q:0);
+          },0);
+          const batchExpense=expenses.filter(e=>(e.context?.notes||'')===ref).reduce((a,e)=>a+Number(e.amount||0),0);
+          producedValue += allOutputQty>0 ? (rawValue+batchExpense)*(Number(out.baseQty||out.qty||0)/allOutputQty) : 0;
+        });
+        estimatedUnitCost = producedValue/productionQty;
+        }
       }
 
       const stockValue = Math.max(0,Number(s.balance||0)) * Math.max(0,estimatedUnitCost||0);
@@ -667,14 +687,14 @@
     const liquidMoney = round2(Number(f.cashBalance||0)+Number(f.bankBalance||0));
     const receivables = round2(Number(f.salesOutstanding||0));
     const payables = round2(Number(f.purchaseOutstanding||0));
-    const stockValue = round2(Number(costing.totalStockValue||0));
-    const ownedWorkingAssets = round2(liquidMoney + receivables + stockValue);
-    const netWorkingPosition = round2(ownedWorkingAssets - payables);
-    const settings=getFinanceSettings();
+      const stockValue = round2(Number(costing.totalStockValue||0));
+      const ownedWorkingAssets = round2(liquidMoney + receivables + stockValue);
+      const settings=getFinanceSettings();
     const facilities=Array.isArray(settings.loanFacilities)?settings.loanFacilities:[];
     const loanLimit=round2(facilities.reduce((s,x)=>s+Number(x.sanctioned||0),0));
-    const loanUsed=round2(facilities.reduce((s,x)=>s+Number(x.used||0),0));
-    const loanAvailable=round2(Math.max(0,loanLimit-loanUsed));
+      const loanUsed=round2(facilities.reduce((s,x)=>s+Number(x.used||0),0));
+      const loanAvailable=round2(Math.max(0,loanLimit-loanUsed));
+      const netWorkingPosition = round2(ownedWorkingAssets - payables - loanUsed);
 
     return {
       cash: round2(Number(f.cashBalance||0)),
@@ -698,15 +718,27 @@
     const settings = getFinanceSettings();
     const banks = getBankAccounts();
     const bankOpening = round2(banks.reduce((a,r)=>a+Number(r.openingBalance||0),0));
-    const bankLedgerFlow = moneyBalance('bank');
-    const cashLedgerFlow = moneyBalance('cash');
+    const jobWork=read('swati_oil_transactions_v1');
+    let jobReceivable=0,jobPayable=0,jobCashFlow=0,jobBankFlow=0;
+    jobWork.forEach(r=>{
+      const net=Number(r.settlement?.net||0);
+      const paid=(Array.isArray(r.payments)?r.payments:[]).reduce((a,p)=>a+Number(p.amount||0),0);
+      const remaining=Math.max(0,Math.abs(net)-paid);
+      if(net>0) jobReceivable+=remaining; else if(net<0) jobPayable+=remaining;
+      (Array.isArray(r.payments)?r.payments:[]).forEach(p=>{
+        const signed=net<0?-Number(p.amount||0):Number(p.amount||0);
+        if(String(p.method||'cash').toLowerCase()==='cash')jobCashFlow+=signed;else jobBankFlow+=signed;
+      });
+    });
+    const bankLedgerFlow = moneyBalance('bank')+jobBankFlow;
+    const cashLedgerFlow = moneyBalance('cash')+jobCashFlow;
     const cashBalance = round2(Number(settings.openingCash||0) + cashLedgerFlow);
     const bankBalance = round2(bankOpening + bankLedgerFlow);
     return {
       purchaseAmount: round2(p.reduce((a,r)=>a+Number(r.amount||0),0)),
-      purchaseOutstanding: round2(p.reduce((a,r)=>a+Number(r.outstanding||0),0)),
+      purchaseOutstanding: round2(p.reduce((a,r)=>a+Number(r.outstanding||0),0)+jobPayable),
       salesAmount: round2(s.reduce((a,r)=>a+Number(r.amount||0),0)),
-      salesOutstanding: round2(s.reduce((a,r)=>a+Number(r.outstanding||0),0)),
+      salesOutstanding: round2(s.reduce((a,r)=>a+Number(r.outstanding||0),0)+jobReceivable),
       expensesAmount: round2(e.reduce((a,r)=>a+Number(r.amount||0),0)),
       cashBalance,
       bankBalance,
@@ -756,6 +788,14 @@
     return row;
   }
 
+  function removeExpense(id){
+    const rows=read(KEYS.expenses);
+    if(!rows.some(r=>r.id===id)) return false;
+    write(KEYS.expenses,rows.filter(r=>r.id!==id));
+    removeMoneyRef('expense',id);
+    return true;
+  }
+
   function updateUsage(id,input={}){
     const rows=read(KEYS.usageMovements);
     const i=rows.findIndex(r=>r.id===id);
@@ -799,6 +839,7 @@
     const rate=round2(input.rate ?? old.rate);
     const amount=round2(input.amount ?? qty*rate);
     const paid=round2(input.paid ?? old.paid);
+    const priorApplied=round2(input.advanceApplied ?? old.advanceApplied ?? 0);
     const row={
       ...old,
       date:input.date ?? old.date,
@@ -806,9 +847,11 @@
       itemId:input.itemId ?? old.itemId,
       itemName:input.itemName ?? old.itemName,
       qty,baseQty:toBaseQty(qty,unitName),unitName,rate,amount,paid,
-      effectiveSettlement:paid,
-      outstanding:round2(Math.max(0,amount-paid)),
-      advance:round2(Math.max(0,paid-amount)),
+      paymentMode:input.paymentMode ?? old.paymentMode ?? 'cash',
+      advanceApplied:priorApplied,
+      effectiveSettlement:round2(paid+priorApplied),
+      outstanding:round2(Math.max(0,amount-paid-priorApplied)),
+      advance:round2(Math.max(0,paid+priorApplied-amount)),
       context:input.context ? normalizeContext(input.context) : old.context,
       updatedAt:new Date().toISOString()
     };
@@ -835,7 +878,7 @@
       const pay={
         ...(pi>=0?pays[pi]:{}),
         id:pi>=0?pays[pi].id:uid('PAY'),
-        date:row.date,party:row.party,amount:paid,paymentMode:input.paymentMode||old.paymentMode||'cash',
+        date:row.date,party:row.party,amount:paid,paymentMode:row.paymentMode||(pi>=0?pays[pi].paymentMode:'cash'),
         refType:'purchase_payment',refId:row.id,context:row.context,updatedAt:new Date().toISOString()
       };
       if(pi>=0) pays[pi]=pay; else pays.push(pay);
@@ -868,11 +911,18 @@
       date:input.date ?? old.date,party:input.party ?? old.party,
       itemId:input.itemId ?? old.itemId,itemName:input.itemName ?? old.itemName,
       qty,baseQty:toBaseQty(qty,unitName),unitName,rate,amount,received,
+      paymentMode:input.paymentMode ?? old.paymentMode ?? 'cash',
       outstanding:round2(Math.max(0,amount-received)),
       context:input.context ? normalizeContext(input.context) : old.context,
       updatedAt:new Date().toISOString()
     };
     rows[i]=row; write(KEYS.sales,rows);
+
+    removeMoneyRef('sale_receipt',id);
+    if(received>0) addMoneyMovement({
+      date:row.date,amount:received,direction:'in',mode:row.paymentMode,
+      refType:'sale_receipt',refId:row.id,title:`Sale receipt - ${row.party||row.itemName}`,context:row.context
+    });
 
     const sm=read(KEYS.stockMovements);
     const si=sm.findIndex(r=>r.refType==='sale' && r.refId===id);
@@ -885,6 +935,12 @@
       context:row.context,updatedAt:new Date().toISOString()
     };
     if(si>=0) sm[si]=movement; else sm.push(movement);
+    const ci=sm.findIndex(r=>r.refType==='sale_oil_content'&&r.refId===id);
+    if(row.itemId==='oil.packaging.filled_tin_15kg'){
+      let tinKg=15;try{tinKg=Number(read('swati_settings_v1',{}).tinKg||15)}catch{}
+      const content={...(ci>=0?sm[ci]:{}),id:ci>=0?sm[ci].id:uid('STK'),date:row.date,itemId:'oil.finished.oil',itemName:'તેલ',qty:round2(row.qty*tinKg),unitName:'kg',movementType:MOVEMENT_TYPES.saleOut,direction:'out',refType:'sale_oil_content',refId:row.id,context:row.context,updatedAt:new Date().toISOString()};
+      if(ci>=0)sm[ci]=content;else sm.push(content);
+    }else if(ci>=0)sm.splice(ci,1);
     write(KEYS.stockMovements,sm);
     return row;
   }
@@ -913,8 +969,8 @@
     KEYS, DIVISIONS, UNITS, MOVEMENT_TYPES,
     addPurchase, addSale, addExpense,
     addStockMovement, addInternalTransfer, addMoneyMovement,
-    stockBalance, stockSnapshot, moneyBalance, financeSummary, list,
+    stockBalance, stockSnapshot, moneyBalance, financeSummary, ownerFinanceSnapshot, costingSummary, list,
     toBaseQty, isWeightUnit, partyLedger, listParties, addPartyPayment, addUsage,
-    getFinanceSettings, saveFinanceSettings, getBankAccounts, saveBankAccounts, addBankAccount, updateBankAccount, updatePurchase, updateSale, updateExpense, updateUsage
+    getFinanceSettings, saveFinanceSettings, getBankAccounts, saveBankAccounts, addBankAccount, updateBankAccount, updatePurchase, updateSale, updateExpense, removeExpense, updateUsage
   };
 })();

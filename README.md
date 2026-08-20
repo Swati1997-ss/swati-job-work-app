@@ -1,6 +1,6 @@
-# Swati Mini Oil Mill App — Alpha 20
+# Swati Mini Oil Mill App — Alpha 37
 
-Alpha 20 turns the tested offline/shared-sync prototype into an installable-PWA-ready package.
+Alpha 37 is the data-integrity and reliability stabilization build. See `UI_ALPHA37_UPDATE.md` for the repaired stock, finance, backup, sync, reporting and migration behavior.
 
 ## Added
 - Installable PWA manifest and app icons
