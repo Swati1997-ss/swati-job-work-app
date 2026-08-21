@@ -301,6 +301,14 @@
     return row;
   }
 
+  function replaceStockMovements(refType, refId, inputs=[]) {
+    const rows = read(KEYS.stockMovements).filter(row => !(row.refType === refType && row.refId === refId));
+    write(KEYS.stockMovements, rows);
+    return inputs
+      .filter(input => Number(input.qty || 0) > 0)
+      .map(input => addStockMovement({...input, refType, refId}));
+  }
+
   function addPurchase(input={}) {
     const rows = read(KEYS.purchases);
     const qty = round2(input.qty);
@@ -971,7 +979,7 @@
   window.SwatiCore = {
     KEYS, DIVISIONS, UNITS, MOVEMENT_TYPES,
     addPurchase, addSale, addExpense,
-    addStockMovement, addInternalTransfer, addMoneyMovement,
+    addStockMovement, replaceStockMovements, addInternalTransfer, addMoneyMovement,
     stockBalance, stockSnapshot, moneyBalance, financeSummary, ownerFinanceSnapshot, costingSummary, list,
     toBaseQty, isWeightUnit, partyLedger, listParties, addPartyPayment, addUsage,
     getFinanceSettings, saveFinanceSettings, getBankAccounts, saveBankAccounts, addBankAccount, updateBankAccount, updatePurchase, updateSale, updateExpense, removeExpense, updateUsage

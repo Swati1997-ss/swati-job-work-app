@@ -7,13 +7,13 @@
   <meta name="application-name" content="Swati Mini Oil Mill" />
   <meta name="mobile-web-app-capable" content="yes" />
   <title>Swati Mini Oil Mill</title>
-  <link rel="manifest" href="manifest.webmanifest?v=alpha42" />
+  <link rel="manifest" href="manifest.webmanifest?v=alpha43" />
   <link rel="apple-touch-icon" href="swati-icon-v2-192.png?v=alpha33-brand-v2" />
-  <link rel="icon" type="image/png" href="swati-icon-v2-192.png?v=alpha42" />
+  <link rel="icon" type="image/png" href="swati-icon-v2-192.png?v=alpha43" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Swati Mini Oil Mill" />
-  <link rel="stylesheet" href="styles.css?v=ui-alpha42" />
+  <link rel="stylesheet" href="styles.css?v=ui-alpha43" />
 </head>
 <body>
   
@@ -407,17 +407,29 @@
           </div>
           <div class="calc-strip">
             <div><span>કુલ તેલ</span><strong id="totalOilKg">0 કિલો</strong></div>
-            <div><span>મજૂરી</span><strong id="jobWorkAmount">₹0</strong></div>
+            <div><span>મજૂરી (₹120 / 15 kg)</span><strong id="jobWorkAmount">₹0</strong></div>
           </div>
+          <div class="subsection-title">મિલ પાસે રહેતો Waste અને Process Loss</div>
+          <div class="grid two">
+            <label>માપી શકાય તેવો Waste (કિલો)<input id="jobWasteKg" type="number" min="0" step="0.01" value="0" /><small class="field-help">આ જથ્થો મિલના સ્ટોકમાં જશે.</small></label>
+            <label>Process Loss (આપમેળે)<input id="jobLossKg" type="number" value="0" readonly /><small class="field-help">આ stock નથી; માત્ર yield analysis માટે છે.</small></label>
+          </div>
+          <div id="jobOutputWarning" class="notice warning" hidden></div>
         </div>
 
         <div class="card section-card">
-          <div class="section-title"><span>3</span><h2>ખોળ ખરીદી</h2></div>
+          <div class="section-title"><span>3</span><h2>નીકળેલ ખોળનું વહેંચાણ</h2></div>
           <div class="grid two">
-            <label>ખોળનું વજન (કિલો)<input id="kholKg" type="number" min="0" step="0.01" value="0" /></label>
-            <label>ભાવ ₹ / કિલો<input id="kholRate" type="number" min="0" step="0.01" /></label>
+            <label>કુલ ખોળ બન્યો (કિલો)<input id="kholKg" type="number" min="0" step="0.01" value="0" /></label>
+            <label>વહેંચણી<select id="kholPurchaseMode"><option value="all">બધો ખોળ મિલ ખરીદે</option><option value="partial">અમુક મિલ ખરીદે</option><option value="customer">બધો ગ્રાહક લઈ જાય</option></select></label>
+            <label>મિલ ખરીદે (કિલો)<input id="kholPurchaseKg" type="number" min="0" step="0.01" value="0" /></label>
+            <label>ખરીદી ભાવ ₹ / કિલો<input id="kholRate" type="number" min="0" step="0.01" /></label>
           </div>
-          <div class="single-total"><span>ખેડૂતને આપવાના</span><strong id="kholAmount">₹0</strong></div>
+          <div class="ownership-summary">
+            <div><span>મિલના Stockમાં</span><strong id="kholMillQty">0 કિલો</strong></div>
+            <div><span>ગ્રાહકને પરત</span><strong id="kholCustomerQty">0 કિલો</strong></div>
+          </div>
+          <div class="single-total"><span>ખોળ માટે ગ્રાહકને આપવાના</span><strong id="kholAmount">₹0</strong></div>
         </div>
 
         <div class="card section-card">
@@ -428,6 +440,7 @@
               <label>સંખ્યા<input id="newTinQty" type="number" min="0" step="1" value="0" /></label>
               <label>ભાવ ₹ / ડબો<input id="newTinRate" type="number" min="0" step="0.01" /></label>
             </div>
+            <div class="ownership-note">ગ્રાહકના ડબા વપરાયા: <strong id="customerTinQty">0</strong> • મિલના નવા ડબા: <strong id="millTinQty">0</strong></div>
             <div class="mini-total">કુલ: <strong id="newTinAmount">₹0</strong></div>
           </div>
           <div class="item-box">
@@ -468,6 +481,20 @@
           <div class="single-total"><span id="remainingLabel">બાકી</span><strong id="remainingAmount">₹0</strong></div>
         </div>
 
+        <div class="card section-card">
+          <div class="section-title"><span>7</span><h2>કામ અને ડિલિવરી સ્થિતિ</h2></div>
+          <div class="grid two">
+            <label>સ્થિતિ<select id="jobStatus"><option value="received">માલ મળ્યો</option><option value="processing">પ્રોસેસિંગ ચાલુ</option><option value="ready">ડિલિવરી માટે તૈયાર</option><option value="delivered">ગ્રાહકને આપ્યું</option><option value="settled">કામ અને હિસાબ પૂર્ણ</option></select></label>
+            <label>ડિલિવરી તારીખ<input id="deliveryDate" type="date" /></label>
+          </div>
+          <div class="delivery-summary">
+            <strong>ગ્રાહકને આપવાનું</strong>
+            <span id="deliveryOilSummary">તેલ: 0</span>
+            <span id="deliveryKholSummary">ખોળ: 0 કિલો</span>
+            <span id="retainedSummary">મિલ પાસે: 0 કિલો</span>
+          </div>
+        </div>
+
         <div id="oilAuditBox" class="card audit-box" hidden>
           <div class="audit-title">Record details</div>
           <div class="audit-grid">
@@ -504,7 +531,8 @@
               <div>સિંગ / ગોગળા</div><div id="pSingGogla">—</div><div></div>
               <div>દાણા / ફાડા</div><div id="pDanaFala">—</div><div></div>
               <div>તેલ</div><div id="pOilOutput">—</div><div></div>
-              <div>ખોળ</div><div id="pKholQty">—</div><div></div>
+              <div>ખોળ</div><div id="pKholQty">—</div><div id="pKholSplit">—</div>
+              <div>Waste</div><div id="pWasteQty">—</div><div>મિલ પાસે</div>
             </div>
           </div>
 
@@ -524,6 +552,7 @@
             </div>
             <div class="final-row"><span id="pFinalLabel">અંતિમ રકમ</span><strong id="pFinal">₹0</strong></div>
             <div class="payment-row">ચૂકવેલ/મળેલ: <b id="pPaid">₹0</b> &nbsp; | &nbsp; બાકી: <b id="pRemaining">₹0</b></div>
+            <div class="payment-row">સ્થિતિ: <b id="pJobStatus">—</b> &nbsp; | &nbsp; ડિલિવરી: <b id="pDeliveryDate">—</b></div>
           </div>
         </div>
       </div>
@@ -595,6 +624,7 @@
         <button type="button" class="company-stock-card oil" data-stock-detail="oil.finished.oil"><span>તેલ Finished Stock</span><strong id="companyOilStockKg">0 kg</strong><small id="companyOilStockMeta">પ્રોડક્શન 0 kg • વેચાણ 0 kg</small><em>વિગત જુઓ ›</em></button>
         <button type="button" class="company-stock-card tin" data-stock-detail="oil.packaging.filled_tin_15kg"><span>ભરેલા 15 kg ડબા</span><strong id="companyTinStock">0 ડબા</strong><small id="companyTinStockMeta">ભરેલા 0 • વેચાયેલા 0</small><em>વિગત જુઓ ›</em></button>
         <button type="button" class="company-stock-card khali" data-stock-detail="oil.byproduct.khali"><span>ખોળ Stock</span><strong id="companyKholStockKg">0 kg</strong><small id="companyKholStockMeta">બન્યો 0 kg • વેચાણ 0 kg</small><em>વિગત જુઓ ›</em></button>
+        <button type="button" class="company-stock-card waste" data-stock-detail="oil.byproduct.jobwork_waste"><span>મજૂરી કામ Waste</span><strong id="companyJobWasteStock">0 kg</strong><small>ગ્રાહકના કામમાંથી મિલ પાસે રહેલ</small><em>વિગત જુઓ ›</em></button>
         <button type="button" class="company-stock-card package" data-stock-detail="oil.packaging.empty_tin_15kg"><span>ખાલી ડબા</span><strong id="companyEmptyTinStock">0 ડબા</strong><small>ખરીદી અને વપરાશની વિગત</small><em>વિગત જુઓ ›</em></button>
         <button type="button" class="company-stock-card package" data-stock-detail="oil.packaging.jute_bag"><span>ખાલી શણના કોથળા</span><strong id="companyEmptyBagStock">0 કોથળા</strong><small>ખરીદી અને વપરાશની વિગત</small><em>વિગત જુઓ ›</em></button>
       </div>
@@ -2186,14 +2216,14 @@
       <div id="deviceOperatorButtons" class="device-operator-buttons"></div>
     </div>
   </div>
-  <script src="sync-config.js?v=ui-alpha42"></script>
-  <script src="offline-sync.js?v=ui-alpha42"></script>
-  <script src="file-tools.js?v=ui-alpha42"></script>
-  <script src="business-core.js?v=ui-alpha42"></script>
-  <script src="business-core-bridge.js?v=ui-alpha42"></script>
-  <script src="ui-i18n.js?v=ui-alpha42"></script>
-  <script src="app.js?v=ui-alpha42"></script>
-  <script src="pwa.js?v=ui-alpha42"></script>
+  <script src="sync-config.js?v=ui-alpha43"></script>
+  <script src="offline-sync.js?v=ui-alpha43"></script>
+  <script src="file-tools.js?v=ui-alpha43"></script>
+  <script src="business-core.js?v=ui-alpha43"></script>
+  <script src="business-core-bridge.js?v=ui-alpha43"></script>
+  <script src="ui-i18n.js?v=ui-alpha43"></script>
+  <script src="app.js?v=ui-alpha43"></script>
+  <script src="pwa.js?v=ui-alpha43"></script>
 
 </body>
 </html>

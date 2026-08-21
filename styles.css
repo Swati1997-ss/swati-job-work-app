@@ -595,6 +595,14 @@ input:focus,select:focus{border-color:var(--pro-blue);box-shadow:0 0 0 3px rgba(
 .company-stock-card.oil{border-top:4px solid var(--brand)}
 .company-stock-card.tin{border-top:4px solid var(--pro-blue)}
 .company-stock-card.khali{border-top:4px solid var(--pro-teal)}
+.company-stock-card.waste{border-top:4px solid #9a6a42}
+.ownership-summary{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.ownership-summary>div,.delivery-summary{background:#f5f8fb;border:1px solid var(--ui-line);border-radius:14px;padding:12px;display:grid;gap:4px}
+.ownership-summary span,.delivery-summary span,.ownership-note{font-size:.78rem;color:var(--text-soft)}
+.ownership-summary strong{font-size:1.05rem}
+.ownership-note{margin-top:9px}
+.delivery-summary{grid-template-columns:1fr 1fr;gap:7px 14px;margin-top:12px}
+.delivery-summary>strong{grid-column:1/-1;color:var(--brand)}
 @media(max-width:800px){.production-grid{grid-template-columns:1fr}.company-stock-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:430px){.company-stock-grid{grid-template-columns:1fr 1fr}.company-stock-card{padding:13px}.company-stock-card strong{font-size:1.15rem}.calc-strip{grid-template-columns:1fr auto}.production-summary{grid-template-columns:1fr}}
 
