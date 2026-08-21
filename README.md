@@ -1,6 +1,6 @@
-# Swati Mini Oil Mill App — Alpha 45
+# Swati Mini Oil Mill App — Alpha 47
 
-Alpha 45 adds bag/mann/kg groundnut purchase with landed costing, editable purchases and batches, professional tin-plus-loose oil stock, source-wise Khol and tin ledgers, hidden ratio analytics, and Grain/Pulse-only Waste/Reject stock and sales. See `UI_ALPHA45_UPDATE.md`.
+Alpha 47 adds retail/bulk Oil Sales with stock deduction and sale costs, moves date-range batch/profit analysis into Khol Sales, compacts Retail and Settings panels, simplifies Reports, removes Price & Profit, and runs safe shared Sync & Pull every five minutes. See `UI_ALPHA47_UPDATE.md`.
 
 ## Added
 - Installable PWA manifest and app icons

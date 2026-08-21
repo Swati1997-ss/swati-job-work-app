@@ -7,7 +7,8 @@
     workspaceCode: 'swati-main',
     workspaceKey: '',
     autoSync: true,
-    autoSyncDelayMs: 3000
+    autoSyncDelayMs: 3000,
+    autoSyncIntervalMs: 300000
   };
 
   function load(){
@@ -45,7 +46,7 @@
       const key=String($('syncWorkspaceKeyInput')?.value||'').trim();
       if(!/^https:\/\//.test(endpoint)){ window.dispatchEvent(new CustomEvent('swati:toast',{detail:'Valid HTTPS sync URL નાખો'})); return; }
       if(!code || !key){ window.dispatchEvent(new CustomEvent('swati:toast',{detail:'Workspace code અને private key જરૂરી છે'})); return; }
-      save({enabled:true,endpointUrl:endpoint,workspaceCode:code,workspaceKey:key,autoSync:!!$('syncAutoToggle')?.checked});
+      save({enabled:true,endpointUrl:endpoint,workspaceCode:code,workspaceKey:key,autoSync:!!$('syncAutoToggle')?.checked,autoSyncIntervalMs:300000});
       window.SwatiOfflineSync?.render?.();
       window.dispatchEvent(new CustomEvent('swati:toast',{detail:'Shared sync configuration આ deviceમાં સાચવાઈ'}));
     });

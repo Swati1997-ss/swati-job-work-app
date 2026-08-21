@@ -7,13 +7,13 @@
   <meta name="application-name" content="Swati Mini Oil Mill" />
   <meta name="mobile-web-app-capable" content="yes" />
   <title>Swati Mini Oil Mill</title>
-  <link rel="manifest" href="manifest.webmanifest?v=alpha45" />
+  <link rel="manifest" href="manifest.webmanifest?v=alpha47" />
   <link rel="apple-touch-icon" href="swati-icon-v2-192.png?v=alpha33-brand-v2" />
-  <link rel="icon" type="image/png" href="swati-icon-v2-192.png?v=alpha45" />
+  <link rel="icon" type="image/png" href="swati-icon-v2-192.png?v=alpha47" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Swati Mini Oil Mill" />
-  <link rel="stylesheet" href="styles.css?v=ui-alpha45" />
+  <link rel="stylesheet" href="styles.css?v=ui-alpha47" />
 </head>
 <body>
   
@@ -59,7 +59,7 @@
         <div id="oilSubmenu" class="drawer-submenu" hidden>
           <button class="drawer-sublink" data-screen="new-oil" type="button" data-i18n="oilJobWork">મજૂરી કામ</button>
           <button class="drawer-sublink" data-screen="production" type="button" data-i18n="oilProduction">કંપની પ્રોડક્શન</button>
-          <button class="drawer-sublink" data-screen="company-sales" type="button">ખોળ વેચાણ</button>
+          <button class="drawer-sublink" data-screen="company-sales" type="button">તેલ / ખોળ વેચાણ</button>
           <button class="drawer-sublink" data-screen="company-stock" type="button" data-i18n="oilStock">સ્ટોક</button>
         </div>
       </div>
@@ -92,7 +92,6 @@
         <span data-i18n="retailSales">રિટેલ વેચાણ</span>
       </button>
 <button class="drawer-link" data-screen="history" type="button"><span class="drawer-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4a8 8 0 1 1-7.3 4.8H2l3.6-4L9 8.8H6.8A6 6 0 1 0 12 6v4l3 2-1.1 1.7L10 11V4h2Z"/></svg></span><span data-i18n="history">હિસ્ટ્રી</span></button>
-      <button class="drawer-link" data-screen="stock" type="button"><span class="drawer-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 9 4.5v11L12 22l-9-4.5v-11L12 2Zm0 2.2L6.1 7 12 9.8 17.9 7 12 4.2ZM5 8.6v7.6l6 3v-7.6l-6-3Zm8 10.6 6-3V8.6l-6 3v7.6Z"/></svg></span><span>Batch</span></button>
 <button class="drawer-link" data-screen="reports" type="button"><span class="drawer-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3h16a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Zm3 13h2V9H7v7Zm4 0h2V6h-2v10Zm4 0h2v-4h-2v4Z"/></svg></span><span data-i18n="reports">રિપોર્ટ્સ</span></button>
     </nav>
 
@@ -293,12 +292,6 @@
           <span class="home-action-arrow">›</span>
         </button>
 
-        <button class="home-action-card" data-go="costing" type="button">
-          <span class="home-action-icon"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4V4Zm3 3v2h10V7H7Zm0 5v5h4v-5H7Zm7 0v2h3v-2h-3Zm0 3v2h3v-2h-3Z"/></svg></span>
-          <span><strong>ભાવ અને નફો</strong></span>
-          <span class="home-action-arrow">›</span>
-        </button>
-
         <button class="home-action-card" data-go="staff" type="button">
           <span class="home-action-icon"><svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8a7 7 0 0 1 14 0H5Z"/></svg></span>
           <span><strong data-i18n="staffLabour">Staff / Labour</strong></span>
@@ -386,14 +379,18 @@
 
         <div class="card section-card">
           <div class="section-title"><span>2</span><h2>ગ્રાહક લાવેલ માલ અને નીકળેલ તેલ</h2></div>
-          <div class="incoming-grid">
+          <div class="incoming-grid material-type-grid">
             <div class="incoming-box">
-              <h3>સિંગ / ગોગળા</h3>
-              <label>વજન (કિલો)<input id="singGoglaKg" type="number" min="0" step="0.01" value="0" /></label>
+              <h3>શીંગ / Pods</h3>
+              <label>વજન<div class="quantity-unit-field"><input id="peanutPodsQty" type="number" min="0" step="0.01" value="0" /><select id="peanutPodsUnit" aria-label="શીંગનું યુનિટ"><option value="kg">કિલો</option><option value="mann">મણ</option></select></div></label>
             </div>
             <div class="incoming-box">
-              <h3>દાણા / ફાડા</h3>
-              <label>વજન (કિલો)<input id="danaFalaKg" type="number" min="0" step="0.01" value="0" /></label>
+              <h3>દાણા / Grains</h3>
+              <label>વજન<div class="quantity-unit-field"><input id="peanutGrainsQty" type="number" min="0" step="0.01" value="0" /><select id="peanutGrainsUnit" aria-label="દાણાનું યુનિટ"><option value="kg">કિલો</option><option value="mann">મણ</option></select></div></label>
+            </div>
+            <div class="incoming-box">
+              <h3>ફાડા / Splits</h3>
+              <label>વજન<div class="quantity-unit-field"><input id="peanutSplitsQty" type="number" min="0" step="0.01" value="0" /><select id="peanutSplitsUnit" aria-label="ફાડાનું યુનિટ"><option value="kg">કિલો</option><option value="mann">મણ</option></select></div></label>
             </div>
           </div>
           <div class="subsection-title">નીકળેલ તેલ</div>
@@ -401,7 +398,7 @@
             <label>તેલના ડબો<input id="oilTins" type="number" min="0" step="1" value="0" /></label>
             <label>વધારાનું તેલ (કિલો)<input id="oilExtraKg" type="number" min="0" step="0.01" value="0" /></label>
           </div>
-          <div class="calc-strip">
+          <div class="calc-strip oil-output-summary">
             <div><span>કુલ તેલ</span><strong id="totalOilKg">0 કિલો</strong></div>
             <div><span>મજૂરી (₹120 / 15 kg)</span><strong id="jobWorkAmount">₹0</strong></div>
           </div>
@@ -521,8 +518,9 @@
             <div class="card-place">સુલતાનપુર</div>
             <div class="front-table">
               <div class="ft-head">વિગત</div><div class="ft-head">વજન / જથ્થો</div><div class="ft-head">નોંધ</div>
-              <div>સિંગ / ગોગળા</div><div id="pSingGogla">—</div><div></div>
-              <div>દાણા / ફાડા</div><div id="pDanaFala">—</div><div></div>
+              <div>શીંગ / Pods</div><div id="pPeanutPods">—</div><div></div>
+              <div>દાણા / Grains</div><div id="pPeanutGrains">—</div><div></div>
+              <div>ફાડા / Splits</div><div id="pPeanutSplits">—</div><div></div>
               <div>તેલ</div><div id="pOilOutput">—</div><div></div>
               <div>ખોળ</div><div id="pKholQty">—</div><div id="pKholSplit">—</div>
             </div>
@@ -537,8 +535,8 @@
             </div>
             <div class="back-table">
               <div class="bt-head">વિગત</div><div class="bt-head">જથ્થો</div><div class="bt-head">ભાવ</div><div class="bt-head">રકમ</div>
-              <div>મજૂરી</div><div id="pJobQty">—</div><div id="pJobRate">—</div><div id="pJobAmount">—</div>
               <div>ખોળ</div><div id="pKholQty2">—</div><div id="pKholRate">—</div><div id="pKholAmount">—</div>
+              <div>મજૂરી</div><div id="pJobQty">—</div><div id="pJobRate">—</div><div id="pJobAmount">—</div>
               <div>નવું ડબો</div><div id="pTinQty">—</div><div id="pTinRate">—</div><div id="pTinAmount">—</div>
               <div>તેલ વેચાણ</div><div id="pOilSaleQty">—</div><div id="pOilSaleRate">—</div><div id="pOilSaleAmount">—</div>
             </div>
@@ -663,35 +661,47 @@
     </section>
 
     <section class="screen" id="screen-company-sales">
-      <div class="sale-product-switch"><button type="button" class="sale-product-btn active" data-sale-product="khol">ખોળ વેચાણ</button></div>
+      <div class="sale-product-switch"><button type="button" class="sale-product-btn active" data-sale-product="khol">ખોળ વેચાણ</button><button type="button" class="sale-product-btn" data-sale-product="oil">તેલ વેચાણ</button></div>
         <input id="companySaleProduct" type="hidden" value="khol" />
         <form id="companySaleForm" class="card section-card">
         <input id="companySaleEditId" type="hidden" />
         <div class="grid two">
           <label>તારીખ<input id="companySaleDate" type="date" /></label>
-          <label>ગ્રાહક<input id="companySaleCustomer" placeholder="ગ્રાહકનું નામ" /></label>
+          <label>ગ્રાહક / Party<input id="companySaleCustomer" list="companySalePartyOptions" placeholder="ગ્રાહક અથવા નિયમિત Party" /><datalist id="companySalePartyOptions"></datalist></label>
           <label>ગામ<input id="companySaleVillage" placeholder="ગામ" /></label>
           <label>મોબાઇલ<input id="companySaleMobile" inputmode="tel" /></label>
-          <label>વેચાણ પ્રકાર<select id="companySaleUnit"><option value="kg">કિલો</option><option value="mann">મણ</option></select></label>
+          <label>ગ્રાહક પ્રકાર<select id="companySaleChannel"><option value="retail">રિટેલ ગ્રાહક</option><option value="bulk">Bulk / નિયમિત Party</option></select></label>
+          <label>વેચાણ યુનિટ<select id="companySaleUnit"><option value="kg">કિલો</option><option value="mann">મણ</option><option value="ton">ટન (TON)</option><option value="tin">ડબો — 15 kg</option></select></label>
           <label id="companySaleTinField" hidden>ટીન<input id="companySaleTinCount" type="number" min="0" step="1" value="0" /></label>
           <label id="companySaleKgField">જથ્થો<input id="companySaleKg" type="number" min="0" step="0.01" value="0" /></label>
           <label>ભાવ ₹ / યુનિટ<input id="companySaleRate" type="number" min="0" step="0.01" /></label>
           <label>ચૂકવેલ ₹<input id="companySalePaid" type="number" min="0" step="0.01" value="0" /></label>
           <label>Payment<select id="companySaleMethod"><option value="cash">રોકડ</option><option value="bank">બેંક / UPI</option><option value="other">અન્ય</option></select></label>
         </div>
+        <details class="sale-extra-costs">
+          <summary>વેચાણના વધારાના ખર્ચ</summary>
+          <div class="grid three">
+            <label>Transportation ₹<input id="companySaleTransport" type="number" min="0" step="0.01" value="0" /></label>
+            <label>Loading ₹<input id="companySaleLoading" type="number" min="0" step="0.01" value="0" /></label>
+            <label>Unloading ₹<input id="companySaleUnloading" type="number" min="0" step="0.01" value="0" /></label>
+          </div>
+        </details>
         <label>નોંધ<input id="companySaleNote" /></label>
         <div class="calc-strip">
           <span>કુલ વેચાણ</span><strong id="companySaleTotal">₹0</strong>
+          <span>વધારાનો ખર્ચ</span><strong id="companySaleExtraCost">₹0</strong>
+          <span>નેટ વેચાણ</span><strong id="companySaleNet">₹0</strong>
           <span>બાકી</span><strong id="companySaleOutstanding">₹0</strong>
         </div>
         <div id="companySaleStockWarning" class="notice warning" hidden></div>
         <div class="sticky-actions edit-form-actions"><button class="primary" id="companySaleSaveBtn" type="submit">વેચાણ સાચવો</button><button class="ghost" id="companySaleEditCancelBtn" type="button" hidden>Cancel Edit</button></div>
       </form>
 
-      <div class="card section-card">
-        <div class="row-between"><h2>તાજેતરનું ખોળ વેચાણ</h2><strong id="companySalesCount">0</strong></div>
+      <details class="card section-card compact-history-panel">
+        <summary><span class="compact-history-icon">↗</span><span><strong id="companySalesTitle">તાજેતરનું ખોળ વેચાણ</strong><small>જુઓ</small></span><b id="companySalesCount">0</b></summary>
         <div id="companySalesList" class="mini-list"></div>
-      </div>
+      </details>
+      <div id="companySalesBatchHost"></div>
     </section>
 
     <section class="screen" id="screen-grain">
@@ -1233,10 +1243,10 @@
 
     
     <section class="screen" id="screen-retail-sales">
-      <div class="module-inline-actions customer-inline-actions no-print">
-        <button class="secondary" type="button" data-go="customers" data-customer-mode="oil-retail">તેલ રિટેલ ગ્રાહકો</button>
-        <button class="secondary" type="button" data-go="customers" data-customer-mode="grain-retail">અનાજ / કઠોળ રિટેલ ગ્રાહકો</button>
-      </div>
+      <details class="card section-card retail-quick-panel no-print">
+        <summary><span class="compact-history-icon">👥</span><span><strong>રિટેલ ગ્રાહકો</strong><small>ગ્રાહક યાદી ખોલો</small></span></summary>
+        <div class="module-inline-actions customer-inline-actions"><button class="secondary" type="button" data-go="customers" data-customer-mode="oil-retail">તેલ રિટેલ ગ્રાહકો</button><button class="secondary" type="button" data-go="customers" data-customer-mode="grain-retail">અનાજ / કઠોળ રિટેલ ગ્રાહકો</button></div>
+      </details>
 
       <div class="retail-category-switch">
         <button class="retail-category-btn active" type="button" data-retail-category="oil" data-i18n="oilRetail">તેલ રિટેલ</button>
@@ -1268,15 +1278,15 @@
         <div class="sticky-actions edit-form-actions"><button class="primary" id="retailSaveBtn" type="submit">વેચાણ સાચવો</button><button class="ghost" id="retailEditCancelBtn" type="button" hidden>Cancel Edit</button></div>
       </form>
 
-      <div class="card section-card">
-        <div class="row-between"><h2>તાજેતરનું રિટેલ વેચાણ</h2><strong id="retailSalesCount">0</strong></div>
+      <details class="card section-card compact-history-panel">
+        <summary><span class="compact-history-icon">₹</span><span><strong>તાજેતરનું રિટેલ વેચાણ</strong><small>જુઓ</small></span><b id="retailSalesCount">0</b></summary>
         <div id="retailSalesList" class="mini-list"></div>
-      </div>
+      </details>
 
-      <div class="card section-card">
-        <div class="row-between"><h2>રિટેલ ગ્રાહકો</h2><strong id="retailCustomerCount">0</strong></div>
+      <details class="card section-card compact-history-panel">
+        <summary><span class="compact-history-icon">👤</span><span><strong>તાજેતરના રિટેલ ગ્રાહકો</strong><small>જુઓ</small></span><b id="retailCustomerCount">0</b></summary>
         <div id="retailCustomerList" class="mini-list"></div>
-      </div>
+      </details>
     </section>
 <section class="screen" id="screen-history">
       <div class="card no-print">
@@ -1292,28 +1302,28 @@
     </section>
 
     <section class="screen" id="screen-stock">
-      <div class="batch-page-head card"><div><small>બેચ પ્લાનિંગ</small><h2>Batch બનાવો અને નફો જુઓ</h2></div><button id="exportBatchBtn" class="secondary" type="button">Batch Excel</button></div>
+      <div class="batch-page-head card"><div><small>ખોળ વેચાણ વિશ્લેષણ</small><h2>તારીખ મુજબ Batch અને નફો</h2></div><button id="exportBatchBtn" class="secondary" type="button">Batch Excel</button></div>
       <div hidden><strong id="stockPurchasedKg">0 કિલો</strong><strong id="stockAllocatedKg">0 કિલો</strong><strong id="stockAvailableKg">0 કિલો</strong><strong id="batchTotalProfit">₹0</strong><button id="exportStockBtn" type="button"></button><table><tbody id="stockBody"></tbody></table></div>
 
       <form id="batchForm" class="card no-print section-card" autocomplete="off">
         <div class="section-title"><span>1</span><h2>નવો Batch બનાવો</h2></div>
         <div class="grid three">
           <label>Batch નામ / નંબર<input id="batchNo" readonly /></label>
-          <label>માલ<select id="batchMaterial"></select></label>
-          <label>વેચાણ તારીખ<input id="batchSaleDate" type="date" required /></label>
+          <label hidden>માલ<select id="batchMaterial"><option value="મગફળી ખરીદી → ખોળ વેચાણ">મગફળી ખરીદી → ખોળ વેચાણ</option></select></label>
+          <label hidden>વેચાણ તારીખ<input id="batchSaleDate" type="date" /></label>
           <label>સમયગાળો શરૂ<input id="batchFromDate" type="date" required /></label>
           <label>સમયગાળો અંત<input id="batchToDate" type="date" required /></label>
-          <label>Batch જથ્થો<div class="quantity-unit-field"><input id="batchQty" type="number" min="0" step="0.01" value="0" /><select id="batchQtyUnit"><option value="kg">કિલો</option><option value="mann">મણ</option></select></div></label>
+          <label hidden>Batch જથ્થો<input id="batchQty" type="number" value="0" /><select id="batchQtyUnit"><option value="kg">કિલો</option></select></label>
           <label>Processing / અન્ય ખર્ચ ₹<input id="batchProcessingCost" type="number" min="0" step="0.01" value="0" /></label>
-          <label>વેચાણની કુલ રકમ ₹<input id="batchSaleAmount" type="number" min="0" step="0.01" value="0" /></label>
+          <label hidden>વેચાણની કુલ રકમ ₹<input id="batchSaleAmount" type="number" value="0" /></label>
           <label>નોંધ<input id="batchNote" placeholder="વૈકલ્પિક" /></label>
         </div>
-        <div class="notice" id="batchAvailability">ઉપલબ્ધ સ્ટોક પસંદ કરો.</div>
+        <div class="notice" id="batchAvailability">From અને To તારીખ પસંદ કરો.</div>
         <div class="settlement-lines batch-calc-lines">
-          <div><span>આ Batchની ખરીદી કિંમત</span><strong id="batchPurchaseCost">₹0</strong></div>
+          <div><span>આ સમયગાળાની મગફળી ખરીદી</span><strong id="batchPurchaseCost">₹0</strong></div>
           <div><span>Processing / અન્ય ખર્ચ</span><strong id="batchCostExtra">₹0</strong></div>
           <div><span>કુલ Cost</span><strong id="batchTotalCost">₹0</strong></div>
-          <div><span>વેચાણ</span><strong id="batchSaleValue">₹0</strong></div>
+          <div><span>આ સમયગાળાનું ખોળ વેચાણ</span><strong id="batchSaleValue">₹0</strong></div>
         </div>
         <div class="net-box" id="batchProfitBox"><span>Batch Profit / Loss</span><strong id="batchProfit">₹0</strong></div>
         <div class="sticky-actions"><button class="primary" type="submit">Batch સાચવો</button><button class="ghost" type="button" id="batchResetBtn">નવું સાફ કરો</button></div>
@@ -1558,42 +1568,6 @@
         </div>
         <div id="stockMgmtList" class="stock-management-list"></div>
       </div>
-    </section>
-
-
-    <section class="screen" id="screen-costing">
-      <div class="profit-hero card">
-        <div><small>બેચનો નિર્ણય</small><h2>ભાવ અને નફો</h2></div>
-        <span>Processing Unit</span>
-      </div>
-
-      <form id="profitPlannerForm" class="card section-card profit-planner">
-        <div class="row-between"><h2>મગફળી તેલ બેચ</h2><button id="profitUseLatestBtn" class="ghost" type="button">છેલ્લો બેચ</button></div>
-        <div class="grid two">
-          <label>મગફળી Input (કિલો)<input id="profitRawKg" type="number" min="0" step="0.01" /></label>
-          <label>મગફળીનો કુલ ખર્ચ ₹<input id="profitRawCost" type="number" min="0" step="0.01" /></label>
-          <label>તેલ Output (કિલો)<input id="profitOilKg" type="number" min="0" step="0.01" /></label>
-          <label>Processing ખર્ચ ₹<input id="profitProcessCost" type="number" min="0" step="0.01" /></label>
-          <label>ખોળ Output (કિલો)<input id="profitKholKg" type="number" min="0" step="0.01" /></label>
-          <label>ખોળ વેચાણ ભાવ ₹/કિલો<input id="profitKholRate" type="number" min="0" step="0.01" /></label>
-          <label>ઇચ્છિત નફો %<input id="profitMargin" type="number" min="0" step="0.1" value="10" /></label>
-          <label>હાલનો તેલ ભાવ ₹/કિલો<input id="profitSellingRate" type="number" min="0" step="0.01" /></label>
-        </div>
-      </form>
-
-      <div class="profit-result-grid">
-        <div class="card profit-result"><span>ખોળની આવક</span><strong id="profitKholCredit">₹0</strong></div>
-        <div class="card profit-result"><span>તેલનો Cost / kg</span><strong id="profitOilCostKg">₹0</strong></div>
-        <div class="card profit-result recommended"><span>ભલામણ ભાવ / kg</span><strong id="profitRecommendedRate">₹0</strong></div>
-        <div class="card profit-result" id="profitPositionCard"><span>આ ભાવ પર બેચ નફો</span><strong id="profitExpectedProfit">₹0</strong></div>
-      </div>
-
-      <details class="card section-card costing-breakdown">
-        <summary>Stock Cost Breakdown</summary>
-        <div class="row-between costing-search-row"><strong id="costingMoneyTied">₹0</strong><input id="costingSearch" class="compact-search" placeholder="આઇટમ શોધો" /></div>
-        <div class="alpha41-hidden-metrics" hidden><strong id="costingTotalStockValue">₹0</strong><strong id="costingTotalPurchaseValue">₹0</strong><strong id="costingTotalProcessingCost">₹0</strong></div>
-        <div id="costingList" class="costing-list"></div>
-      </details>
     </section>
 
 
@@ -1972,8 +1946,8 @@
             <div><small>વસૂલાત</small><strong id="analysisReceivable">₹0 બાકી</strong></div>
           </div>
         </div>
-        <h3 class="analysis-report-title">વિગતવાર રિપોર્ટ</h3>
-        <div class="report-card-grid">
+        <h3 class="analysis-report-title">દૈનિક કામગીરી</h3>
+        <div class="report-card-grid simplified-report-grid">
           <button class="report-card report-sales" type="button" data-report-type="sales">
             <strong data-i18n="salesReport">Sales Report</strong>
           </button>
@@ -1986,22 +1960,18 @@
           <button class="report-card report-jobwork" type="button" data-report-type="jobwork">
             <strong data-i18n="jobWorkReport">Job Work Report</strong>
           </button>
+        </div>
+        <h3 class="analysis-report-title">પ્રોડક્શન અને સ્ટોક</h3>
+        <div class="report-card-grid simplified-report-grid">
           <button class="report-card report-production" type="button" data-report-type="production">
             <strong data-i18n="productionReport">Production Report</strong>
           </button>
+          <button class="report-card report-batch" type="button" data-report-type="batches"><strong>Batch Profit Report</strong></button>
           <button class="report-card report-stock" type="button" data-report-type="stock">
             <strong data-i18n="stockReport">Stock Report</strong>
           </button>
-          <button class="report-card report-parties" type="button" data-report-type="parties">
-            <strong data-i18n="partyReport">Receivable / Payable</strong>
-          </button>
-          <button class="report-card report-staff" type="button" data-report-type="staff">
-            <strong data-i18n="staffReport">Staff Report</strong>
-          </button>
-          <button class="report-card report-invoices" type="button" data-report-type="invoices">
-            <strong data-i18n="invoiceReport">Invoice Report</strong>
-          </button>
         </div>
+        <details class="card section-card compact-report-more"><summary><span class="compact-history-icon">•••</span><span><strong>બીજા રિપોર્ટ્સ</strong><small>Accounts, Staff અને Invoices</small></span></summary><div class="report-card-grid simplified-report-grid"><button class="report-card report-parties" type="button" data-report-type="parties"><strong data-i18n="partyReport">Receivable / Payable</strong></button><button class="report-card report-staff" type="button" data-report-type="staff"><strong data-i18n="staffReport">Staff Report</strong></button><button class="report-card report-invoices" type="button" data-report-type="invoices"><strong data-i18n="invoiceReport">Invoice Report</strong></button></div></details>
       </div>
 
       <div id="reportDetailView" hidden>
@@ -2077,17 +2047,17 @@
         <div class="sticky-actions"><button class="primary" type="submit">Settings સાચવો</button></div>
       </form>
 
-      <div class="card no-print data-card">
-        <h2>Operators</h2>
+      <details class="card no-print data-card settings-compact-panel">
+        <summary><span class="settings-panel-icon">👤</span><span><strong>Operators</strong><small>નામ અને device operator</small></span></summary>
         <div class="grid three">
           <label>Operator 1<input id="operator1" placeholder="નિતેશભાઈ" /></label>
           <label>Operator 2<input id="operator2" placeholder="દર્શન" /></label>
           <label>Operator 3<input id="operator3" placeholder="હેત" /></label>
         </div>
         <div class="button-row"><button id="saveOperatorsBtn" class="secondary" type="button">Operators સાચવો</button></div>
-      </div>
-      <div class="card no-print data-card">
-        <h2>Device & Audit</h2>
+      </details>
+      <details class="card no-print data-card settings-compact-panel">
+        <summary><span class="settings-panel-icon">▣</span><span><strong>Device & Audit</strong><small>Assignment અને device details</small></span></summary>
         
         <div class="audit-grid device-status-grid">
           <span>Assigned Operator</span><strong id="deviceAssignedOperator">—</strong>
@@ -2095,7 +2065,7 @@
         </div>
         <div class="button-row"><button id="resetDeviceAssignmentBtn" class="ghost" type="button">Change Device Assignment</button></div>
         
-      </div>
+      </details>
 
 
       <div class="card no-print data-card">
@@ -2109,7 +2079,8 @@
           <span>Shared Target</span><strong id="syncTargetStatus">Not configured</strong>
           <span>Master Updated</span><strong id="syncMasterAt">Never</strong>
         </div>
-        <div class="button-row">
+        <div class="auto-sync-banner"><span class="sync-dot"></span><strong>દર 5 મિનિટે Auto Sync & Pull Latest</strong><small>Internet અને Shared Sync ઉપલબ્ધ હોય ત્યારે.</small></div>
+        <div class="button-row sync-manual-fallback">
           <button id="syncNowBtn" class="secondary" type="button">Sync & Merge</button>
           <button id="pullMasterBtn" class="ghost" type="button">Pull Latest</button>
           <button id="downloadLocalSnapshotBtn" class="ghost" type="button">Local Snapshot</button>
@@ -2124,7 +2095,7 @@
             <label>Private Workspace Key<input id="syncWorkspaceKeyInput" type="password" autocomplete="new-password" /></label>
             <div class="button-field"><span>Key visibility</span><button id="syncKeyToggleBtn" class="ghost" type="button">Show key</button></div>
           </div>
-          <label class="switch-line"><input id="syncAutoToggle" type="checkbox" checked /> Internet મળ્યા પછી Auto Sync</label>
+          <label class="switch-line"><input id="syncAutoToggle" type="checkbox" checked /> દર 5 મિનિટે Auto Sync & Pull Latest</label>
           <div class="button-row">
             <button id="syncSaveConfigBtn" class="secondary" type="button">Save Sync Setup</button>
             <button id="syncForgetConfigBtn" class="ghost" type="button">Forget Key on This Device</button>
@@ -2158,7 +2129,6 @@
     <div class="modal-card mobile-tools-card">
       <div class="row-between"><h2>Business Tools</h2><button id="mobileToolsClose" class="ghost" type="button">✕</button></div>
       <div class="mobile-tools-grid">
-        <button type="button" data-go="costing"><span>↗</span><strong>ભાવ અને નફો</strong></button>
         <button type="button" data-go="finance"><span>₹</span><strong>ફાઇનાન્સ</strong></button>
         <button type="button" data-go="staff"><span>♙</span><strong>Staff / Labour</strong></button>
         <button type="button" data-go="invoices"><span>PDF</span><strong>Invoices</strong></button>
@@ -2220,14 +2190,14 @@
       <div id="deviceOperatorButtons" class="device-operator-buttons"></div>
     </div>
   </div>
-  <script src="sync-config.js?v=ui-alpha45"></script>
-  <script src="offline-sync.js?v=ui-alpha45"></script>
-  <script src="file-tools.js?v=ui-alpha45"></script>
-  <script src="business-core.js?v=ui-alpha45"></script>
-  <script src="business-core-bridge.js?v=ui-alpha45"></script>
-  <script src="ui-i18n.js?v=ui-alpha45"></script>
-  <script src="app.js?v=ui-alpha45"></script>
-  <script src="pwa.js?v=ui-alpha45"></script>
+  <script src="sync-config.js?v=ui-alpha47"></script>
+  <script src="offline-sync.js?v=ui-alpha47"></script>
+  <script src="file-tools.js?v=ui-alpha47"></script>
+  <script src="business-core.js?v=ui-alpha47"></script>
+  <script src="business-core-bridge.js?v=ui-alpha47"></script>
+  <script src="ui-i18n.js?v=ui-alpha47"></script>
+  <script src="app.js?v=ui-alpha47"></script>
+  <script src="pwa.js?v=ui-alpha47"></script>
 
 </body>
 </html>

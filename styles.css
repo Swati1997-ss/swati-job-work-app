@@ -1738,6 +1738,45 @@ body{background:var(--alpha40-bg);color:#172235}
 .customer-waste-list{display:grid;gap:8px}.customer-waste-row{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px dashed var(--ui-line)}
 .customer-waste-row>span{display:grid;gap:3px}.customer-waste-row small{font-size:.68rem;color:var(--text-soft)}.customer-waste-numbers{text-align:right}
 @media(max-width:700px){.ratio-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ratio-batch-row{grid-template-columns:1fr 1fr}.customer-waste-row{display:grid}.customer-waste-numbers{text-align:left}}
+
+/* UI Alpha 46 — separated customer materials and balanced oil summary */
+.material-type-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.material-type-grid .incoming-box{min-width:0}
+.material-type-grid .quantity-unit-field{grid-template-columns:minmax(0,1fr) 92px}
+.oil-output-summary{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;
+  padding:0;background:transparent
+}
+.oil-output-summary>div{
+  min-width:0;min-height:74px;padding:12px 14px;border:1px solid var(--ui-line);
+  border-radius:14px;background:#f7f9fb;display:grid;align-content:center;gap:5px
+}
+.oil-output-summary>div span{line-height:1.3;overflow-wrap:anywhere}
+.oil-output-summary>div strong{text-align:left;font-size:1.08rem;line-height:1.2;color:var(--brand)}
+@media(max-width:700px){.material-type-grid{grid-template-columns:1fr}}
+@media(max-width:390px){.oil-output-summary{grid-template-columns:1fr}.oil-output-summary>div{min-height:auto}}
+
+/* UI Alpha 47 — focused sales, compact history/settings and simpler reports */
+.sale-extra-costs{margin:14px 0;border:1px dashed var(--ui-line);border-radius:14px;padding:11px 13px;background:#fafbfc}
+.sale-extra-costs summary,.compact-history-panel>summary,.retail-quick-panel>summary,.settings-compact-panel>summary,.compact-report-more>summary{cursor:pointer;font-weight:850}
+.compact-history-panel>summary,.retail-quick-panel>summary,.settings-compact-panel>summary,.compact-report-more>summary{
+  list-style:none;display:grid;grid-template-columns:42px minmax(0,1fr) auto;align-items:center;gap:11px
+}
+.compact-history-panel>summary::-webkit-details-marker,.retail-quick-panel>summary::-webkit-details-marker,.settings-compact-panel>summary::-webkit-details-marker,.compact-report-more>summary::-webkit-details-marker{display:none}
+.compact-history-panel>summary>span:nth-child(2),.retail-quick-panel>summary>span:nth-child(2),.settings-compact-panel>summary>span:nth-child(2),.compact-report-more>summary>span:nth-child(2){display:grid;gap:2px}
+.compact-history-panel summary small,.retail-quick-panel summary small,.settings-compact-panel summary small,.compact-report-more summary small{font-size:.7rem;color:var(--text-soft);font-weight:650}
+.compact-history-panel[open] .mini-list,.retail-quick-panel[open] .module-inline-actions,.settings-compact-panel[open]>*:not(summary),.compact-report-more[open] .report-card-grid{margin-top:14px}
+.settings-panel-icon{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;background:#eef4fb;color:var(--pro-blue);font-size:1.05rem}
+.auto-sync-banner{display:grid;grid-template-columns:12px minmax(0,1fr);gap:3px 9px;align-items:center;background:#edf8f3;border:1px solid #cce7d9;border-radius:13px;padding:11px 13px;margin:12px 0}
+.auto-sync-banner small{grid-column:2;font-size:.68rem;color:var(--text-soft)}
+.sync-manual-fallback{opacity:.82}
+.simplified-report-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.simplified-report-grid .report-card{min-height:66px;padding:12px 13px}
+.report-batch::before{content:"B";background:#fff4dc;color:#9b6a00}
+.compact-report-more{margin-top:12px}
+#companySalesBatchHost{margin-top:14px}
+#companySalesBatchHost .batch-page-head{margin-top:0}
+@media(max-width:520px){.simplified-report-grid{grid-template-columns:1fr}.sale-product-switch{display:grid;grid-template-columns:1fr 1fr}.sync-manual-fallback{display:grid;grid-template-columns:1fr}}
 .stock-page-actions{display:flex;justify-content:flex-end;margin:0 0 12px}
 .stock-detail-panel{scroll-margin-top:96px}
 .stock-detail-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}

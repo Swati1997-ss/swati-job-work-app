@@ -19,7 +19,7 @@
   const configured=()=>!!(cfg().enabled && /^https:\/\//.test(String(cfg().endpointUrl||'')) && cfg().workspaceCode && cfg().workspaceKey);
   const deviceId=()=>localStorage.getItem('swati_device_id_v1')||'';
   const operator=()=>localStorage.getItem('swati_current_operator_v1')||'';
-  let timer=null, syncing=false, applying=false;
+  let timer=null,periodicTimer=null,syncing=false,applying=false;
 
   function enqueue(dataset='data', action='update'){
     if(applying) return;
@@ -63,6 +63,7 @@
       if(out.master) applyMaster(out.master);
       setQueue([]); localStorage.setItem(LAST_SYNC_KEY,new Date().toISOString());
       if(out.master?.updatedAt) localStorage.setItem(LAST_MASTER_KEY,out.master.updatedAt);
+      window.dispatchEvent(new CustomEvent('swati:sync-applied',{detail:{automatic:silent}}));
       render(); return {ok:true,result:out};
     } finally {syncing=false; render();}
   }
@@ -74,7 +75,7 @@
     syncing=true; render();
     try{
       const out=await request('pullMaster',false);
-      if(out.master){applyMaster(out.master); localStorage.setItem(LAST_SYNC_KEY,new Date().toISOString());}
+      if(out.master){applyMaster(out.master); localStorage.setItem(LAST_SYNC_KEY,new Date().toISOString());window.dispatchEvent(new CustomEvent('swati:sync-applied',{detail:{automatic:silent}}));}
       render(); return {ok:true,result:out};
     } finally {syncing=false;render();}
   }
@@ -89,6 +90,13 @@
     clearTimeout(timer); timer=setTimeout(()=>syncNow({silent:true}).catch(()=>{}),Number(cfg().autoSyncDelayMs||3000));
   }
 
+  function startPeriodicAuto(){
+    clearInterval(periodicTimer);periodicTimer=null;
+    if(!cfg().autoSync) return;
+    const every=Math.max(60000,Number(cfg().autoSyncIntervalMs||300000));
+    periodicTimer=setInterval(()=>{if(configured()&&navigator.onLine)syncNow({silent:true}).catch(()=>{});},every);
+  }
+
   function render(){
     const n=document.getElementById('syncNetworkStatus'), p=document.getElementById('syncPendingCount'), l=document.getElementById('syncLastAt'), t=document.getElementById('syncTargetStatus'), m=document.getElementById('syncMasterAt'), b=document.getElementById('syncNowBtn'), pb=document.getElementById('pullMasterBtn');
     if(n) n.textContent=navigator.onLine?'Online':'Offline';
@@ -101,14 +109,14 @@
   }
 
   window.addEventListener('swati:data-changed',e=>enqueue(e.detail?.dataset||'data',e.detail?.action||'update'));
-  window.addEventListener('online',()=>{render();scheduleAuto();});
+  window.addEventListener('online',()=>{render();scheduleAuto();startPeriodicAuto();});
   window.addEventListener('offline',render);
-  window.addEventListener('swati:sync-config-changed',()=>{render();scheduleAuto();});
+  window.addEventListener('swati:sync-config-changed',()=>{render();scheduleAuto();startPeriodicAuto();});
   document.addEventListener('DOMContentLoaded',()=>{
     document.getElementById('syncNowBtn')?.addEventListener('click',()=>syncNow().then(()=>{window.dispatchEvent(new CustomEvent('swati:toast',{detail:'Shared sync પૂર્ણ થયું'})); setTimeout(()=>location.reload(),350);}).catch(e=>window.dispatchEvent(new CustomEvent('swati:toast',{detail:e.message}))));
     document.getElementById('pullMasterBtn')?.addEventListener('click',()=>pullLatest().then(()=>{window.dispatchEvent(new CustomEvent('swati:toast',{detail:'Latest data મળ્યું'})); setTimeout(()=>location.reload(),350);}).catch(e=>window.dispatchEvent(new CustomEvent('swati:toast',{detail:e.message}))));
     document.getElementById('downloadLocalSnapshotBtn')?.addEventListener('click',downloadSnapshot);
-    render(); scheduleAuto();
+    render(); scheduleAuto(); startPeriodicAuto();
   });
-  window.SwatiOfflineSync={enqueue,queue,snapshot,syncNow,pullLatest,downloadSnapshot,render,configured,applyMaster};
+  window.SwatiOfflineSync={enqueue,queue,snapshot,syncNow,pullLatest,downloadSnapshot,render,configured,applyMaster,startPeriodicAuto};
 })();
