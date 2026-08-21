@@ -1,6 +1,6 @@
-# Swati Mini Oil Mill App — Alpha 41
+# Swati Mini Oil Mill App — Alpha 42
 
-Alpha 41 focuses the operator home, connects every Groundnut Oil sale to Processing Unit stock, adds a practical Price & Profit planner, and turns Reports into a visual business-analysis screen. See `UI_ALPHA41_UPDATE.md`.
+Alpha 42 adds મણ support, automatic payment and production-loss calculations, combined Purchase/Expense navigation, batch-only planning, khol-only company sales, and detailed Oil Mill stock history. See `UI_ALPHA42_UPDATE.md`.
 
 ## Added
 - Installable PWA manifest and app icons

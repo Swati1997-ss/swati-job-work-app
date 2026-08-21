@@ -1755,3 +1755,37 @@ body{background:var(--alpha40-bg);color:#172235}
   .mobile-tools-card{position:absolute;left:12px;right:12px;bottom:calc(76px + env(safe-area-inset-bottom));margin:0;max-height:70vh}
 }
 @media(max-width:390px){.mobile-tools-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.analysis-hero{min-height:105px;padding:16px}.analysis-hero h2{font-size:1.4rem}}
+
+/* UI Alpha 42 — practical units, compact history and division stock */
+.quantity-unit-field{display:grid;grid-template-columns:minmax(0,1fr) 112px;gap:8px}
+.quantity-unit-field select{min-width:0}
+.field-help{display:block;margin-top:6px;color:var(--text-soft);font-size:.68rem;font-weight:600;line-height:1.35}
+.compact-history-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}
+.compact-history-card{padding:0;overflow:hidden}
+.compact-history-card summary{list-style:none;display:grid;grid-template-columns:44px 1fr auto;gap:11px;align-items:center;padding:14px 16px;cursor:pointer}
+.compact-history-card summary::-webkit-details-marker{display:none}
+.compact-history-card summary>span:nth-child(2){display:grid;gap:2px}
+.compact-history-card summary small{color:var(--text-soft);font-size:.67rem}
+.compact-history-icon{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:#eef6ff;font-size:1.2rem}
+.compact-history-card[open] summary{border-bottom:1px solid var(--ui-line);background:#fbfdff}
+.compact-history-card .mini-list{padding:4px 14px 12px}
+.company-stock-card{font:inherit;color:inherit;text-align:left;cursor:pointer;width:100%}
+.company-stock-card em{font-style:normal;color:#0874b9;font-size:.66rem;font-weight:800;margin-top:5px}
+.company-stock-card.package{border-top:4px solid #8b5cf6}
+.stock-page-actions{display:flex;justify-content:flex-end;margin:0 0 12px}
+.stock-detail-panel{scroll-margin-top:96px}
+.stock-detail-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}
+.stock-detail-summary span{display:grid;gap:4px;padding:11px;border-radius:12px;background:#f5f8fc;color:var(--text-soft);font-size:.7rem}
+.stock-detail-summary strong{color:var(--ink);font-size:1rem}
+.stock-timeline{display:grid}
+.stock-timeline-row{display:grid;grid-template-columns:14px 1fr auto;gap:10px;align-items:center;padding:12px 2px;border-top:1px solid var(--ui-line)}
+.stock-timeline-row span:nth-child(2){display:grid;gap:2px}.stock-timeline-row small{color:var(--text-soft);font-size:.66rem}
+.stock-timeline-dot{width:10px;height:10px;border-radius:50%;background:#c0395f}.stock-timeline-row.in .stock-timeline-dot{background:#0d9b72}
+.stock-timeline-row.in>b{color:#08765b}.stock-timeline-row.out>b{color:#a42749}
+.finance-entry-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:6px;background:#e9eef5;border-radius:16px;margin-bottom:14px}
+.finance-entry-tabs button{border:0;border-radius:12px;background:transparent;padding:12px;font-weight:850;color:#657187}
+.finance-entry-tabs button.active{background:#fff;color:var(--brand);box-shadow:0 3px 12px rgba(25,43,69,.1)}
+.batch-page-head,.stock-adjustment-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;padding:16px 18px}
+.batch-page-head h2,.stock-adjustment-head h2{margin:2px 0 0}.batch-page-head small,.stock-adjustment-head small{color:var(--text-soft);font-weight:750}
+@media(max-width:700px){.compact-history-grid{grid-template-columns:1fr}.batch-page-head,.stock-adjustment-head{align-items:flex-start;flex-direction:column}.stock-adjustment-head .button-row{width:100%}.stock-adjustment-head .button-row button{flex:1}}
+@media(max-width:430px){.quantity-unit-field{grid-template-columns:minmax(0,1fr) 100px}.stock-detail-summary{grid-template-columns:1fr 1fr 1fr}.company-stock-card em{font-size:.62rem}}

@@ -519,7 +519,10 @@
         .filter(r => r.itemId === itemId)
         .filter(r => !filter.division || r.context?.division === filter.division)
         .filter(r => !filter.unit || r.context?.unit === filter.unit)
-        .reduce((sum,r) => sum + (r.direction === 'in' ? Number(r.qty||0) : -Number(r.qty||0)), 0)
+        .reduce((sum,r) => {
+          const qty = Number(r.baseQty ?? r.qty ?? 0);
+          return sum + (r.direction === 'in' ? qty : -qty);
+        }, 0)
     );
   }
 
