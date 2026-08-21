@@ -1,6 +1,6 @@
-# Swati Mini Oil Mill App — Alpha 43
+# Swati Mini Oil Mill App — Alpha 45
 
-Alpha 43 applies the confirmed Oil Mill job-work ownership flow: ₹120 per 15 kg oil output, proportional loose-oil charge, customer-owned oil, khol purchase/return split, mill-retained waste stock, automatic process loss, delivery status, and clearer bill/WhatsApp summaries. See `UI_ALPHA43_UPDATE.md`.
+Alpha 45 adds bag/mann/kg groundnut purchase with landed costing, editable purchases and batches, professional tin-plus-loose oil stock, source-wise Khol and tin ledgers, hidden ratio analytics, and Grain/Pulse-only Waste/Reject stock and sales. See `UI_ALPHA45_UPDATE.md`.
 
 ## Added
 - Installable PWA manifest and app icons

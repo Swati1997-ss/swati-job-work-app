@@ -595,7 +595,6 @@ input:focus,select:focus{border-color:var(--pro-blue);box-shadow:0 0 0 3px rgba(
 .company-stock-card.oil{border-top:4px solid var(--brand)}
 .company-stock-card.tin{border-top:4px solid var(--pro-blue)}
 .company-stock-card.khali{border-top:4px solid var(--pro-teal)}
-.company-stock-card.waste{border-top:4px solid #9a6a42}
 .ownership-summary{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
 .ownership-summary>div,.delivery-summary{background:#f5f8fb;border:1px solid var(--ui-line);border-radius:14px;padding:12px;display:grid;gap:4px}
 .ownership-summary span,.delivery-summary span,.ownership-note{font-size:.78rem;color:var(--text-soft)}
@@ -1516,63 +1515,6 @@ html[lang="en"] select{
 }
 
 
-/* UI Alpha 36 — Grain/Pulse customer-origin Waste / Reject history */
-.customer-waste-panel{
-  border-left:4px solid #9a6a2f;
-  margin-bottom:12px;
-}
-.customer-waste-summary{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:9px;
-  margin:12px 0;
-}
-.customer-waste-summary>div{
-  padding:10px 12px;
-  border-radius:11px;
-  background:#fbf8f3;
-  display:grid;
-  gap:3px;
-}
-.customer-waste-summary span{
-  font-size:.68rem;
-  color:var(--text-soft);
-}
-.customer-waste-list{
-  display:grid;
-  gap:8px;
-}
-.customer-waste-row{
-  display:flex;
-  justify-content:space-between;
-  gap:12px;
-  padding:11px 0;
-  border-bottom:1px dashed var(--ui-line);
-}
-.customer-waste-row:last-child{border-bottom:0}
-.customer-waste-row>span{
-  display:grid;
-  gap:3px;
-}
-.customer-waste-row small{
-  font-size:.68rem;
-  color:var(--text-soft);
-}
-.customer-waste-numbers{
-  text-align:right;
-  justify-items:end;
-}
-@media(max-width:560px){
-  .customer-waste-row{
-    display:grid;
-    grid-template-columns:1fr;
-  }
-  .customer-waste-numbers{
-    text-align:left;
-    justify-items:start;
-  }
-}
-
 /* UI Alpha 40 — calm colour, faster mobile navigation and clearer sharing */
 :root{
   --alpha40-blue:#0b63b6;
@@ -1780,6 +1722,22 @@ body{background:var(--alpha40-bg);color:#172235}
 .company-stock-card{font:inherit;color:inherit;text-align:left;cursor:pointer;width:100%}
 .company-stock-card em{font-style:normal;color:#0874b9;font-size:.66rem;font-weight:800;margin-top:5px}
 .company-stock-card.package{border-top:4px solid #8b5cf6}
+.ratio-icon-button{display:inline-flex;align-items:center;gap:7px;border:1px solid #c9d9ea;background:#fff;color:#0b63b6;border-radius:12px;padding:9px 13px;font-weight:850;margin:0 0 14px;cursor:pointer}
+.ratio-panel{border-left:4px solid #0b63b6}
+.ratio-summary-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px;margin:14px 0}
+.ratio-summary-grid>div{background:#eef6ff;border-radius:12px;padding:11px;display:grid;gap:4px}
+.ratio-summary-grid span{font-size:.7rem;color:var(--text-soft)}
+.ratio-summary-grid strong{font-size:1.15rem;color:#0b63b6}
+.ratio-batch-list{display:grid;gap:7px}
+.stock-purchase-detail{display:grid;gap:4px;padding:12px;margin:8px 0;border:1px solid #dbe5ef;border-radius:12px;background:#f8fbfe;font-size:.74rem}.stock-purchase-detail small{color:var(--text-soft)}.stock-purchase-detail b{color:#0b63b6}
+.ratio-batch-row{display:grid;grid-template-columns:1.2fr repeat(4,1fr);gap:8px;padding:9px 0;border-bottom:1px solid var(--ui-line);font-size:.76rem}
+.customer-waste-panel{border-left:4px solid #9a6a2f;margin-bottom:12px}
+.customer-waste-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:12px 0}
+.customer-waste-summary>div{padding:10px 12px;border-radius:11px;background:#fbf8f3;display:grid;gap:3px}
+.customer-waste-summary span{font-size:.68rem;color:var(--text-soft)}
+.customer-waste-list{display:grid;gap:8px}.customer-waste-row{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px dashed var(--ui-line)}
+.customer-waste-row>span{display:grid;gap:3px}.customer-waste-row small{font-size:.68rem;color:var(--text-soft)}.customer-waste-numbers{text-align:right}
+@media(max-width:700px){.ratio-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ratio-batch-row{grid-template-columns:1fr 1fr}.customer-waste-row{display:grid}.customer-waste-numbers{text-align:left}}
 .stock-page-actions{display:flex;justify-content:flex-end;margin:0 0 12px}
 .stock-detail-panel{scroll-margin-top:96px}
 .stock-detail-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}
