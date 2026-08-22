@@ -8,11 +8,11 @@
     workspaceKey: '',
     autoSync: true,
     autoSyncDelayMs: 3000,
-    autoSyncIntervalMs: 300000
+    autoSyncIntervalMs: 120000
   };
 
   function load(){
-    try { return {...DEFAULTS, ...JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}')}; }
+    try { return {...DEFAULTS, ...JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'), autoSyncIntervalMs:120000}; }
     catch { return {...DEFAULTS}; }
   }
   function save(next){
@@ -46,7 +46,7 @@
       const key=String($('syncWorkspaceKeyInput')?.value||'').trim();
       if(!/^https:\/\//.test(endpoint)){ window.dispatchEvent(new CustomEvent('swati:toast',{detail:'Valid HTTPS sync URL નાખો'})); return; }
       if(!code || !key){ window.dispatchEvent(new CustomEvent('swati:toast',{detail:'Workspace code અને private key જરૂરી છે'})); return; }
-      save({enabled:true,endpointUrl:endpoint,workspaceCode:code,workspaceKey:key,autoSync:!!$('syncAutoToggle')?.checked,autoSyncIntervalMs:300000});
+      save({enabled:true,endpointUrl:endpoint,workspaceCode:code,workspaceKey:key,autoSync:!!$('syncAutoToggle')?.checked,autoSyncIntervalMs:120000});
       window.SwatiOfflineSync?.render?.();
       window.dispatchEvent(new CustomEvent('swati:toast',{detail:'Shared sync configuration આ deviceમાં સાચવાઈ'}));
     });

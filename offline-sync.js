@@ -19,7 +19,7 @@
   const configured=()=>!!(cfg().enabled && /^https:\/\//.test(String(cfg().endpointUrl||'')) && cfg().workspaceCode && cfg().workspaceKey);
   const deviceId=()=>localStorage.getItem('swati_device_id_v1')||'';
   const operator=()=>localStorage.getItem('swati_current_operator_v1')||'';
-  let timer=null,periodicTimer=null,syncing=false,applying=false;
+  let timer=null,periodicTimer=null,syncing=false,applying=false,lastPeriodicAttempt=0;
 
   function enqueue(dataset='data', action='update'){
     if(applying) return;
@@ -32,7 +32,7 @@
 
   function snapshot(){
     const data={}; for(const k of KEYS) data[k]=parse(k,null);
-    return {version:37,createdAt:new Date().toISOString(),workspaceCode:cfg().workspaceCode,deviceId:deviceId(),operator:operator(),data};
+    return {version:48,createdAt:new Date().toISOString(),workspaceCode:cfg().workspaceCode,deviceId:deviceId(),operator:operator(),data};
   }
 
   function applyMaster(master){
@@ -90,11 +90,20 @@
     clearTimeout(timer); timer=setTimeout(()=>syncNow({silent:true}).catch(()=>{}),Number(cfg().autoSyncDelayMs||3000));
   }
 
+  function tryPeriodicAuto(force=false){
+    if(!cfg().autoSync || !configured() || !navigator.onLine || syncing) return;
+    const every=Math.max(60000,Number(cfg().autoSyncIntervalMs||120000));
+    const lastSync=Date.parse(localStorage.getItem(LAST_SYNC_KEY)||'')||0;
+    const latest=Math.max(lastSync,lastPeriodicAttempt);
+    if(!force && Date.now()-latest<every) return;
+    lastPeriodicAttempt=Date.now();syncNow({silent:true}).catch(()=>{});
+  }
+
   function startPeriodicAuto(){
     clearInterval(periodicTimer);periodicTimer=null;
     if(!cfg().autoSync) return;
-    const every=Math.max(60000,Number(cfg().autoSyncIntervalMs||300000));
-    periodicTimer=setInterval(()=>{if(configured()&&navigator.onLine)syncNow({silent:true}).catch(()=>{});},every);
+    periodicTimer=setInterval(()=>tryPeriodicAuto(false),30000);
+    setTimeout(()=>tryPeriodicAuto(false),5000);
   }
 
   function render(){
@@ -111,6 +120,8 @@
   window.addEventListener('swati:data-changed',e=>enqueue(e.detail?.dataset||'data',e.detail?.action||'update'));
   window.addEventListener('online',()=>{render();scheduleAuto();startPeriodicAuto();});
   window.addEventListener('offline',render);
+  window.addEventListener('focus',()=>tryPeriodicAuto(false));
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')tryPeriodicAuto(false);});
   window.addEventListener('swati:sync-config-changed',()=>{render();scheduleAuto();startPeriodicAuto();});
   document.addEventListener('DOMContentLoaded',()=>{
     document.getElementById('syncNowBtn')?.addEventListener('click',()=>syncNow().then(()=>{window.dispatchEvent(new CustomEvent('swati:toast',{detail:'Shared sync પૂર્ણ થયું'})); setTimeout(()=>location.reload(),350);}).catch(e=>window.dispatchEvent(new CustomEvent('swati:toast',{detail:e.message}))));

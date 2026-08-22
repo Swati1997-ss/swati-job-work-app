@@ -1,7 +1,7 @@
-const CACHE='swati-mini-oil-mill-alpha47';
+const CACHE='swati-mini-oil-mill-alpha48';
 const APP_SHELL=[
-  './','./index.html','./styles.css?v=ui-alpha47','./file-tools.js?v=ui-alpha47','./business-core.js?v=ui-alpha47','./business-core-bridge.js?v=ui-alpha47','./ui-i18n.js?v=ui-alpha47','./app.js?v=ui-alpha47','./sync-config.js?v=ui-alpha47','./offline-sync.js?v=ui-alpha47','./pwa.js?v=ui-alpha47',
-  './manifest.webmanifest?v=alpha47','./swati-icon-v2-192.png?v=alpha33-brand-v2','./swati-icon-v2-512.png?v=alpha33-brand-v2','./swati-icon-maskable-v2-192.png?v=alpha33-brand-v2','./swati-icon-maskable-v2-512.png?v=alpha33-brand-v2'
+  './','./index.html','./styles.css?v=ui-alpha48','./file-tools.js?v=ui-alpha48','./business-core.js?v=ui-alpha48','./business-core-bridge.js?v=ui-alpha48','./ui-i18n.js?v=ui-alpha48','./app.js?v=ui-alpha48','./sync-config.js?v=ui-alpha48','./offline-sync.js?v=ui-alpha48','./pwa.js?v=ui-alpha48',
+  './manifest.webmanifest?v=alpha48','./swati-icon-v2-192.png?v=alpha33-brand-v2','./swati-icon-v2-512.png?v=alpha33-brand-v2','./swati-icon-maskable-v2-192.png?v=alpha33-brand-v2','./swati-icon-maskable-v2-512.png?v=alpha33-brand-v2'
 ];
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(APP_SHELL)).then(()=>self.skipWaiting()));

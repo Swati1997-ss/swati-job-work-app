@@ -838,7 +838,7 @@
   function syncGrainJobWasteStock(r){
     if(!window.SwatiCore?.replaceStockMovements)return;
     const name=`${r.grain?.commodity||'Grain'} Waste / Reject`,slug=String(r.grain?.commodity||'grain').trim().toLowerCase().replace(/[^\p{L}\p{N}]+/gu,'_');
-    window.SwatiCore.replaceStockMovements('grain_jobwork_waste',r.id,r.grain?.purchaseEnabled?[{date:r.date,itemId:`grain.waste.${slug}`,itemName:name,qty:Number(r.grain?.purchaseKg||0),unitName:'kg',movementType:'purchase_in',direction:'in',unitCost:Number(r.grain?.purchaseRate||0),context:{division:'grain_pulse',unit:'jobwork',activity:'grain_jobwork_waste_purchase',sourceModule:'grain_jobwork_alpha47',operator:r.updatedBy||currentOperator(),notes:r.billNo}}]:[]);
+    window.SwatiCore.replaceStockMovements('grain_jobwork_waste',r.id,r.grain?.purchaseEnabled?[{date:r.date,itemId:`grain.waste.${slug}`,itemName:name,qty:Number(r.grain?.purchaseKg||0),unitName:'kg',movementType:'purchase_in',direction:'in',unitCost:Number(r.grain?.purchaseRate||0),context:{division:'grain_pulse',unit:'jobwork',activity:'grain_jobwork_waste_purchase',sourceModule:'grain_jobwork_alpha48',operator:r.updatedBy||currentOperator(),notes:r.billNo}}]:[]);
   }
 
   function renderGrainCustomerSuggestions(){
@@ -1883,6 +1883,7 @@
           receivables:Number(f.salesOutstanding||0),
           payables:Number(f.purchaseOutstanding||0),
           stockValue:window.SwatiCore?.costingSummary?window.SwatiCore.costingSummary().totalStockValue:0,
+          assetValue:0,
           ownedWorkingAssets:0,
           netWorkingPosition:0,
           loanLimit:Number(f.loanLimit||0),
@@ -1896,13 +1897,15 @@
 
     const totalReceivable=round2(Number(owner.receivables||0)+jobReceivable);
     const totalPayable=round2(Number(owner.payables||0)+jobPayable);
-    const ownedWorkingAssets=round2(Number(owner.liquidMoney||0)+Number(owner.stockValue||0)+totalReceivable);
+    const assetValue=round2(Number(owner.assetValue||0));
+    const ownedWorkingAssets=round2(Number(owner.liquidMoney||0)+Number(owner.stockValue||0)+totalReceivable+assetValue);
     const netWorkingPosition=round2(ownedWorkingAssets-totalPayable);
 
     if($('financeCashBalance')) $('financeCashBalance').textContent=money(owner.cash||0);
     if($('financeBankBalance')) $('financeBankBalance').textContent=money(owner.bank||0);
     if($('financeLiquid')) $('financeLiquid').textContent=money(owner.liquidMoney||0);
     if($('financeStockValue')) $('financeStockValue').textContent=money(owner.stockValue||0);
+    if($('financeAssetTotal')) $('financeAssetTotal').textContent=money(assetValue);
     if($('financeReceivable')) $('financeReceivable').textContent=money(totalReceivable);
     if($('financePayable')) $('financePayable').textContent=money(totalPayable);
 
@@ -1939,7 +1942,7 @@
         </div>`).join('')||'<div class="empty">હજુ cash/bank data નથી.</div>';
     }
 
-    const settings=window.SwatiCore.getFinanceSettings?window.SwatiCore.getFinanceSettings():{openingCash:0,loanFacilities:[]};
+    const settings=window.SwatiCore.getFinanceSettings?window.SwatiCore.getFinanceSettings():{openingCash:0,loanFacilities:[],assets:[]};
     if($('financeOpeningCash') && document.activeElement!==$('financeOpeningCash')) $('financeOpeningCash').value=Number(settings.openingCash||0);
 
     const manageBanks=window.SwatiCore.getBankAccounts?window.SwatiCore.getBankAccounts():[];
@@ -1960,6 +1963,18 @@
           <span><strong>${money(l.sanctioned||0)}</strong><small>Sanctioned</small></span>
           <button type="button" class="ghost edit-chip" data-edit-loan="${escapeAttr(l.id)}">Edit / સુધારો</button>
         </div>`).join('')||'<div class="empty">હજુ loan / credit facility ઉમેરેલ નથી.</div>';
+    }
+
+    const assets=Array.isArray(settings.assets)?settings.assets:[];
+    if($('assetDate') && !$('assetDate').value) $('assetDate').value=todayISO();
+    if($('financeAssetManageList')){
+      const assetTypeLabel={cold_storage:'Cold Storage',machine:'મશીન',property:'મિલકત',deposit:'Deposit / રોકાણ',other:'અન્ય'};
+      $('financeAssetManageList').innerHTML=assets.slice().sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))).map(a=>`
+        <div class="finance-manage-row">
+          <span><strong>${escapeHtml(a.name||'Asset')}</strong><small>${escapeHtml(assetTypeLabel[a.type]||a.type||'Asset')} • ${escapeHtml(a.date||'')}</small></span>
+          <span><strong>${money(a.amount||0)}</strong><small>${escapeHtml(a.note||'રોકાયેલી રકમ')}</small></span>
+          <button type="button" class="ghost edit-chip" data-edit-asset="${escapeAttr(a.id)}">Edit / સુધારો</button>
+        </div>`).join('')||'<div class="empty">હજુ કોઈ asset ઉમેરેલ નથી.</div>';
     }
 
   }
@@ -2535,14 +2550,18 @@
     const rows=getStaffPayments().filter(p=>p.staffId===staffId);
     const salaryPaid=round2(rows.filter(p=>p.type==='salary').reduce((s,p)=>s+Number(p.amount||0),0));
     const advancePaid=round2(rows.filter(p=>p.type==='advance').reduce((s,p)=>s+Number(p.amount||0),0));
-    return {salaryPaid,advancePaid};
+    const jama=round2(rows.filter(p=>p.type==='jama').reduce((s,p)=>s+Number(p.amount||0),0));
+    const udhar=round2(rows.filter(p=>p.type==='udhar').reduce((s,p)=>s+Number(p.amount||0),0));
+    return {salaryPaid,advancePaid,jama,udhar};
   }
 
   function staffSalaryPosition(staff){
     const earned=staffEarnedSalary(staff);
     const p=staffPaymentTotals(staff.id);
-    const outstanding=round2(Math.max(0,earned-p.salaryPaid-p.advancePaid));
-    return {...p,earned,outstanding};
+    const currentBalance=round2(earned+p.jama-p.salaryPaid-p.advancePaid-p.udhar);
+    const outstanding=round2(Math.max(0,currentBalance));
+    const staffOwes=round2(Math.max(0,-currentBalance));
+    return {...p,earned,currentBalance,outstanding,staffOwes};
   }
 
   function renderStaff(){
@@ -2564,7 +2583,7 @@
 
     const presentToday=attendance.filter(a=>a.date===today && (a.status==='present'||a.status==='half')).length;
     const totalOutstanding=round2(staff.reduce((s,x)=>s+staffSalaryPosition(x).outstanding,0));
-    const totalAdvance=round2(staff.reduce((s,x)=>s+staffPaymentTotals(x.id).advancePaid,0));
+    const totalAdvance=round2(staff.reduce((s,x)=>{const p=staffPaymentTotals(x.id);return s+p.advancePaid+p.udhar;},0));
 
     if($('staffCount')) $('staffCount').textContent=String(staff.length);
     if($('staffPresentToday')) $('staffPresentToday').textContent=String(presentToday);
@@ -2581,8 +2600,8 @@
             <small>${escapeHtml(s.role||'')} • ${s.salaryType==='monthly'?'Monthly':'Daily'} ${money(s.salaryRate||0)}</small>
           </span>
           <span class="row-actions">
-            <strong>${money(pos.outstanding)}</strong>
-            <small>Outstanding</small>
+            <strong class="${pos.currentBalance<0?'negative-balance':'positive-balance'}">${money(Math.abs(pos.currentBalance))}</strong>
+            <small>${pos.currentBalance<0?'Staff પાસેથી લેવાનું':'Staffને આપવાનું'}</small>
             <button type="button" class="edit-chip" data-edit-staff="${escapeAttr(s.id)}">Edit / સુધારો</button>
           </span>
         </div>`;
@@ -2608,8 +2627,9 @@
           <span><strong>${escapeHtml(s.name)}</strong><small>${staffAttendanceUnits(s.id)} attendance units</small></span>
           <div><span>Earned</span><strong>${money(p.earned)}</strong></div>
           <div><span>Salary Paid</span><strong>${money(p.salaryPaid)}</strong></div>
-          <div><span>Advance</span><strong>${money(p.advancePaid)}</strong></div>
-          <div><span>Outstanding</span><strong>${money(p.outstanding)}</strong></div>
+          <div><span>જમા</span><strong>${money(p.jama)}</strong></div>
+          <div><span>ઉધાર / Advance</span><strong>${money(p.udhar+p.advancePaid)}</strong></div>
+          <div><span>Current Balance</span><strong class="${p.currentBalance<0?'negative-balance':'positive-balance'}">${money(Math.abs(p.currentBalance))}</strong><small>${p.currentBalance<0?'Staff પાસેથી લેવાનું':'Staffને આપવાનું'}</small></div>
         </div>`;
       }).join('')||'<div class="empty">Salary summary માટે staff data નથી.</div>';
     }
@@ -2620,8 +2640,8 @@
       $('staffPaymentList').innerHTML=payRows.slice(0,20).map(p=>{
         const s=staffById(p.staffId);
         return `<div class="mini-list-row">
-          <span><strong>${escapeHtml(s?.name||'Staff')}</strong><small>${escapeHtml(p.date||'')} • ${p.type==='advance'?'Advance':'Salary Paid'}</small></span>
-          <strong>${money(p.amount||0)}</strong>
+          <span><strong>${escapeHtml(s?.name||'Staff')}</strong><small>${escapeHtml(p.date||'')} • ${{salary:'પગાર ચૂકવ્યો',advance:'જૂની Advance',jama:'જમા',udhar:'ઉધાર'}[p.type]||p.type}</small></span>
+          <strong class="${p.type==='jama'?'positive-balance':'negative-balance'}">${p.type==='jama'?'+':'−'} ${money(p.amount||0)}</strong>
         </div>`;
       }).join('')||'<div class="empty">હજુ staff payment નથી.</div>';
     }
@@ -3182,6 +3202,16 @@
       activeExpandedReport==='stock'?money(r.amount||0):money(r.amount||0),
       r.outstanding?`Outstanding ${money(r.outstanding)}`:(r.payable?`${activeExpandedReport==='batches'?'Total Cost':'Payable'} ${money(r.payable)}`:'')
     )).join('')||'<div class="empty">આ filterમાં data નથી.</div>';
+
+    if($('reportGraphList')){
+      const graphRows=rows.slice().sort((a,b)=>Number(b.amount||b.qty||b.outstanding||0)-Number(a.amount||a.qty||a.outstanding||0)).slice(0,8);
+      const graphMax=Math.max(1,...graphRows.map(r=>Math.abs(Number(r.amount||r.qty||r.outstanding||0))));
+      $('reportGraphList').innerHTML=graphRows.map((r,index)=>{
+        const value=Math.abs(Number(r.amount||r.qty||r.outstanding||0));
+        const width=Math.max(4,Math.round(value/graphMax*100));
+        return `<div class="report-graph-row"><span title="${escapeAttr(r.title||'Entry')}">${escapeHtml(r.title||'Entry')}</span><div><i style="width:${width}%" class="graph-color-${index%4}"></i></div><strong>${activeExpandedReport==='stock'?round2(value):money(value)}</strong></div>`;
+      }).join('')||'<div class="empty">આ filter માટે graph data નથી.</div>';
+    }
   }
 
   function openExpandedReport(type){
@@ -3223,6 +3253,15 @@
     if(!$('reportHomeView')) return;
     renderReportVisuals();
     if(activeExpandedReport) renderExpandedReport();
+  }
+
+  function decorateReportCards(){
+    document.querySelectorAll('.report-card').forEach((card,index)=>{
+      if(card.querySelector('.report-mini-chart')) return;
+      const chart=document.createElement('span');chart.className='report-mini-chart';chart.setAttribute('aria-hidden','true');
+      chart.innerHTML=`<i style="height:${35+(index%3)*15}%"></i><i style="height:${72-(index%2)*15}%"></i><i style="height:${48+(index%4)*10}%"></i>`;
+      card.prepend(chart);
+    });
   }
 
   function renderReportVisuals(){
@@ -3819,10 +3858,10 @@
   });
 
   window.addEventListener('beforeinstallprompt',(e)=>{
-    e.preventDefault(); deferredInstall = e; $('installBtn').hidden = false;
+    e.preventDefault(); deferredInstall = e; if($('installBtn')) $('installBtn').hidden = false;
   });
   window.addEventListener('swati:sync-applied',()=>{renderAll();});
-  $('installBtn').addEventListener('click', async ()=>{
+  $('installBtn')?.addEventListener('click', async ()=>{
     if(!deferredInstall) return; deferredInstall.prompt(); await deferredInstall.userChoice; deferredInstall = null; $('installBtn').hidden = true;
   });
 
@@ -3919,9 +3958,9 @@
       const salePayload={date:saleRow.date,party:saleRow.customer,itemId,itemName:saleRow.product==='khol'?'ખોળ':'તેલ',qty:saleRow.unit==='tin'?saleRow.tinCount:(saleRow.enteredQty??saleRow.kg),unitName:saleRow.unit,rate:saleRow.rate,amount:saleRow.total,received:saleRow.paid,paymentMode:saleRow.method,context:{division:'oil_mill',unit:'production',activity:'company_sale',sourceModule:'oil_company',operator:saleRow.operator,notes:saleRow.id}};
       const linked=companySaleEditId?linkedCoreSaleBySourceId(saleRow.id):null;
       if(linked) window.SwatiCore.updateSale(linked.id,salePayload); else window.SwatiCore.addSale(salePayload);
-      window.SwatiCore.replaceStockMovements?.('company_sale_tin',saleRow.id,saleRow.product==='oil'&&saleRow.unit==='tin'?[{date:saleRow.date,itemId:'oil.packaging.filled_tin_15kg',itemName:'15 કિલો ભરેલું ટીન',qty:saleRow.tinCount,unitName:'tin',movementType:'sale_out',direction:'out',context:{division:'oil_mill',unit:'sales',activity:'company_oil_tin_sale',sourceModule:'oil_company_alpha47',operator:saleRow.operator,notes:saleRow.id}}]:[]);
-      const existingCost=(window.SwatiCore.list('expenses')||[]).find(x=>x.context?.sourceModule==='oil_company_sale_cost_alpha47'&&x.context?.notes===saleRow.id);
-      const costPayload={date:saleRow.date,category:'sales_cost',name:`${saleRow.product==='oil'?'તેલ':'ખોળ'} વેચાણ ખર્ચ — ${saleRow.customer||'Party'}`,amount:saleRow.extraCost,paymentMode:saleRow.method,context:{division:'oil_mill',unit:'sales',activity:'company_sale_cost',sourceModule:'oil_company_sale_cost_alpha47',operator:saleRow.operator,notes:saleRow.id}};
+      window.SwatiCore.replaceStockMovements?.('company_sale_tin',saleRow.id,saleRow.product==='oil'&&saleRow.unit==='tin'?[{date:saleRow.date,itemId:'oil.packaging.filled_tin_15kg',itemName:'15 કિલો ભરેલું ટીન',qty:saleRow.tinCount,unitName:'tin',movementType:'sale_out',direction:'out',context:{division:'oil_mill',unit:'sales',activity:'company_oil_tin_sale',sourceModule:'oil_company_alpha48',operator:saleRow.operator,notes:saleRow.id}}]:[]);
+      const existingCost=(window.SwatiCore.list('expenses')||[]).find(x=>['oil_company_sale_cost_alpha47','oil_company_sale_cost_alpha48'].includes(x.context?.sourceModule)&&x.context?.notes===saleRow.id);
+      const costPayload={date:saleRow.date,category:'sales_cost',name:`${saleRow.product==='oil'?'તેલ':'ખોળ'} વેચાણ ખર્ચ — ${saleRow.customer||'Party'}`,amount:saleRow.extraCost,paymentMode:saleRow.method,context:{division:'oil_mill',unit:'sales',activity:'company_sale_cost',sourceModule:'oil_company_sale_cost_alpha48',operator:saleRow.operator,notes:saleRow.id}};
       if(saleRow.extraCost>0){if(existingCost)window.SwatiCore.updateExpense(existingCost.id,costPayload);else window.SwatiCore.addExpense(costPayload);}else if(existingCost)window.SwatiCore.removeExpense(existingCost.id);
     }
     $('companySaleForm').reset();$('companySaleDate').value=todayISO();$('companySaleProduct').value='khol';
@@ -4225,7 +4264,10 @@
 
     document.querySelectorAll('[data-i18n]').forEach(el=>{
       const key=el.dataset.i18n;
-      if(UI_TEXT[l][key]) el.textContent=UI_TEXT[l][key];
+      if(!UI_TEXT[l][key]) return;
+      const directText=[...el.childNodes].find(node=>node.nodeType===Node.TEXT_NODE&&node.nodeValue.trim());
+      if(directText) directText.nodeValue=UI_TEXT[l][key];
+      else if(!el.children.length) el.textContent=UI_TEXT[l][key];
     });
 
     const translatedTitles={
@@ -4380,6 +4422,22 @@
     renderFinance();
   });
 
+  $('assetForm')?.addEventListener('submit',(e)=>{
+    e.preventDefault();
+    const name=$('assetName').value.trim();
+    const amount=round2(Number($('assetAmount').value||0));
+    if(!name||amount<=0){toast('Asset નામ અને રોકાયેલી રકમ દાખલ કરો');return;}
+    const settings=window.SwatiCore.getFinanceSettings();
+    const assets=Array.isArray(settings.assets)?settings.assets:[];
+    const editId=$('assetEditId')?.value||'';
+    const row={id:editId||`ASSET-${Date.now()}`,name,type:$('assetType').value,amount,date:$('assetDate').value||todayISO(),note:$('assetNote').value.trim(),updatedAt:new Date().toISOString()};
+    if(editId){const i=assets.findIndex(x=>x.id===editId);if(i>=0)assets[i]={...assets[i],...row};}
+    else assets.push(row);
+    settings.assets=assets;window.SwatiCore.saveFinanceSettings(settings);
+    $('assetForm').reset();$('assetDate').value=todayISO();clearEditMode('asset','Asset સાચવો');renderFinance();
+    toast(editId?'Asset update થયું':'Asset સાચવાયું');
+  });
+
 
 
   document.querySelectorAll('[data-finance-setup-tab]').forEach(btn=>btn.addEventListener('click',()=>{
@@ -4388,7 +4446,16 @@
     if($('financeSetupCashPanel')) $('financeSetupCashPanel').hidden=tab!=='cash';
     if($('financeSetupBanksPanel')) $('financeSetupBanksPanel').hidden=tab!=='banks';
     if($('financeSetupLoansPanel')) $('financeSetupLoansPanel').hidden=tab!=='loans';
+    if($('financeSetupAssetsPanel')) $('financeSetupAssetsPanel').hidden=tab!=='assets';
   }));
+
+  $('financeAssetManageList')?.addEventListener('click',(e)=>{
+    const btn=e.target.closest('[data-edit-asset]');if(!btn)return;
+    const settings=window.SwatiCore.getFinanceSettings();const a=(settings.assets||[]).find(x=>x.id===btn.dataset.editAsset);if(!a)return;
+    $('assetEditId').value=a.id;$('assetName').value=a.name||'';$('assetType').value=a.type||'other';$('assetAmount').value=a.amount||0;$('assetDate').value=a.date||todayISO();$('assetNote').value=a.note||'';
+    setEditMode('asset',a.id,'Asset Update કરો');
+  });
+  $('assetEditCancelBtn')?.addEventListener('click',()=>{$('assetForm').reset();$('assetDate').value=todayISO();clearEditMode('asset','Asset સાચવો');});
 
   $('financeBankManageList')?.addEventListener('click',(e)=>{
     const btn=e.target.closest('[data-edit-bank]');
@@ -4738,18 +4805,26 @@
     });
     writeLocalList(STAFF_PAYMENT_KEY,rows);
 
-    if(window.SwatiCore?.addExpense){
+    if(type==='jama' && window.SwatiCore?.addMoneyMovement){
+      window.SwatiCore.addMoneyMovement({
+        date,amount,direction:'in',mode:paymentMode,
+        refType:'staff_jama',refId:rows[rows.length-1].id,
+        title:`Staff જમા - ${staff?.name||''}`,
+        context:{division:'company',unit:'company',activity:'staff_jama',sourceModule:'staff_alpha48',operator:currentOperator(),notes:note}
+      });
+    }else if(window.SwatiCore?.addExpense){
+      const isUdhar=type==='advance'||type==='udhar';
       window.SwatiCore.addExpense({
         date,
-        category:type==='advance'?'staff_advance':'salary',
-        name:type==='advance'?`Staff Advance - ${staff?.name||''}`:`Salary - ${staff?.name||''}`,
+        category:isUdhar?'staff_udhar':'salary',
+        title:isUdhar?`Staff ઉધાર - ${staff?.name||''}`:`Salary - ${staff?.name||''}`,
         amount,
         paymentMode,
         context:{
           division:'company',
           unit:'company',
-          activity:type==='advance'?'staff_advance':'salary_payment',
-          sourceModule:'staff_alpha26',
+          activity:isUdhar?'staff_udhar':'salary_payment',
+          sourceModule:'staff_alpha48',
           operator:currentOperator(),
           notes:note
         }
@@ -4759,7 +4834,7 @@
     $('staffPaymentAmount').value='';
     $('staffPaymentNote').value='';
     renderStaff();
-    toast(type==='advance'?'Staff Advance ઉમેરાયું':'Salary Payment ઉમેરાયું');
+    toast({salary:'પગારની ચુકવણી સાચવાઈ',advance:'Advance સાચવાઈ',jama:'Staff જમા સાચવાઈ',udhar:'Staff ઉધાર સાચવાયું'}[type]||'Staff entry સાચવાઈ');
   });
 
 
@@ -4964,5 +5039,6 @@
   resetGrainForm();
   resetBatchForm();
   if($('reportFrom') && $('reportTo')) setReportRange('month');
+  decorateReportCards();
   renderAll();
 })();

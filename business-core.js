@@ -215,14 +215,16 @@
   function getFinanceSettings() {
     return read(KEYS.financeSettings, {
       openingCash: 0,
-      loanFacilities: []
+      loanFacilities: [],
+      assets: []
     });
   }
 
   function saveFinanceSettings(settings={}) {
     const clean = {
       openingCash: round2(settings.openingCash),
-      loanFacilities: Array.isArray(settings.loanFacilities) ? settings.loanFacilities : []
+      loanFacilities: Array.isArray(settings.loanFacilities) ? settings.loanFacilities : [],
+      assets: Array.isArray(settings.assets) ? settings.assets : []
     };
     write(KEYS.financeSettings, clean);
     return clean;
@@ -698,9 +700,10 @@
     const liquidMoney = round2(Number(f.cashBalance||0)+Number(f.bankBalance||0));
     const receivables = round2(Number(f.salesOutstanding||0));
     const payables = round2(Number(f.purchaseOutstanding||0));
-      const stockValue = round2(Number(costing.totalStockValue||0));
-      const ownedWorkingAssets = round2(liquidMoney + receivables + stockValue);
       const settings=getFinanceSettings();
+      const stockValue = round2(Number(costing.totalStockValue||0));
+      const assetValue=round2((Array.isArray(settings.assets)?settings.assets:[]).reduce((s,x)=>s+Number(x.amount||0),0));
+      const ownedWorkingAssets = round2(liquidMoney + receivables + stockValue + assetValue);
     const facilities=Array.isArray(settings.loanFacilities)?settings.loanFacilities:[];
     const loanLimit=round2(facilities.reduce((s,x)=>s+Number(x.sanctioned||0),0));
       const loanUsed=round2(facilities.reduce((s,x)=>s+Number(x.used||0),0));
@@ -714,6 +717,7 @@
       receivables,
       payables,
       stockValue,
+      assetValue,
       ownedWorkingAssets,
       netWorkingPosition,
       loanLimit,
